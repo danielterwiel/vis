@@ -826,8 +826,8 @@ vis/
 
 ### Phase 2: Core Infrastructure
 
-- [ ] Implement sandboxed iframe execution with `srcdoc`
-- [ ] Create Babel-based code instrumentation
+- [x] Implement sandboxed iframe execution with `srcdoc`
+- [ ] Create SWC-based code instrumentation (loop injection)
 - [ ] Build step capture and `postMessage` communication
 - [ ] Implement timeout/infinite loop protection
 - [ ] Set up client-side test runner with Chai

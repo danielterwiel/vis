@@ -101,3 +101,47 @@ Next: Set up Zustand store for app state
 - Full validation suite passing ✓
 
 Next: Begin Phase 2 - Implement sandboxed iframe execution with srcdoc
+2026-01-14 14:37 - Phase 2: Sandboxed Iframe Execution COMPLETED (First task)
+- Created SWC WASM initializer module (src/lib/execution/swcInitializer.ts)
+  * Singleton initialization pattern with promise caching
+  * initializeSWC() must be called once on app mount
+  * transformCode() function for code transformation
+  * Comprehensive error handling with retry support
+- Implemented defense-in-depth postMessage validation (src/lib/execution/messageValidation.ts)
+  * Multi-layer validation: structure, type whitelist, schema, source check
+  * Type-safe message interfaces (ExecutionCompleteMessage, ExecutionErrorMessage, etc.)
+  * Correlation ID system for request/response matching
+  * CRITICAL: Sandboxed iframes have null origin, cannot rely on origin checks alone
+- Created sandboxed iframe execution system (src/lib/execution/sandbox.ts)
+  * executeSandboxedCode() for single code execution
+  * executeSandboxedCodeBatch() for parallel execution
+  * Timeout protection (5s default, configurable)
+  * Operation capture via __capture() function injected into sandbox
+  * Console interception (log, warn, error, info) with postMessage relay
+  * Clean iframe sandbox attribute: "allow-scripts" only
+  * Proper cleanup and memory management
+- Updated App.tsx to initialize SWC on mount
+  * Loading state while SWC initializes
+  * Error state with user-friendly message on initialization failure
+  * Updated App tests to handle async initialization with waitFor
+- Created comprehensive test suites:
+  * swcInitializer.test.ts: 8 tests covering initialization and transformation
+  * messageValidation.test.ts: 17 tests covering all message types and validation layers
+  * sandbox.test.ts: 11 tests (9 skipped - require real browser, 2 pass)
+  * NOTE: Sandbox tests require actual browser environment (Playwright/Cypress)
+  * happy-dom/jsdom don't support iframe srcdoc execution
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 60 passed, 9 skipped (require browser) ✓
+
+Implementation Notes:
+- Used setAttribute("sandbox", "allow-scripts") instead of sandbox.add() for better test compatibility
+- SWC chosen over Babel (20-70x faster) per CLAUDE.md guidance
+- Defense-in-depth security: 4 layers of validation for postMessage
+- Correlation IDs enable matching async request/response pairs
+- iframe.contentWindow used for source validation
+- Timeout mechanism protects against infinite loops (separate from loop injection)
+
+Next: Create SWC-based code instrumentation for loop detection and operation capture
