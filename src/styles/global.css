@@ -199,6 +199,14 @@ body {
   border: 1px solid #a78bfa;
 }
 
+.editor-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
 .codemirror-wrapper {
   flex: 1;
   overflow: hidden;

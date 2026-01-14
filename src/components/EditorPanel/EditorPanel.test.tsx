@@ -36,10 +36,11 @@ describe("EditorPanel", () => {
     expect(screen.getByText("easy")).toBeDefined();
   });
 
-  it("renders HintSystem component", () => {
+  it("renders HintButton component", () => {
     render(<EditorPanel />);
-    // HintSystem should render hints header
-    expect(screen.getByText(/Hints/)).toBeDefined();
+    // HintButton should be rendered
+    const hintButton = screen.getByRole("button", { name: "Show hints" });
+    expect(hintButton).toBeInTheDocument();
   });
 
   describe("Show Solution functionality", () => {

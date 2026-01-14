@@ -45,13 +45,8 @@ describe("VisualizationPanel", () => {
     expect(screen.getByText("⟲ Reset")).toBeDefined();
   });
 
-  it("renders animation speed control", () => {
-    render(<VisualizationPanel />);
-    expect(screen.getByText("Speed:")).toBeInTheDocument();
-    expect(screen.getByText("1×")).toBeInTheDocument();
-    expect(screen.getByText("0.5×")).toBeInTheDocument();
-    expect(screen.getByText("2×")).toBeInTheDocument();
-  });
+  // Animation speed control was removed as per PRD Phase 9
+  // Test removed - no speed controls in UI
 
   it("renders step counter", () => {
     render(<VisualizationPanel />);

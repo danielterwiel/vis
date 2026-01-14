@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { CodeMirrorEditor } from "./CodeMirrorEditor";
-import { HintSystem } from "./HintSystem";
+import { HintButton } from "./HintButton";
 import { PresetSelector } from "./PresetSelector";
 import useAppStore, { DataStructureType } from "../../store/useAppStore";
 import { skeletonCodeSystem } from "../../templates";
@@ -121,8 +121,10 @@ function EditorPanel() {
           />
         </div>
       </div>
-      <CodeMirrorEditor value={userCode} onChange={handleCodeChange} readOnly={isReadOnly} />
-      <HintSystem testCase={currentTestCase || null} />
+      <div className="editor-content">
+        <CodeMirrorEditor value={userCode} onChange={handleCodeChange} readOnly={isReadOnly} />
+        <HintButton testCase={currentTestCase || null} />
+      </div>
     </div>
   );
 }
