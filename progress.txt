@@ -145,3 +145,41 @@ Implementation Notes:
 - Timeout mechanism protects against infinite loops (separate from loop injection)
 
 Next: Create SWC-based code instrumentation for loop detection and operation capture
+2026-01-14 14:42 - Phase 2: SWC-based Code Instrumentation COMPLETED
+- Created comprehensive code instrumentation system (src/lib/execution/instrumenter.ts)
+  * instrumentCode() main function with configurable options
+  * Loop counter injection for while, for, and do-while loops (regex-based)
+  * Recursion depth tracking wrapper for all functions
+  * Operation capture injection for array methods (push, pop, etc.)
+  * Error boundary wrapping for safe execution
+  * Configurable limits: maxLoopIterations (100k), maxRecursionDepth (1000)
+- Implementation approach:
+  * Regex-based transformation (SWC WASM doesn't support custom AST plugins)
+  * Multi-pass instrumentation: validate → loops → recursion → capture → error boundary
+  * Graceful fallback: validateSyntax uses SWC if initialized, else basic validation
+  * Unique counter variables (__loopCount_0, __loopCount_1, etc.) for each loop
+- Helper utilities:
+  * extractFunctionName() - extracts function/method names from code
+  * isFunction() - determines if code defines a function
+  * validateSyntax() - validates syntax with SWC or basic heuristics
+  * basicSyntaxValidation() - checks balanced braces/brackets/parens without SWC
+- Created comprehensive test suite (src/lib/execution/instrumenter.test.ts)
+  * 35 tests covering all instrumentation features
+  * Tests for while, for, do-while loop injection
+  * Tests for recursion tracking, error boundaries
+  * Tests for custom options (max iterations, max depth)
+  * Tests for helper functions (extract name, isFunction, validate)
+  * All 35 tests passing ✓
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 95 passed, 9 skipped (require browser) ✓
+
+Technical notes:
+- Loop injection uses regex instead of SWC AST transformation (WASM limitation)
+- Syntax validation falls back to basic checks if SWC not initialized
+- Instrumentation preserves original code behavior while adding safety checks
+- Error messages clearly identify loop type (while/for/do-while) for debugging
+
+Next: Build step capture and postMessage communication for visualization
