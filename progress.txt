@@ -262,3 +262,46 @@ Technical notes:
 
 Next: Set up client-side test runner with Chai
 
+2026-01-14 14:54 - Phase 2: Client-side Test Runner COMPLETED (Phase 2 COMPLETE)
+- Created comprehensive test runner module (src/lib/testing/testRunner.ts)
+  * runTest() - Execute single test case against user code
+  * runTests() - Run multiple test cases in sequence
+  * runTestsByDifficulty() - Run tests filtered by difficulty level
+  * validateUserCode() - Validate code before execution
+  * extractMainFunction() - Extract function name from user code
+- Created type definitions (src/lib/testing/types.ts)
+  * TestCase interface with all test metadata
+  * TestResult interface for test execution results
+  * TestRunOptions for configurable test behavior
+  * DifficultyLevel type: easy | medium | hard
+- Created Vitest expect bundler (src/lib/testing/expectBundle.ts)
+  * bundleExpect() - Serializes minimal expect implementation for sandbox
+  * Implements core matchers: toBe, toEqual, toBeGreaterThan, toContain, etc.
+  * Includes .not modifier for negation
+  * Creates runnable JavaScript string for sandbox injection
+- Integration with execution pipeline:
+  * Uses captureSteps() from stepCapture module
+  * Injects expect code + user code + test assertions into sandbox
+  * Captures visualization steps and console logs during execution
+  * Returns comprehensive test results with timing and captured data
+- Created comprehensive test suites:
+  * testRunner.test.ts: 20 tests covering all runner functions
+  * expectBundle.test.ts: 18 tests verifying expect implementation
+  * types.test.ts: 6 tests validating type exports
+  * All tests use proper mocking of stepCapture module
+- Created index.ts barrel export for clean API
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 185 passed, 9 skipped (require browser) ✓
+
+Implementation notes:
+- Used captureSteps() instead of executeSandboxedCode() directly (higher-level API)
+- Simplified expect implementation for sandbox (full Vitest expect would require bundler)
+- Test runner extracts function name via regex (supports function/arrow/expression syntax)
+- Console logs and steps captured separately and mapped to TestResult format
+- Options flow through: timeout, maxLoopIterations, maxRecursionDepth, capture flags
+
+Next: Begin Phase 3 - Define TestCase interface and structure (already done in types.ts), create test cases for Arrays
+

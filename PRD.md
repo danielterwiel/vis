@@ -830,7 +830,7 @@ vis/
 - [x] Create SWC-based code instrumentation (loop injection)
 - [x] Build step capture and `postMessage` communication
 - [x] Implement timeout/infinite loop protection
-- [ ] Set up client-side test runner with Chai
+- [x] Set up client-side test runner with Vitest expect
 
 ### Phase 3: Test Cases System
 
