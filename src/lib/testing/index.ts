@@ -17,4 +17,6 @@ export { bundleTrackedStack } from "./trackedStackBundle";
 
 export { bundleTrackedQueue } from "./trackedQueueBundle";
 
+export { bundleTrackedBinaryTree } from "./trackedBinaryTreeBundle";
+
 export type { TestCase, TestResult, TestRunOptions, DifficultyLevel } from "./types";
