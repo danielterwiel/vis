@@ -846,7 +846,7 @@ vis/
 - [x] Implement TrackedArray with operation capture
 - [x] Add D3 transition animations for push, pop, swap, sort
 - [x] Connect editor → execution → visualization pipeline
-- [ ] Implement all 3 array test cases
+- [x] Implement all 3 array test cases
 
 ### Phase 5: Visualization Modes
 

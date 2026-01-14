@@ -17,12 +17,16 @@ export const arrayTests: TestCase[] = [
       expect(result.length).toBe(5);
     `,
     referenceSolution: `function sort(arr) {
-  return arr.slice().sort((a, b) => a - b);
+  // Sort using built-in method
+  arr.sort((a, b) => a - b);
+  return arr;
 }`,
     skeletonCode: `function sort(arr) {
   // TODO: Implement sorting algorithm
   // Hint: You can use arr.sort() with a compare function
+  // The arr parameter is a TrackedArray that records operations
 
+  return arr;
 }`,
     hints: [
       "JavaScript arrays have a built-in sort() method",
@@ -50,8 +54,9 @@ export const arrayTests: TestCase[] = [
   const n = arr.length;
   for (let i = 0; i < n - 1; i++) {
     for (let j = 0; j < n - i - 1; j++) {
-      if (arr[j] > arr[j + 1]) {
-        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+      // Use TrackedArray's at() for reading and swap() for swapping
+      if (arr.at(j) > arr.at(j + 1)) {
+        arr.swap(j, j + 1);
       }
     }
   }
@@ -62,13 +67,15 @@ export const arrayTests: TestCase[] = [
   // TODO: Implement nested loops
   // Outer loop: iterate n-1 times
   // Inner loop: compare adjacent elements and swap if needed
+  // Use arr.at(index) to read values
+  // Use arr.swap(i, j) to swap elements (this will be visualized!)
 
   return arr;
 }`,
     hints: [
       "Bubble sort compares adjacent elements and swaps them if out of order",
-      "You need two nested loops",
-      "Use destructuring to swap: [arr[j], arr[j+1]] = [arr[j+1], arr[j]]",
+      "You need two nested loops: outer loop runs n-1 times, inner loop compares pairs",
+      "Use arr.swap(j, j+1) to swap adjacent elements when they're out of order",
     ],
     acceptanceCriteria: [
       "Function returns array sorted in ascending order",
@@ -97,16 +104,8 @@ export const arrayTests: TestCase[] = [
 }
 
 function partition(arr, low, high) {
-  const pivot = arr[high];
-  let i = low - 1;
-  for (let j = low; j < high; j++) {
-    if (arr[j] < pivot) {
-      i++;
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-  }
-  [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
-  return i + 1;
+  // Use TrackedArray's partition method for visualization
+  return arr.partition(low, high);
 }`,
     skeletonCode: `function quickSort(arr, low = 0, high = arr.length - 1) {
   // TODO: Implement recursive quick sort
@@ -118,10 +117,8 @@ function partition(arr, low, high) {
 }
 
 function partition(arr, low, high) {
-  // TODO: Implement partition
-  // 1. Choose pivot (last element)
-  // 2. Move smaller elements to left of pivot
-  // 3. Return final pivot position
+  // TODO: Use arr.partition(low, high) for visualization
+  // This method handles the partitioning and captures the operation
 
 }`,
     hints: [

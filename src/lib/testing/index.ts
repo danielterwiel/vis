@@ -9,4 +9,6 @@ export { runTest, runTests, runTestsByDifficulty, validateUserCode } from "./tes
 
 export { bundleExpect, expect } from "./expectBundle";
 
+export { bundleTrackedArray } from "./trackedArrayBundle";
+
 export type { TestCase, TestResult, TestRunOptions, DifficultyLevel } from "./types";

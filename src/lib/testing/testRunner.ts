@@ -7,6 +7,7 @@
 
 import { captureSteps } from "../execution/stepCapture";
 import { bundleExpect } from "./expectBundle";
+import { bundleTrackedArray } from "./trackedArrayBundle";
 import type { TestCase, TestResult, TestRunOptions } from "./types";
 import type { VisualizationStep } from "../../store/useAppStore";
 
@@ -76,20 +77,29 @@ export async function runTest(
 
     // Step 2: Build the complete sandbox code
     const expectCode = bundleExpect();
+    const trackedArrayCode = bundleTrackedArray();
     const sandboxCode = `
       ${expectCode}
+      ${trackedArrayCode}
 
       // User's code
       ${userCode}
 
-      // Initialize with test data
-      const input = ${JSON.stringify(testCase.initialData)};
+      // Initialize with test data - wrap in TrackedArray if array type
+      const initialData = ${JSON.stringify(testCase.initialData)};
+      const input = Array.isArray(initialData)
+        ? new TrackedArray(initialData, typeof __capture === 'function' ? __capture : undefined)
+        : initialData;
 
       // Execute user's function
       const result = ${functionName}(input);
 
-      // Run test assertions
-      ${testCase.assertions}
+      // Extract final array data if TrackedArray
+      const finalResult = result instanceof TrackedArray ? result.getData() :
+                          (Array.isArray(result) ? result : result);
+
+      // Run test assertions (use finalResult for array comparisons)
+      ${testCase.assertions.replace(/\bresult\b/g, "finalResult")}
     `;
 
     // Step 3: Execute in sandbox with step capture
