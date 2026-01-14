@@ -15,6 +15,7 @@ describe("useAppStore", () => {
       result.current.resetVisualization();
       result.current.clearTestResults();
       result.current.resetHints();
+      result.current.clearConsoleLogs();
     });
   });
 
@@ -35,6 +36,7 @@ describe("useAppStore", () => {
       expect(result.current.animationSpeed).toBe(1);
       expect(result.current.testResults.size).toBe(0);
       expect(result.current.hintsRevealed).toBe(0);
+      expect(result.current.consoleLogs).toEqual([]);
     });
   });
 
@@ -420,6 +422,73 @@ describe("useAppStore", () => {
       });
 
       expect(result.current.hintsRevealed).toBe(0);
+    });
+  });
+
+  describe("Console Logs", () => {
+    it("should have empty console logs initially", () => {
+      const { result } = renderHook(() => useAppStore());
+      expect(result.current.consoleLogs).toEqual([]);
+    });
+
+    it("should add console log with timestamp", () => {
+      const { result } = renderHook(() => useAppStore());
+
+      act(() => {
+        result.current.addConsoleLog({ level: "log", args: ["Hello, world!"] });
+      });
+
+      expect(result.current.consoleLogs).toHaveLength(1);
+      expect(result.current.consoleLogs[0]?.level).toBe("log");
+      expect(result.current.consoleLogs[0]?.args).toEqual(["Hello, world!"]);
+      expect(result.current.consoleLogs[0]?.timestamp).toBeGreaterThan(0);
+    });
+
+    it("should add multiple console logs", () => {
+      const { result } = renderHook(() => useAppStore());
+
+      act(() => {
+        result.current.addConsoleLog({ level: "log", args: ["Message 1"] });
+        result.current.addConsoleLog({ level: "warn", args: ["Message 2"] });
+        result.current.addConsoleLog({ level: "error", args: ["Message 3"] });
+      });
+
+      expect(result.current.consoleLogs).toHaveLength(3);
+      expect(result.current.consoleLogs[0]?.level).toBe("log");
+      expect(result.current.consoleLogs[1]?.level).toBe("warn");
+      expect(result.current.consoleLogs[2]?.level).toBe("error");
+    });
+
+    it("should set console logs", () => {
+      const { result } = renderHook(() => useAppStore());
+
+      const logs = [
+        { level: "log" as const, args: ["Test 1"], timestamp: Date.now() },
+        { level: "warn" as const, args: ["Test 2"], timestamp: Date.now() + 1 },
+      ];
+
+      act(() => {
+        result.current.setConsoleLogs(logs);
+      });
+
+      expect(result.current.consoleLogs).toEqual(logs);
+    });
+
+    it("should clear console logs", () => {
+      const { result } = renderHook(() => useAppStore());
+
+      act(() => {
+        result.current.addConsoleLog({ level: "log", args: ["Message 1"] });
+        result.current.addConsoleLog({ level: "log", args: ["Message 2"] });
+      });
+
+      expect(result.current.consoleLogs).toHaveLength(2);
+
+      act(() => {
+        result.current.clearConsoleLogs();
+      });
+
+      expect(result.current.consoleLogs).toEqual([]);
     });
   });
 });

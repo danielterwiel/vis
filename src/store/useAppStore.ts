@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { ConsoleLog } from "../components/ConsoleOutput";
 
 export type DataStructureType =
   | "array"
@@ -59,6 +60,9 @@ export interface AppState {
   testResults: Map<string, TestResult>;
   hintsRevealed: number; // Count of hints revealed for current test
 
+  // Console output
+  consoleLogs: ConsoleLog[];
+
   // Actions - Data structure selection
   setSelectedDataStructure: (dataStructure: DataStructureType) => void;
   setSelectedDifficulty: (difficulty: DifficultyLevel) => void;
@@ -86,6 +90,11 @@ export interface AppState {
   revealHint: () => void;
   resetHints: () => void;
 
+  // Actions - Console
+  addConsoleLog: (log: Omit<ConsoleLog, "timestamp">) => void;
+  setConsoleLogs: (logs: ConsoleLog[]) => void;
+  clearConsoleLogs: () => void;
+
   // Actions - Reset
   resetVisualization: () => void;
 }
@@ -108,6 +117,8 @@ const useAppStore = create<AppState>((set, get) => ({
 
   testResults: new Map(),
   hintsRevealed: 0,
+
+  consoleLogs: [],
 
   // Actions - Data structure selection
   setSelectedDataStructure: (dataStructure) =>
@@ -194,6 +205,16 @@ const useAppStore = create<AppState>((set, get) => ({
   revealHint: () => set((state) => ({ hintsRevealed: state.hintsRevealed + 1 })),
 
   resetHints: () => set({ hintsRevealed: 0 }),
+
+  // Actions - Console
+  addConsoleLog: (log) =>
+    set((state) => ({
+      consoleLogs: [...state.consoleLogs, { ...log, timestamp: Date.now() }],
+    })),
+
+  setConsoleLogs: (logs) => set({ consoleLogs: logs }),
+
+  clearConsoleLogs: () => set({ consoleLogs: [] }),
 
   // Actions - Reset
   resetVisualization: () =>

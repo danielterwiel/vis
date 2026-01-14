@@ -1,0 +1,134 @@
+.console-output {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+}
+
+.console-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #252526;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.console-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #cccccc;
+}
+
+.console-clear-button {
+  padding: 4px 12px;
+  background-color: #3e3e42;
+  border: 1px solid #5a5a5e;
+  border-radius: 4px;
+  color: #cccccc;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.console-clear-button:hover {
+  background-color: #4e4e52;
+}
+
+.console-logs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  line-height: 1.5;
+}
+
+.console-empty {
+  color: #858585;
+  font-style: italic;
+  padding: 8px;
+}
+
+.console-log {
+  display: flex;
+  gap: 8px;
+  padding: 4px 8px;
+  border-left: 3px solid transparent;
+  margin-bottom: 2px;
+}
+
+.console-log-log {
+  border-left-color: #3794ff;
+}
+
+.console-log-warn {
+  border-left-color: #cca700;
+  background-color: rgba(204, 167, 0, 0.1);
+}
+
+.console-log-error {
+  border-left-color: #f48771;
+  background-color: rgba(244, 135, 113, 0.1);
+}
+
+.console-log-info {
+  border-left-color: #75beff;
+}
+
+.console-timestamp {
+  color: #858585;
+  font-size: 11px;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.console-level {
+  font-weight: 600;
+  min-width: 50px;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+.console-level-log {
+  color: #3794ff;
+}
+
+.console-level-warn {
+  color: #cca700;
+}
+
+.console-level-error {
+  color: #f48771;
+}
+
+.console-level-info {
+  color: #75beff;
+}
+
+.console-message {
+  flex: 1;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  color: #d4d4d4;
+}
+
+/* Scrollbar styling */
+.console-logs::-webkit-scrollbar {
+  width: 10px;
+}
+
+.console-logs::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.console-logs::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 5px;
+}
+
+.console-logs::-webkit-scrollbar-thumb:hover {
+  background: #4e4e4e;
+}

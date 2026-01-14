@@ -874,7 +874,7 @@ vis/
 ### Phase 7: Polish & UX
 
 - [x] Data structure selector toolbar
-- [ ] Console output panel with formatting
+- [x] Console output panel with formatting
 - [ ] Animation speed controls
 - [ ] Step-through debugging mode
 - [ ] Dark/light theme toggle
