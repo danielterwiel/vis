@@ -16,3 +16,6 @@ export { TrackedQueue, createTrackedQueue } from "./TrackedQueue";
 
 export { TrackedBinaryTree, createTrackedBinaryTree } from "./TrackedBinaryTree";
 export type { BinaryTreeNode } from "./TrackedBinaryTree";
+
+export { TrackedGraph, createTrackedGraph } from "./TrackedGraph";
+export type { GraphNode, GraphEdge, GraphData } from "./TrackedGraph";
