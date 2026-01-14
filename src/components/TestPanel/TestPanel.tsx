@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, type ReactElement } from "react";
+import { IconCheck, IconX, IconCircle, IconPlayerPlay } from "@tabler/icons-react";
 import type { TestCase, TestResult } from "../../lib/testing/types";
 import useAppStore from "../../store/useAppStore";
 import "./TestPanel.css";
@@ -35,10 +36,10 @@ export function TestPanel({ testCases, onRunTest, onRunAllTests }: TestPanelProp
     return testResults.get(testId);
   };
 
-  const getStatusIcon = (testId: string): string => {
+  const getStatusIcon = (testId: string): ReactElement => {
     const result = getTestResult(testId);
-    if (!result) return "○";
-    return result.passed ? "✓" : "✗";
+    if (!result) return <IconCircle size={18} />;
+    return result.passed ? <IconCheck size={18} /> : <IconX size={18} />;
   };
 
   const getStatusClass = (testId: string): string => {
@@ -64,7 +65,12 @@ export function TestPanel({ testCases, onRunTest, onRunAllTests }: TestPanelProp
       </div>
 
       <div className="test-actions">
-        <button onClick={handleRunAll} disabled={isRunning || testCases.length === 0}>
+        <button
+          onClick={handleRunAll}
+          disabled={isRunning || testCases.length === 0}
+          aria-label="Run all tests"
+        >
+          <IconPlayerPlay size={18} />
           {isRunning ? "Running..." : "Run All Tests"}
         </button>
       </div>
@@ -116,7 +122,9 @@ export function TestPanel({ testCases, onRunTest, onRunAllTests }: TestPanelProp
                     className="run-single-test"
                     onClick={() => handleRunTest(testCase)}
                     disabled={isRunning}
+                    aria-label={`Run ${testCase.name}`}
                   >
+                    <IconPlayerPlay size={16} />
                     {isRunning ? "Running..." : "Run"}
                   </button>
                 </div>

@@ -1,4 +1,11 @@
 import { useMemo, useEffect, useCallback, useRef } from "react";
+import {
+  IconPlayerPlay,
+  IconPlayerPause,
+  IconChevronLeft,
+  IconChevronRight,
+  IconReload,
+} from "@tabler/icons-react";
 import useAppStore from "../../store/useAppStore";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { arrayTests } from "../../lib/testing/testCases";
@@ -234,8 +241,10 @@ function VisualizationPanel() {
             onClick={previousStep}
             disabled={currentStepIndex <= 0}
             className="control-button"
+            aria-label="Previous step"
           >
-            ← Previous
+            <IconChevronLeft size={20} />
+            Previous
           </button>
           <span className="step-counter">
             Step {currentStepIndex + 1} / {currentSteps.length || 1}
@@ -244,21 +253,36 @@ function VisualizationPanel() {
             onClick={nextStep}
             disabled={currentStepIndex >= currentSteps.length - 1}
             className="control-button"
+            aria-label="Next step"
           >
-            Next →
+            Next
+            <IconChevronRight size={20} />
           </button>
           <button
             onClick={() => setIsAnimating(!isAnimating)}
             className={`control-button ${isAnimating ? "active" : ""}`}
+            aria-label={isAnimating ? "Pause animation" : "Play animation"}
           >
-            {isAnimating ? "⏸ Pause" : "▶ Play"}
+            {isAnimating ? (
+              <>
+                <IconPlayerPause size={20} />
+                Pause
+              </>
+            ) : (
+              <>
+                <IconPlayerPlay size={20} />
+                Play
+              </>
+            )}
           </button>
           <button
             onClick={() => setCurrentStepIndex(0)}
             disabled={currentSteps.length === 0}
             className="control-button"
+            aria-label="Reset to first step"
           >
-            ⟲ Reset
+            <IconReload size={20} />
+            Reset
           </button>
         </div>
       </div>

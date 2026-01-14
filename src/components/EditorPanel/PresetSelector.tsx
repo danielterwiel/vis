@@ -4,6 +4,7 @@
  */
 
 import { useState } from "react";
+import { IconCode } from "@tabler/icons-react";
 import {
   getPresetsForDataStructure,
   getCategoriesForDataStructure,
@@ -56,7 +57,9 @@ export function PresetSelector({
         onClick={() => setIsOpen(!isOpen)}
         disabled={disabled}
         title="Load algorithm examples"
+        aria-label="Load algorithm examples"
       >
+        <IconCode size={18} />
         Examples
       </button>
 

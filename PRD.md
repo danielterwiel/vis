@@ -953,7 +953,7 @@ vis/
 
 - [x] Convert data structure selector to dropdown in EditorPanel
 - [x] Convert hints section to icon button with modal
-- [ ] Add Tabler icons throughout UI (strategically)
+- [x] Add Tabler icons throughout UI (strategically)
 - [ ] Fix Examples dialog UI/UX
 - [ ] Move "Example usage" comments to top of skeleton functions
 - [ ] Show all 3 test cases simultaneously (no filter)

@@ -39,10 +39,11 @@ describe("VisualizationPanel", () => {
 
   it("renders visualization controls", () => {
     render(<VisualizationPanel />);
-    expect(screen.getByText("← Previous")).toBeDefined();
-    expect(screen.getByText("Next →")).toBeDefined();
-    expect(screen.getByText("▶ Play")).toBeDefined();
-    expect(screen.getByText("⟲ Reset")).toBeDefined();
+    // Check for button text content (icons are now included)
+    expect(screen.getByText("Previous")).toBeDefined();
+    expect(screen.getByText("Next")).toBeDefined();
+    expect(screen.getByText("Play")).toBeDefined();
+    expect(screen.getByText("Reset")).toBeDefined();
   });
 
   // Animation speed control was removed as per PRD Phase 9
