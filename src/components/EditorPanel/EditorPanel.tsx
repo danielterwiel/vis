@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { CodeMirrorEditor } from "./CodeMirrorEditor";
 import { HintSystem } from "./HintSystem";
 import useAppStore, { DataStructureType } from "../../store/useAppStore";
@@ -20,11 +20,28 @@ function EditorPanel() {
     selectedDataStructure,
     selectedDifficulty,
     userCode,
+    visualizationMode,
     setUserCode,
     setCodeStatus,
     setSelectedDataStructure,
     resetHints,
   } = useAppStore();
+
+  // Track previous mode to detect when switching to reference mode
+  const prevModeRef = useRef(visualizationMode);
+
+  // Get current test case for hints and reference solution
+  const getCurrentTestCase = useCallback(() => {
+    switch (selectedDataStructure) {
+      case "array":
+        return arrayTests.find((t) => t.difficulty === selectedDifficulty);
+      // TODO: Add other data structures
+      default:
+        return arrayTests.find((t) => t.difficulty === selectedDifficulty);
+    }
+  }, [selectedDataStructure, selectedDifficulty]);
+
+  const currentTestCase = getCurrentTestCase();
 
   // Load skeleton code when difficulty or data structure changes
   useEffect(() => {
@@ -39,6 +56,21 @@ function EditorPanel() {
     resetHints();
   }, [selectedDataStructure, selectedDifficulty, setUserCode, setCodeStatus, resetHints]);
 
+  // Load reference solution when visualization mode changes to "reference"
+  useEffect(() => {
+    const prevMode = prevModeRef.current;
+    prevModeRef.current = visualizationMode;
+
+    // Only load reference when switching TO reference mode (not when already in it)
+    if (visualizationMode === "reference" && prevMode !== "reference") {
+      const testCase = getCurrentTestCase();
+      if (testCase?.referenceSolution) {
+        setUserCode(testCase.referenceSolution);
+        setCodeStatus("complete");
+      }
+    }
+  }, [visualizationMode, getCurrentTestCase, setUserCode, setCodeStatus]);
+
   // Update code status when user edits code
   const handleCodeChange = (newCode: string) => {
     setUserCode(newCode);
@@ -50,18 +82,8 @@ function EditorPanel() {
     }
   };
 
-  // Get current test case for hints
-  const getCurrentTestCase = () => {
-    switch (selectedDataStructure) {
-      case "array":
-        return arrayTests.find((t) => t.difficulty === selectedDifficulty);
-      // TODO: Add other data structures
-      default:
-        return arrayTests.find((t) => t.difficulty === selectedDifficulty);
-    }
-  };
-
-  const currentTestCase = getCurrentTestCase();
+  // Editor is read-only in reference mode
+  const isReadOnly = visualizationMode === "reference";
 
   return (
     <div className="editor-panel">
@@ -82,9 +104,12 @@ function EditorPanel() {
           <span className={`difficulty-badge difficulty-${selectedDifficulty}`}>
             {selectedDifficulty}
           </span>
+          {isReadOnly && (
+            <span className="reference-mode-badge">Reference Solution (Read-Only)</span>
+          )}
         </div>
       </div>
-      <CodeMirrorEditor value={userCode} onChange={handleCodeChange} />
+      <CodeMirrorEditor value={userCode} onChange={handleCodeChange} readOnly={isReadOnly} />
       <HintSystem testCase={currentTestCase || null} />
     </div>
   );

@@ -142,6 +142,16 @@ body {
   background-color: #ef4444;
 }
 
+.reference-mode-badge {
+  padding: 0.25rem 0.75rem;
+  background-color: #8b5cf6;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid #a78bfa;
+}
+
 .codemirror-wrapper {
   flex: 1;
   overflow: hidden;

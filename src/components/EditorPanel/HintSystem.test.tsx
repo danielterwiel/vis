@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, beforeEach } from "vitest";
 import { HintSystem } from "./HintSystem";
@@ -163,14 +163,18 @@ describe("HintSystem", () => {
     });
 
     it("resets properly when store resets hints", async () => {
-      useAppStore.setState({ hintsRevealed: 3 });
+      act(() => {
+        useAppStore.setState({ hintsRevealed: 3 });
+      });
 
       const { rerender } = render(<HintSystem testCase={mockTestCase} />);
 
       expect(screen.getByText("Hints (3/3)")).toBeInTheDocument();
 
       // Reset hints
-      useAppStore.getState().resetHints();
+      act(() => {
+        useAppStore.getState().resetHints();
+      });
       rerender(<HintSystem testCase={mockTestCase} />);
 
       expect(screen.getByText("Hints (0/3)")).toBeInTheDocument();
@@ -220,7 +224,9 @@ describe("HintSystem", () => {
       expect(screen.getByText("Hints (1/2)")).toBeInTheDocument();
 
       // Switch test case - hints should be reset by parent component
-      useAppStore.setState({ hintsRevealed: 0 });
+      act(() => {
+        useAppStore.setState({ hintsRevealed: 0 });
+      });
       rerender(<HintSystem testCase={test2} />);
 
       expect(screen.getByText("Hints (0/3)")).toBeInTheDocument();

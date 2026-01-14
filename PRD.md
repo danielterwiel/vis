@@ -852,7 +852,7 @@ vis/
 
 - [x] Build ModeSelector component
 - [x] Implement "Expected Output" mode
-- [ ] Implement "Reference Solution" mode
+- [x] Implement "Reference Solution" mode
 - [ ] Add side-by-side comparison view
 - [ ] Handle incomplete code gracefully
 

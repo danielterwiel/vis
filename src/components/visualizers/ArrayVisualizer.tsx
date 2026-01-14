@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { select } from "d3-selection";
 import { transition } from "d3-transition";
 import type { VisualizationStep } from "../../store/useAppStore";
@@ -29,13 +29,33 @@ export function ArrayVisualizer({
   isAnimating = false,
 }: ArrayVisualizerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
+
+  // Track container size changes
+  useEffect(() => {
+    if (!svgRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        if (width > 0 && height > 0) {
+          setDimensions({ width, height });
+        }
+      }
+    });
+
+    resizeObserver.observe(svgRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!svgRef.current || data.length === 0) return;
 
     const svg = select(svgRef.current);
-    const width = svgRef.current.clientWidth || 800;
-    const height = svgRef.current.clientHeight || 400;
+    const { width, height } = dimensions;
+
+    // Set viewBox dynamically to match container - enables proper scaling
+    svg.attr("viewBox", `0 0 ${width} ${height}`);
 
     // Calculate dimensions
     const margin = { top: 40, right: 40, bottom: 60, left: 40 };
@@ -165,7 +185,7 @@ export function ArrayVisualizer({
         // Ignore cleanup errors (e.g., if SVG was already removed)
       }
     };
-  }, [data, steps, currentStepIndex, isAnimating]);
+  }, [data, steps, currentStepIndex, isAnimating, dimensions]);
 
   return <svg ref={svgRef} className="array-visualizer" />;
 }
