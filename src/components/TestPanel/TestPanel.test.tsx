@@ -62,7 +62,7 @@ describe("TestPanel", () => {
   });
 
   describe("Rendering", () => {
-    it("should render with test cases", () => {
+    it("should render with all test cases visible simultaneously", () => {
       render(
         <TestPanel
           testCases={mockTestCases}
@@ -115,111 +115,6 @@ describe("TestPanel", () => {
       expect(easyBadges.length).toBeGreaterThan(0);
       expect(mediumBadges.length).toBeGreaterThan(0);
       expect(hardBadges.length).toBeGreaterThan(0);
-    });
-  });
-
-  describe("Difficulty Filtering", () => {
-    it("should show all tests by default", () => {
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
-
-      expect(screen.getByText("Easy Test")).toBeInTheDocument();
-      expect(screen.getByText("Medium Test")).toBeInTheDocument();
-      expect(screen.getByText("Hard Test")).toBeInTheDocument();
-    });
-
-    it("should filter to easy tests", async () => {
-      const user = userEvent.setup();
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
-
-      const easyButtons = screen.getAllByText("Easy");
-      const easyFilterButton = easyButtons.find((btn) => btn.closest("button"));
-      if (easyFilterButton) {
-        await user.click(easyFilterButton);
-      }
-
-      expect(screen.getByText("Easy Test")).toBeInTheDocument();
-      expect(screen.queryByText("Medium Test")).not.toBeInTheDocument();
-      expect(screen.queryByText("Hard Test")).not.toBeInTheDocument();
-    });
-
-    it("should filter to medium tests", async () => {
-      const user = userEvent.setup();
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
-
-      const mediumButtons = screen.getAllByText("Medium");
-      const mediumFilterButton = mediumButtons.find((btn) => btn.closest("button"));
-      if (mediumFilterButton) {
-        await user.click(mediumFilterButton);
-      }
-
-      expect(screen.queryByText("Easy Test")).not.toBeInTheDocument();
-      expect(screen.getByText("Medium Test")).toBeInTheDocument();
-      expect(screen.queryByText("Hard Test")).not.toBeInTheDocument();
-    });
-
-    it("should filter to hard tests", async () => {
-      const user = userEvent.setup();
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
-
-      const hardButtons = screen.getAllByText("Hard");
-      const hardFilterButton = hardButtons.find((btn) => btn.closest("button"));
-      if (hardFilterButton) {
-        await user.click(hardFilterButton);
-      }
-
-      expect(screen.queryByText("Easy Test")).not.toBeInTheDocument();
-      expect(screen.queryByText("Medium Test")).not.toBeInTheDocument();
-      expect(screen.getByText("Hard Test")).toBeInTheDocument();
-    });
-
-    it("should return to all tests when clicking All button", async () => {
-      const user = userEvent.setup();
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
-
-      // First filter to easy
-      const easyButtons = screen.getAllByText("Easy");
-      const easyFilterButton = easyButtons.find((btn) => btn.closest("button"));
-      if (easyFilterButton) {
-        await user.click(easyFilterButton);
-      }
-
-      // Then click All
-      const allButton = screen.getByRole("button", { name: "All" });
-      await user.click(allButton);
-
-      expect(screen.getByText("Easy Test")).toBeInTheDocument();
-      expect(screen.getByText("Medium Test")).toBeInTheDocument();
-      expect(screen.getByText("Hard Test")).toBeInTheDocument();
     });
   });
 

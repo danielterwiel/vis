@@ -930,7 +930,7 @@ vis/
 
 - [x] Remove dark mode toggle and theme switching system
 - [x] Remove DataStructureSelector button container
-- [ ] Remove test case difficulty filter
+- [x] Remove test case difficulty filter
 - [ ] Remove "Your code here" comments from skeleton templates
 - [ ] Remove emoji before "Examples" button
 - [ ] Remove share functionality

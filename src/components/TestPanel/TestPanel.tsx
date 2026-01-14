@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { TestCase, TestResult, DifficultyLevel } from "../../lib/testing/types";
+import type { TestCase, TestResult } from "../../lib/testing/types";
 import useAppStore from "../../store/useAppStore";
 import "./TestPanel.css";
 
@@ -10,14 +10,8 @@ interface TestPanelProps {
 }
 
 export function TestPanel({ testCases, onRunTest, onRunAllTests }: TestPanelProps) {
-  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | "all">("all");
   const [isRunning, setIsRunning] = useState(false);
   const testResults = useAppStore((state) => state.testResults);
-
-  const filteredTests =
-    selectedDifficulty === "all"
-      ? testCases
-      : testCases.filter((tc) => tc.difficulty === selectedDifficulty);
 
   const handleRunTest = async (testCase: TestCase) => {
     setIsRunning(true);
@@ -69,44 +63,17 @@ export function TestPanel({ testCases, onRunTest, onRunAllTests }: TestPanelProp
         </div>
       </div>
 
-      <div className="difficulty-filter">
-        <button
-          className={selectedDifficulty === "all" ? "active" : ""}
-          onClick={() => setSelectedDifficulty("all")}
-        >
-          All
-        </button>
-        <button
-          className={selectedDifficulty === "easy" ? "active" : ""}
-          onClick={() => setSelectedDifficulty("easy")}
-        >
-          Easy
-        </button>
-        <button
-          className={selectedDifficulty === "medium" ? "active" : ""}
-          onClick={() => setSelectedDifficulty("medium")}
-        >
-          Medium
-        </button>
-        <button
-          className={selectedDifficulty === "hard" ? "active" : ""}
-          onClick={() => setSelectedDifficulty("hard")}
-        >
-          Hard
-        </button>
-      </div>
-
       <div className="test-actions">
-        <button onClick={handleRunAll} disabled={isRunning || filteredTests.length === 0}>
+        <button onClick={handleRunAll} disabled={isRunning || testCases.length === 0}>
           {isRunning ? "Running..." : "Run All Tests"}
         </button>
       </div>
 
       <div className="test-list">
-        {filteredTests.length === 0 ? (
+        {testCases.length === 0 ? (
           <div className="no-tests">No tests available</div>
         ) : (
-          filteredTests.map((testCase) => {
+          testCases.map((testCase) => {
             const result = getTestResult(testCase.id);
             return (
               <div key={testCase.id} className={`test-item ${getStatusClass(testCase.id)}`}>
