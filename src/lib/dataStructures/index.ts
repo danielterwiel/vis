@@ -19,3 +19,6 @@ export type { BinaryTreeNode } from "./TrackedBinaryTree";
 
 export { TrackedGraph, createTrackedGraph } from "./TrackedGraph";
 export type { GraphNode, GraphEdge, GraphData } from "./TrackedGraph";
+
+export { TrackedHashMap, createTrackedHashMap } from "./TrackedHashMap";
+export type { HashMapEntry, HashMapBucket } from "./TrackedHashMap";

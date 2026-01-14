@@ -21,4 +21,6 @@ export { bundleTrackedBinaryTree } from "./trackedBinaryTreeBundle";
 
 export { bundleTrackedGraph } from "./trackedGraphBundle";
 
+export { bundleTrackedHashMap } from "./trackedHashMapBundle";
+
 export type { TestCase, TestResult, TestRunOptions, DifficultyLevel } from "./types";

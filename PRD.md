@@ -868,7 +868,8 @@ vis/
 - [x] Binary Tree test cases (3 test cases: Easy/Medium/Hard)
 - [x] Graph data structure (TrackedGraph with operation capture)
 - [x] Graph visualizer (D3 force layout) + 3 test cases
-- [ ] HashMap visualizer + 3 test cases
+- [x] HashMap data structure (TrackedHashMap with operation capture)
+- [x] HashMap visualizer (bucket visualization with collision chains) + 3 test cases
 
 ### Phase 7: Polish & UX
 
