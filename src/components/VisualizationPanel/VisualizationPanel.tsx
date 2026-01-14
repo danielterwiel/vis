@@ -4,7 +4,9 @@ import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { arrayTests } from "../../lib/testing/testCases";
 import { ModeSelector } from "./ModeSelector";
 import { ComparisonView } from "./ComparisonView";
+import { AnimationSpeedControl } from "./AnimationSpeedControl";
 import { runReferenceSolution } from "../../lib/execution/referenceSolutionRunner";
+import "./AnimationSpeedControl.css";
 
 function VisualizationPanel() {
   const {
@@ -22,6 +24,7 @@ function VisualizationPanel() {
     previousStep,
     setCurrentStepIndex,
     setIsAnimating,
+    setAnimationSpeed,
     setVisualizationMode,
     setExpectedOutputSteps,
     setReferenceSteps,
@@ -259,6 +262,11 @@ function VisualizationPanel() {
           >
             ⟲ Reset
           </button>
+          <AnimationSpeedControl
+            speed={animationSpeed}
+            onSpeedChange={setAnimationSpeed}
+            disabled={currentSteps.length === 0}
+          />
         </div>
       </div>
       <div className="visualizer-container">

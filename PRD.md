@@ -875,7 +875,7 @@ vis/
 
 - [x] Data structure selector toolbar
 - [x] Console output panel with formatting
-- [ ] Animation speed controls
+- [x] Animation speed controls
 - [ ] Step-through debugging mode
 - [ ] Dark/light theme toggle
 - [ ] Mobile-responsive layout (limited)
