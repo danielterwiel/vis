@@ -183,3 +183,40 @@ Technical notes:
 - Error messages clearly identify loop type (while/for/do-while) for debugging
 
 Next: Build step capture and postMessage communication for visualization
+2026-01-14 14:45 - Phase 2: Step Capture and postMessage Communication COMPLETED
+- Created comprehensive step capture orchestration module (src/lib/execution/stepCapture.ts)
+  * captureSteps() - Main function to instrument, execute, and capture steps
+  * captureStepsBatch() - Parallel execution of multiple code samples
+  * validateCodeForCapture() - Validate code without executing
+  * Integrates instrumenter → sandbox → message handling → result collection
+- Architecture implementation:
+  * Step 1: Instrument user code with operation capture
+  * Step 2: Execute in sandboxed iframe
+  * Step 3: Collect capture-step and console-log messages via callbacks
+  * Step 4: Return complete result with steps, console logs, timing
+- Features:
+  * Real-time step callbacks (onStepCaptured) for live visualization updates
+  * Console log callbacks (onConsoleLog) for debugging output
+  * Batch execution with indexed callbacks for test suites
+  * Comprehensive error handling with graceful fallbacks
+  * Type-safe interfaces for all inputs and outputs
+- Created comprehensive test suite (src/lib/execution/stepCapture.test.ts)
+  * 13 tests covering all functions and edge cases
+  * Tests for single and batch execution
+  * Tests for callback invocation and message handling
+  * Tests for error scenarios and validation
+  * All 13 tests passing ✓
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 108 passed, 9 skipped (require browser) ✓
+
+Integration notes:
+- stepCapture.ts is the high-level API that components should use
+- Connects all lower-level pieces: instrumenter, sandbox, messageValidation
+- Ready to be integrated with Zustand store for UI updates
+- Console logs captured separately from visualization steps
+
+Next: Implement timeout/infinite loop protection (already partially done via loop injection, need full timeout system)
+
