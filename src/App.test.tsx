@@ -3,8 +3,18 @@ import { render, screen } from '@testing-library/react'
 import App from './App'
 
 describe('App', () => {
-  it('renders without crashing', () => {
+  it('renders the application header', () => {
     render(<App />)
-    expect(screen.getByText(/Data Structure Visualizer/i)).toBeDefined()
+    expect(screen.getByText('Data Structure Visualizer')).toBeDefined()
+  })
+
+  it('renders the editor panel', () => {
+    render(<App />)
+    expect(screen.getByText('Editor')).toBeDefined()
+  })
+
+  it('renders the visualization panel', () => {
+    render(<App />)
+    expect(screen.getByText('Visualization')).toBeDefined()
   })
 })

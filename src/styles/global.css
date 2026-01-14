@@ -35,6 +35,46 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+}
+
+.app-header {
+  padding: 1rem;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333;
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.panels-container {
+  flex: 1;
+  overflow: hidden;
+}
+
+.resize-handle {
+  width: 4px;
+  background-color: #333;
+  cursor: col-resize;
+  transition: background-color 0.2s;
+}
+
+.resize-handle:hover {
+  background-color: #646cff;
+}
+
+.editor-panel,
+.visualization-panel {
+  height: 100%;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.editor-panel {
+  background-color: #1e1e1e;
+}
+
+.visualization-panel {
+  background-color: #242424;
 }

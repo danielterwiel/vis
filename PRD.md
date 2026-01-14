@@ -828,7 +828,7 @@ vis/
 
 - [x] Initialize Vite + React 19 project
 - [x] Install dependencies (CodeMirror 6, D3, Framer Motion, Chai, SWC)
-- [ ] Set up basic layout with `react-resizable-panels`
+- [x] Set up basic layout with `react-resizable-panels`
 - [ ] Configure CodeMirror 6 editor
 - [ ] Set up Zustand store for app state
 
