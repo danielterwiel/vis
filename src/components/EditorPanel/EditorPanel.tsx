@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { CodeMirrorEditor } from "./CodeMirrorEditor";
 import { HintSystem } from "./HintSystem";
+import { PresetSelector } from "./PresetSelector";
 import useAppStore, { DataStructureType } from "../../store/useAppStore";
 import { skeletonCodeSystem } from "../../templates";
 import { arrayTests } from "../../lib/testing/testCases";
@@ -88,6 +89,12 @@ function EditorPanel() {
   // Editor is read-only in reference mode
   const isReadOnly = visualizationMode === "reference";
 
+  // Handle preset selection
+  const handlePresetSelect = (code: string) => {
+    setUserCode(code);
+    setCodeStatus("complete");
+  };
+
   // Handle share button click
   const handleShare = async () => {
     try {
@@ -134,6 +141,11 @@ function EditorPanel() {
           {isReadOnly && (
             <span className="reference-mode-badge">Reference Solution (Read-Only)</span>
           )}
+          <PresetSelector
+            dataStructure={selectedDataStructure}
+            onSelectPreset={handlePresetSelect}
+            disabled={isReadOnly}
+          />
           <button
             className="share-button"
             onClick={handleShare}
