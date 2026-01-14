@@ -864,7 +864,7 @@ vis/
 - [x] Stack/Queue visualizer (StackQueueVisualizer with SVG rendering for both data structures)
 - [x] Stack/Queue test cases (3 test cases: Easy - Balanced Parentheses, Medium - Queue Using Two Stacks, Hard - Min Stack)
 - [x] Binary Tree data structure (TrackedBinaryTree with operation capture)
-- [ ] Binary Tree visualizer (D3 layout)
+- [x] Binary Tree visualizer (D3 layout)
 - [ ] Binary Tree test cases (3 test cases: Easy/Medium/Hard)
 - [ ] Graph visualizer (D3 force layout) + 3 test cases
 - [ ] HashMap visualizer + 3 test cases
