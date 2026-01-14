@@ -31,6 +31,7 @@ export interface TestResult {
   error?: string;
   executionTime: number;
   steps: VisualizationStep[];
+  consoleLogs: Array<{ level: string; args: unknown[] }>;
 }
 
 export interface AppState {

@@ -61,6 +61,7 @@ describe("useAppStore", () => {
           passed: true,
           executionTime: 100,
           steps: [],
+          consoleLogs: [],
         });
       });
 
@@ -309,6 +310,7 @@ describe("useAppStore", () => {
         passed: true,
         executionTime: 150,
         steps: [{ type: "sort", timestamp: Date.now() }],
+        consoleLogs: [],
       };
 
       act(() => {
@@ -328,6 +330,7 @@ describe("useAppStore", () => {
           passed: true,
           executionTime: 100,
           steps: [],
+          consoleLogs: [],
         });
         result.current.setTestResult("test-2", {
           testId: "test-2",
@@ -335,6 +338,7 @@ describe("useAppStore", () => {
           error: "Expected [1,2,3] but got [3,2,1]",
           executionTime: 120,
           steps: [],
+          consoleLogs: [],
         });
       });
 
@@ -350,6 +354,7 @@ describe("useAppStore", () => {
         result.current.setTestResult("test-1", {
           testId: "test-1",
           passed: true,
+          consoleLogs: [],
           executionTime: 100,
           steps: [],
         });
@@ -358,6 +363,7 @@ describe("useAppStore", () => {
           passed: false,
           executionTime: 120,
           steps: [],
+          consoleLogs: [],
         });
       });
 

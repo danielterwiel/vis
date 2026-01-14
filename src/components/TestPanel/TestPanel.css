@@ -1,0 +1,255 @@
+.test-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  overflow: hidden;
+}
+
+.test-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.test-panel-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.test-summary {
+  font-size: 0.875rem;
+}
+
+.test-summary .all-passed {
+  color: #4ec9b0;
+}
+
+.test-summary .some-failed {
+  color: #f48771;
+}
+
+.difficulty-filter {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.difficulty-filter button {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #3c3c3c;
+  background-color: #2d2d2d;
+  color: #d4d4d4;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.difficulty-filter button:hover {
+  background-color: #3c3c3c;
+}
+
+.difficulty-filter button.active {
+  background-color: #0e639c;
+  border-color: #0e639c;
+  color: white;
+}
+
+.test-actions {
+  margin-bottom: 1rem;
+}
+
+.test-actions button {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background-color: #0e639c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.test-actions button:hover:not(:disabled) {
+  background-color: #1177bb;
+}
+
+.test-actions button:disabled {
+  background-color: #3c3c3c;
+  color: #808080;
+  cursor: not-allowed;
+}
+
+.test-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.no-tests {
+  padding: 2rem;
+  text-align: center;
+  color: #808080;
+  font-style: italic;
+}
+
+.test-item {
+  background-color: #252526;
+  border: 1px solid #3c3c3c;
+  border-radius: 6px;
+  padding: 0.75rem;
+  transition: all 0.2s;
+}
+
+.test-item:hover {
+  border-color: #505050;
+}
+
+.test-item.passed {
+  border-left: 3px solid #4ec9b0;
+}
+
+.test-item.failed {
+  border-left: 3px solid #f48771;
+}
+
+.test-item.not-run {
+  border-left: 3px solid #808080;
+}
+
+.test-item-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.test-status {
+  font-size: 1rem;
+  font-weight: bold;
+  min-width: 1.25rem;
+}
+
+.test-item.passed .test-status {
+  color: #4ec9b0;
+}
+
+.test-item.failed .test-status {
+  color: #f48771;
+}
+
+.test-item.not-run .test-status {
+  color: #808080;
+}
+
+.test-name {
+  flex: 1;
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+.test-difficulty {
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.test-difficulty.easy {
+  background-color: rgba(78, 201, 176, 0.2);
+  color: #4ec9b0;
+}
+
+.test-difficulty.medium {
+  background-color: rgba(206, 145, 120, 0.2);
+  color: #ce9178;
+}
+
+.test-difficulty.hard {
+  background-color: rgba(244, 135, 113, 0.2);
+  color: #f48771;
+}
+
+.test-description {
+  font-size: 0.8125rem;
+  color: #a0a0a0;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.test-result-details {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+}
+
+.test-success {
+  background-color: rgba(78, 201, 176, 0.1);
+  color: #4ec9b0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.step-count {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.test-error {
+  background-color: rgba(244, 135, 113, 0.1);
+  color: #f48771;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.error-message {
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  margin-bottom: 0.25rem;
+  word-break: break-word;
+}
+
+.execution-time {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.test-item-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.run-single-test {
+  padding: 0.25rem 0.75rem;
+  background-color: #0e639c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  transition: background-color 0.2s;
+}
+
+.run-single-test:hover:not(:disabled) {
+  background-color: #1177bb;
+}
+
+.run-single-test:disabled {
+  background-color: #3c3c3c;
+  color: #808080;
+  cursor: not-allowed;
+}
