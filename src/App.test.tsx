@@ -10,6 +10,20 @@ vi.mock("./lib/execution/swcInitializer", () => ({
   transformCode: vi.fn((code: string) => code),
 }));
 
+// Mock test runner
+vi.mock("./lib/testing/testRunner", () => ({
+  runTest: vi.fn(() =>
+    Promise.resolve({
+      testId: "test-1",
+      passed: true,
+      executionTime: 100,
+      steps: [],
+      consoleLogs: [],
+    }),
+  ),
+  runTests: vi.fn(() => Promise.resolve([])),
+}));
+
 describe("App", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -42,6 +56,13 @@ describe("App", () => {
     render(<App />);
     await waitFor(() => {
       expect(screen.getByText("Visualization")).toBeDefined();
+    });
+  });
+
+  it("renders the test panel after initialization", async () => {
+    render(<App />);
+    await waitFor(() => {
+      expect(screen.getByText("Test Cases")).toBeDefined();
     });
   });
 
