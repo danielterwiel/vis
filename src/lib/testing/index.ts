@@ -13,4 +13,8 @@ export { bundleTrackedArray } from "./trackedArrayBundle";
 
 export { bundleTrackedLinkedList } from "./trackedLinkedListBundle";
 
+export { bundleTrackedStack } from "./trackedStackBundle";
+
+export { bundleTrackedQueue } from "./trackedQueueBundle";
+
 export type { TestCase, TestResult, TestRunOptions, DifficultyLevel } from "./types";

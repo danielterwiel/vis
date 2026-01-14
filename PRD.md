@@ -862,6 +862,7 @@ vis/
 - [x] LinkedList visualizer (SVG rendering with D3 transitions)
 - [x] LinkedList test cases (Easy/Medium/Hard) with TrackedLinkedList integration
 - [x] Stack/Queue visualizer (StackQueueVisualizer with SVG rendering for both data structures)
+- [x] Stack/Queue test cases (3 test cases: Easy - Balanced Parentheses, Medium - Queue Using Two Stacks, Hard - Min Stack)
 - [ ] Binary Tree visualizer (D3 layout) + 3 test cases
 - [ ] Graph visualizer (D3 force layout) + 3 test cases
 - [ ] HashMap visualizer + 3 test cases

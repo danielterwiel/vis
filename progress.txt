@@ -1175,3 +1175,54 @@ Implementation notes:
 
 Next: Create Stack/Queue test cases (3 test cases each: Easy/Medium/Hard)
 
+2026-01-14 18:03 - Phase 6: Stack/Queue Test Cases COMPLETED
+- Created comprehensive stackQueueTests module (src/lib/testing/testCases/stackQueueTests.ts)
+  * 3 test cases matching PRD specifications (lines 523-526)
+  * Easy: Balanced Parentheses Checker (using stack to check parentheses)
+  * Medium: Queue Using Two Stacks (FIFO implementation with two stacks)
+  * Hard: Min Stack with O(1) getMin (track minimum using auxiliary stack)
+- Each test case includes:
+  * Unique ID following convention: stack/queue/min-stack-{operation}-{difficulty}
+  * Initial data (string for easy, arrays for medium/hard) and expected output
+  * Assertions using expect syntax with visualization step verification
+  * Reference solution using TrackedStack/TrackedQueue API methods
+  * Skeleton code with TODO comments and TrackedStack/TrackedQueue hints
+  * Progressive hints array (3 hints per test)
+  * Acceptance criteria array (objective pass/fail conditions)
+- Created TrackedStack bundler (src/lib/testing/trackedStackBundle.ts)
+  * Serializes TrackedStack class as executable JavaScript string
+  * All 8 methods included: push, pop, peek, clear, isEmpty, getSize, getData, toArray
+  * Static from() method and createTrackedStack() helper function
+  * Full operation capture with metadata for visualization
+- Created TrackedQueue bundler (src/lib/testing/trackedQueueBundle.ts)
+  * Serializes TrackedQueue class as executable JavaScript string
+  * All 8 methods included: enqueue, dequeue, peek, clear, isEmpty, getSize, getData, toArray
+  * Static from() method and createTrackedQueue() helper function
+  * Full operation capture with metadata for visualization
+- Updated testCases barrel export (src/lib/testing/testCases/index.ts)
+  * Exported stackQueueTests for use in application
+- Updated testing module index (src/lib/testing/index.ts)
+  * Exported bundleTrackedStack and bundleTrackedQueue for sandbox injection
+- Created comprehensive test suites:
+  * stackQueueTests.test.ts: 30 tests covering all test case validation
+  * trackedStackBundle.test.ts: 16 tests verifying bundle structure and functionality
+  * trackedQueueBundle.test.ts: 16 tests verifying bundle structure and functionality
+  * All tests passing ✓
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 763 passed, 12 skipped ✓
+
+Implementation notes:
+- Test cases use TrackedStack methods: push(), pop(), peek(), isEmpty()
+- Test cases use TrackedQueue methods: enqueue(), dequeue(), peek(), isEmpty()
+- Easy test returns boolean (true for balanced parentheses)
+- Medium test returns array in FIFO order ([1,2,3,4,5])
+- Hard test returns minimum value (1 from [5,2,8,1,9])
+- All test cases capture visualization steps for animation
+- Bundlers follow same pattern as trackedArrayBundle and trackedLinkedListBundle (string serialization)
+- Ready for integration with test runner and UI components
+
+Next: Begin Binary Tree visualizer + 3 test cases (Phase 6 next task)
+
