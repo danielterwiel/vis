@@ -1,7 +1,11 @@
 import { useEffect, useRef } from "react";
 import { select } from "d3-selection";
+import { transition } from "d3-transition";
 import type { VisualizationStep } from "../../store/useAppStore";
 import "./ArrayVisualizer.css";
+
+// Register d3-transition with d3-selection
+select.prototype.transition = transition;
 
 interface ArrayVisualizerProps {
   data: number[];
@@ -33,9 +37,6 @@ export function ArrayVisualizer({
     const width = svgRef.current.clientWidth || 800;
     const height = svgRef.current.clientHeight || 400;
 
-    // Clear previous render
-    svg.selectAll("*").remove();
-
     // Calculate dimensions
     const margin = { top: 40, right: 40, bottom: 60, left: 40 };
     const innerWidth = width - margin.left - margin.right;
@@ -44,9 +45,6 @@ export function ArrayVisualizer({
     const barSpacing = innerWidth / data.length;
     const maxValue = Math.max(...data, 1);
 
-    // Create main group
-    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
-
     // Get current step for highlighting
     const currentStep =
       currentStepIndex >= 0 && currentStepIndex < steps.length
@@ -54,62 +52,109 @@ export function ArrayVisualizer({
         : null;
     const highlightIndices = getHighlightIndices(currentStep);
 
-    // Create bars
-    const bars = g
-      .selectAll<SVGGElement, number>("g.bar")
-      .data(data)
+    // Determine animation duration based on isAnimating flag
+    const duration = isAnimating ? 500 : 0;
+
+    // Create or update main group
+    let g = svg.select<SVGGElement>("g.main-group");
+    if (g.empty()) {
+      g = svg.append("g").attr("class", "main-group");
+    }
+    g.attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Data join for bars
+    const bars = g.selectAll<SVGGElement, number>("g.bar").data(data, (d, i) => `${i}-${d}`);
+
+    // EXIT: Remove bars that are no longer in the data
+    bars.exit().transition().duration(duration).style("opacity", 0).remove();
+
+    // ENTER: Create new bar groups
+    const barsEnter = bars
       .enter()
       .append("g")
       .attr("class", "bar")
-      .attr("transform", (_, i) => `translate(${i * barSpacing},0)`);
+      .attr("transform", (_, i) => `translate(${i * barSpacing},0)`)
+      .style("opacity", 0);
 
-    // Add rectangles
-    bars
+    // Add rectangles to new bars
+    barsEnter
       .append("rect")
+      .attr("class", "bar-rect")
+      .attr("x", (barWidth - barWidth) / 2)
+      .attr("y", innerHeight)
+      .attr("width", barWidth)
+      .attr("height", 0)
+      .attr("rx", 4);
+
+    // Add value labels to new bars
+    barsEnter
+      .append("text")
+      .attr("class", "bar-label")
+      .attr("x", barWidth / 2)
+      .attr("y", innerHeight - 10)
+      .attr("text-anchor", "middle");
+
+    // Add index labels to new bars
+    barsEnter
+      .append("text")
+      .attr("class", "bar-index")
+      .attr("x", barWidth / 2)
+      .attr("y", innerHeight + 25)
+      .attr("text-anchor", "middle");
+
+    // UPDATE: Merge enter and update selections
+    const barsMerge = barsEnter.merge(bars);
+
+    // Animate bar positions
+    barsMerge
+      .transition()
+      .duration(duration)
+      .attr("transform", (_, i) => `translate(${i * barSpacing},0)`)
+      .style("opacity", 1);
+
+    // Update rectangles with highlighting and animations
+    barsMerge
+      .select<SVGRectElement>("rect")
+      .transition()
+      .duration(duration)
       .attr("class", (_, i) => {
         if (highlightIndices.active.includes(i)) return "bar-rect bar-active";
         if (highlightIndices.comparing.includes(i)) return "bar-rect bar-comparing";
         if (highlightIndices.swapped.includes(i)) return "bar-rect bar-swapped";
         return "bar-rect";
       })
-      .attr("x", (barWidth - barWidth) / 2)
       .attr("y", (d) => innerHeight - (d / maxValue) * innerHeight)
-      .attr("width", barWidth)
-      .attr("height", (d) => (d / maxValue) * innerHeight)
-      .attr("rx", 4);
+      .attr("height", (d) => (d / maxValue) * innerHeight);
 
-    // Add value labels
-    bars
-      .append("text")
-      .attr("class", "bar-label")
-      .attr("x", barWidth / 2)
-      .attr("y", (d) => innerHeight - (d / maxValue) * innerHeight - 10)
-      .attr("text-anchor", "middle")
-      .text((d) => d);
+    // Update value labels
+    barsMerge
+      .select<SVGTextElement>("text.bar-label")
+      .text((d) => d)
+      .transition()
+      .duration(duration)
+      .attr("y", (d) => innerHeight - (d / maxValue) * innerHeight - 10);
 
-    // Add index labels
-    bars
-      .append("text")
-      .attr("class", "bar-index")
-      .attr("x", barWidth / 2)
-      .attr("y", innerHeight + 25)
-      .attr("text-anchor", "middle")
-      .text((_, i) => i);
+    // Update index labels
+    barsMerge.select<SVGTextElement>("text.bar-index").text((_, i) => i);
 
-    // Add step indicator
+    // Update or create step indicator
+    let stepIndicator = svg.select<SVGTextElement>("text.step-indicator");
     if (currentStep) {
-      svg
-        .append("text")
-        .attr("class", "step-indicator")
+      if (stepIndicator.empty()) {
+        stepIndicator = svg.append("text").attr("class", "step-indicator");
+      }
+      stepIndicator
         .attr("x", width / 2)
         .attr("y", 25)
         .attr("text-anchor", "middle")
         .text(`Step ${currentStepIndex + 1}/${steps.length}: ${formatStep(currentStep)}`);
+    } else {
+      stepIndicator.remove();
     }
 
     // Cleanup function
     return () => {
-      svg.selectAll("*").remove();
+      svg.selectAll("*").interrupt();
     };
   }, [data, steps, currentStepIndex, isAnimating]);
 

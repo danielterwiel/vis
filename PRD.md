@@ -844,7 +844,7 @@ vis/
 
 - [x] Create ArrayVisualizer component with SVG
 - [x] Implement TrackedArray with operation capture
-- [ ] Add Framer Motion animations for push, pop, swap, sort
+- [x] Add D3 transition animations for push, pop, swap, sort
 - [ ] Connect editor → execution → visualization pipeline
 - [ ] Implement all 3 array test cases
 

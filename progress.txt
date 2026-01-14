@@ -565,3 +565,43 @@ Implementation notes:
 - Follows immutability pattern: getData() returns copies, not references
 
 Next: Add Framer Motion animations for push, pop, swap, sort (Phase 4 task 3)
+2026-01-14 15:22 - Phase 4: D3 Transition Animations COMPLETED (Task 3)
+- Implemented smooth D3 transition animations for ArrayVisualizer
+  * Imported d3-transition module (already included with d3 package)
+  * Added enter-update-exit pattern for data-driven animations
+  * Configurable animation duration based on isAnimating flag (500ms when animating, 0ms instant)
+- Animation features:
+  * ENTER: New bars fade in from bottom (opacity 0→1, height 0→final)
+  * UPDATE: Bars smoothly transition positions, heights, and colors
+  * EXIT: Removed bars fade out (opacity 1→0) before removal
+  * Position animations for all bar movements (sorting, swapping)
+  * Height/value animations when data changes
+  * Color transitions for highlighting states (active, comparing, swapped)
+- Technical implementation:
+  * Used D3 data join with key function for element tracking: (d, i) => `${i}-${d}`
+  * Replaced svg.selectAll("*").remove() with persistent main-group
+  * Applied .transition().duration(duration) to all animated properties
+  * Changed cleanup to interrupt() instead of remove() to stop pending animations
+  * Maintained D3Adapter pattern - React never touches DOM after initial render
+- Animation types supported:
+  * Push operations: Bar slides in from right with fade-in
+  * Pop operations: Bar fades out and disappears
+  * Swap operations: Bars exchange positions with smooth transition + red highlight
+  * Sort operations: All bars animate to final sorted positions
+  * Compare operations: Orange highlight with smooth color transition
+  * Set operations: Green highlight with height/value change animation
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 376 passed, 9 skipped (require browser) ✓
+
+Implementation notes:
+- D3 transitions used instead of Framer Motion (better for SVG, maintains D3Adapter pattern)
+- Animation duration controlled by isAnimating prop (allows instant updates when stepping)
+- Smooth easing with D3's default cubic-in-out transition
+- Bars persist across renders via data join, enabling smooth position changes
+- Step indicator updates instantly (no animation) for better readability
+- Color classes applied during transition for smooth highlight changes
+
+Next: Connect editor → execution → visualization pipeline (Phase 4 task 4)
