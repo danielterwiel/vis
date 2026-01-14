@@ -885,7 +885,7 @@ vis/
 - [x] Export/share code snippets (URL encoding)
 - [x] Local storage for progress persistence
 - [x] Preset algorithm examples (sorting, traversals)
-- [ ] Performance metrics display (time/space complexity)
+- [x] Performance metrics display (time/space complexity)
 
 ---
 

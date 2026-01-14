@@ -5,6 +5,7 @@ import { arrayTests } from "../../lib/testing/testCases";
 import { ModeSelector } from "./ModeSelector";
 import { ComparisonView } from "./ComparisonView";
 import { AnimationSpeedControl } from "./AnimationSpeedControl";
+import { PerformanceMetrics } from "./PerformanceMetrics";
 import { runReferenceSolution } from "../../lib/execution/referenceSolutionRunner";
 import "./AnimationSpeedControl.css";
 
@@ -20,6 +21,7 @@ function VisualizationPanel() {
     animationSpeed,
     visualizationMode,
     codeStatus,
+    testResults,
     nextStep,
     previousStep,
     setCurrentStepIndex,
@@ -285,6 +287,15 @@ function VisualizationPanel() {
             </div>
           )}
         </div>
+
+        {/* Performance Metrics - show when we have execution data */}
+        {currentSteps.length > 0 && visualizationMode !== "skeleton" && (
+          <PerformanceMetrics
+            executionTime={currentTestCase && testResults.get(currentTestCase.id)?.executionTime}
+            steps={currentSteps}
+            dataSize={Array.isArray(initialData) ? initialData.length : 0}
+          />
+        )}
       </div>
     </div>
   );

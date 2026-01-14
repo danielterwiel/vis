@@ -1,0 +1,168 @@
+.performance-metrics {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.metrics-header h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.metric-value.time {
+  color: var(--accent-blue);
+}
+
+.metric-value.operations {
+  color: var(--accent-purple);
+}
+
+.metric-value.data-size {
+  color: var(--text-primary);
+}
+
+.metric-value.complexity {
+  font-size: 20px;
+  font-family: "Courier New", monospace;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* Complexity color coding */
+.metric-value.complexity.excellent {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.metric-value.complexity.good {
+  background: rgba(52, 152, 219, 0.15);
+  color: #3498db;
+  border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.metric-value.complexity.fair {
+  background: rgba(241, 196, 15, 0.15);
+  color: #f1c40f;
+  border: 1px solid rgba(241, 196, 15, 0.3);
+}
+
+.metric-value.complexity.poor {
+  background: rgba(230, 126, 34, 0.15);
+  color: #e67e22;
+  border: 1px solid rgba(230, 126, 34, 0.3);
+}
+
+.metric-value.complexity.bad {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.metric-value.complexity.neutral {
+  background: rgba(149, 165, 166, 0.15);
+  color: #95a5a6;
+  border: 1px solid rgba(149, 165, 166, 0.3);
+}
+
+/* Complexity guide */
+.complexity-guide {
+  display: flex;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.guide-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.guide-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.guide-color.excellent {
+  background: #2ecc71;
+}
+
+.guide-color.good {
+  background: #3498db;
+}
+
+.guide-color.fair {
+  background: #f1c40f;
+}
+
+.guide-color.poor {
+  background: #e67e22;
+}
+
+.guide-color.bad {
+  background: #e74c3c;
+}
+
+.guide-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: "Courier New", monospace;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .complexity-guide {
+    justify-content: center;
+  }
+
+  .metric-value {
+    font-size: 16px;
+  }
+
+  .metric-value.complexity {
+    font-size: 18px;
+  }
+}
+
+/* Light theme adjustments */
+body.light-theme .guide-color {
+  border-color: rgba(0, 0, 0, 0.1);
+}
