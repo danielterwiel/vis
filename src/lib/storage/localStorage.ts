@@ -2,7 +2,7 @@
  * Local storage utilities for persisting user progress
  */
 
-import type { DataStructureType, DifficultyLevel, Theme } from "../../store/useAppStore";
+import type { DataStructureType, DifficultyLevel } from "../../store/useAppStore";
 
 const STORAGE_VERSION = "1";
 const STORAGE_PREFIX = "vis_app_v" + STORAGE_VERSION;
@@ -13,7 +13,6 @@ const STORAGE_PREFIX = "vis_app_v" + STORAGE_VERSION;
 const KEYS = {
   USER_CODE: (ds: DataStructureType, diff: DifficultyLevel) =>
     `${STORAGE_PREFIX}_code_${ds}_${diff}`,
-  THEME: `${STORAGE_PREFIX}_theme`,
   ANIMATION_SPEED: `${STORAGE_PREFIX}_animation_speed`,
   HINTS_REVEALED: (ds: DataStructureType, diff: DifficultyLevel) =>
     `${STORAGE_PREFIX}_hints_${ds}_${diff}`,
@@ -66,38 +65,6 @@ export function loadUserCode(
   try {
     const key = KEYS.USER_CODE(dataStructure, difficulty);
     return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Save theme preference
- */
-export function saveTheme(theme: Theme): void {
-  if (!isLocalStorageAvailable()) return;
-
-  try {
-    localStorage.setItem(KEYS.THEME, theme);
-  } catch (error) {
-    if (import.meta.env.MODE !== "test") {
-      console.warn("Failed to save theme:", error);
-    }
-  }
-}
-
-/**
- * Load theme preference
- */
-export function loadTheme(): Theme | null {
-  if (!isLocalStorageAvailable()) return null;
-
-  try {
-    const theme = localStorage.getItem(KEYS.THEME);
-    if (theme === "light" || theme === "dark") {
-      return theme;
-    }
-    return null;
   } catch {
     return null;
   }

@@ -3,8 +3,6 @@ import type { ConsoleLog } from "../components/ConsoleOutput";
 import {
   loadUserCode,
   saveUserCode,
-  loadTheme,
-  saveTheme,
   loadAnimationSpeed,
   saveAnimationSpeed,
   loadHintsRevealed,
@@ -47,8 +45,6 @@ export interface TestResult {
   consoleLogs: Array<{ level: string; args: unknown[] }>;
 }
 
-export type Theme = "light" | "dark";
-
 export interface AppState {
   // Data structure selection
   selectedDataStructure: DataStructureType;
@@ -74,9 +70,6 @@ export interface AppState {
 
   // Console output
   consoleLogs: ConsoleLog[];
-
-  // Theme
-  theme: Theme;
 
   // Actions - Data structure selection
   setSelectedDataStructure: (dataStructure: DataStructureType) => void;
@@ -110,10 +103,6 @@ export interface AppState {
   setConsoleLogs: (logs: ConsoleLog[]) => void;
   clearConsoleLogs: () => void;
 
-  // Actions - Theme
-  setTheme: (theme: Theme) => void;
-  toggleTheme: () => void;
-
   // Actions - Reset
   resetVisualization: () => void;
 }
@@ -123,7 +112,6 @@ const useAppStore = create<AppState>((set, get) => {
   const initialDataStructure: DataStructureType = "array";
   const initialDifficulty: DifficultyLevel = "easy";
   const savedCode = loadUserCode(initialDataStructure, initialDifficulty);
-  const savedTheme = loadTheme();
   const savedAnimationSpeed = loadAnimationSpeed();
   const savedHintsRevealed = loadHintsRevealed(initialDataStructure, initialDifficulty);
 
@@ -147,8 +135,6 @@ const useAppStore = create<AppState>((set, get) => {
     hintsRevealed: savedHintsRevealed ?? 0,
 
     consoleLogs: [],
-
-    theme: savedTheme ?? "dark",
 
     // Actions - Data structure selection
     setSelectedDataStructure: (dataStructure) => {
@@ -280,18 +266,6 @@ const useAppStore = create<AppState>((set, get) => {
     setConsoleLogs: (logs) => set({ consoleLogs: logs }),
 
     clearConsoleLogs: () => set({ consoleLogs: [] }),
-
-    // Actions - Theme
-    setTheme: (theme) => {
-      saveTheme(theme);
-      set({ theme });
-    },
-    toggleTheme: () => {
-      const state = get();
-      const newTheme = state.theme === "dark" ? "light" : "dark";
-      saveTheme(newTheme);
-      set({ theme: newTheme });
-    },
 
     // Actions - Reset
     resetVisualization: () =>

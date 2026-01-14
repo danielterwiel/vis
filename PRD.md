@@ -1,6 +1,6 @@
-# Data Structure Visualization Application Plan
+# Data Structure Visualization Application PRD
 
-A CodePen-like application with a code editor on the left and real-time data structure visualization on the right. Users write JavaScript algorithms that manipulate data structures, and the right panel animates the result. Includes a test case system with 3 difficulty levels per data structure.
+A minimalist CodePen-like application with a code editor on the left and real-time data structure visualization on the right. Users write JavaScript algorithms that manipulate data structures, with 3 test cases per structure displayed simultaneously. **100% client-side rendered with no backend.**
 
 **Key Constraint**: This application must be entirely client-side rendered with no backend server.
 
@@ -12,7 +12,6 @@ A CodePen-like application with a code editor on the left and real-time data str
 
 - Massive ecosystem with 190M+ weekly npm downloads
 - Battle-tested with extensive third-party library support
-- Well-maintained wrappers for Monaco Editor (`@monaco-editor/react`)
 - Framer Motion for animations integrates seamlessly
 - `react-resizable-panels` for split pane layout
 
@@ -23,20 +22,14 @@ A CodePen-like application with a code editor on the left and real-time data str
 - Fast HMR and dev server
 - Excellent React support via `@vitejs/plugin-react`
 - Modern ESM-first approach
-- Tree-shaking to reduce Monaco bundle size
+- Tree-shaking to reduce bundle size
 
-### Code Editor: **Monaco Editor**
+### Code Editor: **CodeMirror 6**
 
-- Powers VS Code - familiar experience
-- Full TypeScript/JavaScript IntelliSense
+- Lightweight (~300KB vs Monaco's ~2.4MB+)
+- Full JavaScript IntelliSense
 - Syntax highlighting, error detection, autocomplete
-- Use `@monaco-editor/react` wrapper
-
-**Mitigation for bundle size (5-10MB)**:
-
-- Lazy load Monaco (don't block initial render)
-- Tree-shake unused language features
-- Accept limited mobile experience
+- Excellent performance for client-side apps
 
 ### Visualization Engine: **D3.js + SVG**
 
@@ -64,25 +57,57 @@ A CodePen-like application with a code editor on the left and real-time data str
 - Communicate via `postMessage` with origin verification
 - Timeout mechanisms for infinite loop protection
 
-### Code Instrumentation: **Babel Standalone**
+### Code Instrumentation: **SWC WASM**
 
-- `@babel/standalone` for browser-based AST transformation
-- `@babel/parser` for code parsing
+- `@swc/wasm-web` for browser-based AST transformation (20-70x faster than Babel)
 - Transform user code to capture operations for visualization
+- Inject loop counters for infinite loop detection
 - Generate source maps for debugging
 
-### Client-Side Testing: **Chai Assertions**
+### Client-Side Testing: **Vitest expect (bundled)**
 
-- Chai runs entirely in browser with no dependencies
-- BDD-style `expect` assertions for readable tests
+- Vitest's `expect` function bundled for sandbox use
+- BDD-style assertions for readable tests
 - Executes in sandboxed iframe alongside user code
 - Results sent back via `postMessage`
+
+### Icons: **Tabler Icons**
+
+- Comprehensive icon set with consistent design
+- Tree-shakeable imports
+- Used strategically for UI controls (play, hints, examples, step controls)
+
+---
+
+## UI/UX Principles
+
+### Minimalist Design
+
+- Clean, uncluttered interfaces focusing on essential elements
+- Single theme only (no dark mode toggle)
+- Strategic use of icons without overwhelming the interface
+- Immediate visual feedback from visualizations
+
+### Real Estate Optimization
+
+- Data structure selection via compact dropdown (not button grid)
+- Hints accessible via single icon button (modal on click)
+- All 3 test cases visible simultaneously (no difficulty filter)
+- Floating controls for visualization to save space
+- Play button positioned above editor for running tests
+
+### Immediate Feedback
+
+- Visualizations auto-play all steps immediately on code execution
+- No speed controls - instant playback with replay option
+- Horizontal slider for manual step-through
+- Floating step back/forward buttons for granular control
 
 ---
 
 ## Test Cases System
 
-Each data structure includes **3 test cases** at different difficulty levels. Tests run entirely client-side using Chai assertions in the sandboxed iframe.
+Each data structure includes **3 test cases** at different difficulty levels, all visible simultaneously. Tests run entirely client-side using bundled Vitest expect in the sandboxed iframe.
 
 ### Test Case Structure
 
@@ -99,7 +124,7 @@ interface TestCase {
   // Expected final state after user code runs
   expectedOutput: any;
 
-  // Chai assertion code (runs in sandbox)
+  // Vitest expect assertions (runs in sandbox)
   assertions: string;
 
   // Reference solution (for "Show Solution" feature)
@@ -108,7 +133,7 @@ interface TestCase {
   // Skeleton code with TODOs for user to fill in
   skeletonCode: string;
 
-  // Hints (progressively revealed)
+  // Hints (progressively revealed via modal)
   hints: string[];
 }
 ```
@@ -125,15 +150,19 @@ const arraySortingTests = [
     initialData: [5, 2, 8, 1, 9],
     expectedOutput: [1, 2, 5, 8, 9],
     assertions: `
-      expect(result).to.deep.equal([1, 2, 5, 8, 9]);
-      expect(result).to.have.lengthOf(5);
+      expect(result).toEqual([1, 2, 5, 8, 9]);
+      expect(result).toHaveLength(5);
     `,
     referenceSolution: `
+      // Example usage: Sort an array of numbers
+
       function sort(arr) {
         return arr.slice().sort((a, b) => a - b);
       }
     `,
     skeletonCode: `
+      // Example usage: Sort an array of numbers
+
       function sort(arr) {
         // TODO: Implement sorting algorithm
         // Hint: You can use arr.sort() with a compare function
@@ -154,10 +183,12 @@ const arraySortingTests = [
     initialData: [64, 34, 25, 12, 22, 11, 90],
     expectedOutput: [11, 12, 22, 25, 34, 64, 90],
     assertions: `
-      expect(result).to.deep.equal([11, 12, 22, 25, 34, 64, 90]);
-      expect(steps.filter(s => s.type === 'swap').length).to.be.greaterThan(0);
+      expect(result).toEqual([11, 12, 22, 25, 34, 64, 90]);
+      expect(steps.filter(s => s.type === 'swap').length).toBeGreaterThan(0);
     `,
     referenceSolution: `
+      // Example usage: Implement bubble sort algorithm
+
       function bubbleSort(arr) {
         const n = arr.length;
         for (let i = 0; i < n - 1; i++) {
@@ -171,6 +202,8 @@ const arraySortingTests = [
       }
     `,
     skeletonCode: `
+      // Example usage: Implement bubble sort algorithm
+
       function bubbleSort(arr) {
         const n = arr.length;
         // TODO: Implement nested loops
@@ -194,10 +227,12 @@ const arraySortingTests = [
     initialData: [10, 80, 30, 90, 40, 50, 70],
     expectedOutput: [10, 30, 40, 50, 70, 80, 90],
     assertions: `
-      expect(result).to.deep.equal([10, 30, 40, 50, 70, 80, 90]);
-      expect(steps.filter(s => s.type === 'partition').length).to.be.greaterThan(0);
+      expect(result).toEqual([10, 30, 40, 50, 70, 80, 90]);
+      expect(steps.filter(s => s.type === 'partition').length).toBeGreaterThan(0);
     `,
     referenceSolution: `
+      // Example usage: Implement quick sort with partition
+
       function quickSort(arr, low = 0, high = arr.length - 1) {
         if (low < high) {
           const pi = partition(arr, low, high);
@@ -221,6 +256,8 @@ const arraySortingTests = [
       }
     `,
     skeletonCode: `
+      // Example usage: Implement quick sort with partition
+
       function quickSort(arr, low = 0, high = arr.length - 1) {
         // TODO: Implement recursive quick sort
         // Base case: if low >= high, return
@@ -247,7 +284,28 @@ const arraySortingTests = [
 ];
 ```
 
-### Client-Side Test Execution Architecture
+### Skeleton Code Format
+
+**Important**: Skeleton code follows this format:
+
+```javascript
+// Example usage: [Brief description of what the code does]
+
+function myFunction() {
+  // TODO comments and implementation hints
+}
+```
+
+**Rules**:
+
+- "Example usage" comment always at the top
+- One empty line between comment and function
+- No "Your code here" comments
+- TODOs and hints within function body
+
+---
+
+## Client-Side Test Execution Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -255,20 +313,20 @@ const arraySortingTests = [
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
 │  ┌──────────────────┐         ┌────────────────────────────────────┐│
-│  │  Test Selector   │         │  Sandboxed iframe (srcdoc)         ││
-│  │  ┌────────────┐  │         │  sandbox="allow-scripts"           ││
-│  │  │ Easy       │  │         │                                    ││
-│  │  │ Medium     │  │ ──────▶ │  1. Load Chai.js                   ││
-│  │  │ Hard       │  │         │  2. Load instrumented user code    ││
-│  │  └────────────┘  │         │  3. Execute with test data         ││
-│  │                  │         │  4. Run Chai assertions            ││
-│  │  [Run Tests]     │         │  5. postMessage results back       ││
+│  │  Play Button     │         │  Sandboxed iframe (srcdoc)         ││
+│  │  (Above Editor)  │         │  sandbox="allow-scripts"           ││
+│  │                  │         │                                    ││
+│  │  [▶ Run Tests]   │ ──────▶ │  1. Load bundled Vitest expect     ││
+│  │                  │         │  2. Load instrumented user code    ││
+│  │                  │         │  3. Execute with test data         ││
+│  │                  │         │  4. Run expect assertions          ││
+│  │                  │         │  5. postMessage results back       ││
 │  └──────────────────┘         └────────────────────────────────────┘│
 │           │                                  │                      │
 │           │                                  │                      │
 │           ▼                                  ▼                      │
 │  ┌─────────────────────────────────────────────────────────────────┐│
-│  │  Test Results Panel                                             ││
+│  │  Test Results Panel (All 3 visible)                             ││
 │  │  ✓ Easy: Sort Small Array (passed)                              ││
 │  │  ✗ Medium: Bubble Sort (failed - expected [11,12...])           ││
 │  │  ○ Hard: Quick Sort (not run)                                   ││
@@ -295,9 +353,8 @@ async function runTest(userCode: string, testCase: TestCase): Promise<TestResult
     iframe.sandbox = "allow-scripts";
 
     const sandboxCode = `
-      <script src="https://unpkg.com/chai/chai.js"></script>
+      <script src="[bundled-vitest-expect]"></script>
       <script>
-        const expect = chai.expect;
         const steps = [];
 
         // Capture function for visualization
@@ -357,7 +414,7 @@ async function runTest(userCode: string, testCase: TestCase): Promise<TestResult
 
 ## Handling Incomplete Code
 
-When user code is incomplete or hasn't been written yet, the visualization panel needs to show something useful.
+When user code is incomplete or hasn't been written yet, the visualization panel shows skeleton state.
 
 ### Visualization Modes
 
@@ -399,92 +456,37 @@ type VisualizationMode =
 - Green highlights when matching expected output
 - Side-by-side comparison available
 
-### UI Components for Modes
-
-```tsx
-// src/components/VisualizationPanel/ModeSelector.tsx
-
-function ModeSelector({ currentMode, onModeChange, codeStatus }) {
-  return (
-    <div className="mode-selector">
-      <button onClick={() => onModeChange("user-code")} disabled={codeStatus === "incomplete"}>
-        Run My Code
-      </button>
-
-      <button onClick={() => onModeChange("expected-output")}>Show Expected</button>
-
-      <button
-        onClick={() => {
-          if (confirm("This will reveal the solution. Continue?")) {
-            onModeChange("reference");
-          }
-        }}
-      >
-        Show Solution
-      </button>
-    </div>
-  );
-}
-```
-
-### Skeleton Code System
-
-Each data structure challenge starts with skeleton code containing:
-
-```javascript
-// Example skeleton for Binary Search Tree insertion
-
-class BST {
-  constructor() {
-    this.root = null;
-  }
-
-  insert(value) {
-    // TODO: Create a new node with the given value
-    const newNode = { value, left: null, right: null };
-
-    // TODO: If tree is empty, set root to new node
-    if (/* your condition here */) {
-
-    }
-
-    // TODO: Otherwise, find correct position
-    // Hint: Use a while loop to traverse
-    // - If value < current.value, go left
-    // - If value > current.value, go right
-
-
-    return this; // Enable chaining
-  }
-}
-
-// Test your implementation:
-const tree = new BST();
-tree.insert(10).insert(5).insert(15);
-```
-
 ### Progressive Hints System
 
+Hints are accessed via an icon button (absolute positioned in top-right of editor). Clicking opens a modal:
+
 ```typescript
-// src/components/EditorPanel/HintSystem.tsx
+// src/components/EditorPanel/HintModal.tsx
 
-function HintSystem({ testCase, hintsRevealed, onRevealHint }) {
+function HintModal({ testCase, hintsRevealed, onRevealHint, onClose }) {
   return (
-    <div className="hints-panel">
-      <h4>Hints ({hintsRevealed}/{testCase.hints.length})</h4>
+    <dialog open className="hints-modal">
+      <header>
+        <h3>Hints ({hintsRevealed}/{testCase.hints.length})</h3>
+        <button onClick={onClose} aria-label="Close hints">
+          <IconX />
+        </button>
+      </header>
 
-      {testCase.hints.map((hint, index) => (
-        <div key={index} className="hint">
-          {index < hintsRevealed ? (
-            <p>{hint}</p>
-          ) : (
-            <button onClick={() => onRevealHint(index)}>
-              Reveal Hint {index + 1}
-            </button>
-          )}
-        </div>
-      ))}
-    </div>
+      <div className="hints-list">
+        {testCase.hints.map((hint, index) => (
+          <div key={index} className="hint">
+            {index < hintsRevealed ? (
+              <p>{hint}</p>
+            ) : (
+              <button onClick={() => onRevealHint(index)}>
+                Reveal Hint {index + 1}
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    </dialog>
   );
 }
 ```
@@ -493,11 +495,11 @@ function HintSystem({ testCase, hintsRevealed, onRevealHint }) {
 
 ## Supported Data Structures
 
-Each data structure includes 3 test cases (Easy, Medium, Hard).
+Each data structure includes 3 test cases (Easy, Medium, Hard) visible simultaneously.
 
 ### 1. **Arrays**
 
-- Visual: Horizontal/vertical bar representation
+- Visual: Horizontal bar representation
 - Operations: push, pop, shift, unshift, splice, sort, reverse
 - Animations: Element movement, swaps, highlights during sorting
 - **Test Cases**:
@@ -562,34 +564,38 @@ Each data structure includes 3 test cases (Easy, Medium, Hard).
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                              App Shell                                  │
-├─────────────────────────────────┬───────────────────────────────────────┤
-│                                 │                                       │
-│      Code Editor Panel          │       Visualization Panel             │
-│     ┌─────────────────────┐     │     ┌───────────────────────────┐     │
-│     │                     │     │     │                           │     │
-│     │   Monaco Editor     │     │     │   SVG/Canvas Renderer     │     │
-│     │                     │     │     │                           │     │
-│     │   - JS/TS           │     │     │   - Data Structure View   │     │
-│     │   - Autocomplete    │     │     │   - Animation Layer       │     │
-│     │   - Error hints     │     │     │   - Mode Selector         │     │
-│     │                     │     │     │   - Controls (play/step)  │     │
-│     └─────────────────────┘     │     └───────────────────────────┘     │
-│                                 │                                       │
-│     ┌──────────────────────┐    │     ┌───────────────────────────┐     │
-│     │ Run Controls         │    │     │  Test Results Panel       │     │
-│     │ [▶ Run] [Test] [Step]│    │     │  ✓ Easy  ✗ Medium  ○ Hard │     │
-│     └──────────────────────┘    │     └───────────────────────────┘     │
-│                                 │                                       │
-│     ┌─────────────────────┐     │     ┌───────────────────────────┐     │
-│     │ Hints Panel         │     │     │  Console Output           │     │
-│     │ [Hint 1] [Hint 2]...│     │     │  - Logs                   │     │
-│     └─────────────────────┘     │     │  - Return values          │     │
-│                                 │     └───────────────────────────┘     │
-├─────────────────────────────────┴───────────────────────────────────────┤
-│                    Data Structure & Test Selector                       │
-│  [Array] [LinkedList] [Stack] [Queue] [Tree] [Graph] [Map]              │
-│  Test: [Easy ✓] [Medium] [Hard]                                         │
-└─────────────────────────────────────────────────────────────────────────┘
+├─────────────────────────────┬───────────────────────────────────────────┤
+│                             │                                           │
+│      Code Editor Panel      │       Visualization Panel                 │
+│     ┌─────────────────┐     │     ┌───────────────────────────────┐     │
+│     │  [▶] Play Tests │     │     │                               │     │
+│     ├─────────────────┤     │     │   SVG/Canvas Renderer         │     │
+│     │ Data Structure  │     │     │                               │     │
+│     │   [Dropdown ▼]  │     │     │   - Data Structure View       │     │
+│     ├─────────────────┤     │     │   - Animation Layer           │     │
+│     │                 │     │     │                               │     │
+│     │ CodeMirror 6    │     │     │   ┌─────────────────────┐     │     │
+│     │                 │     │     │   │ [↻] [◀] [▶]       │     │     │
+│     │ - JS/TS         │     │     │   │ Floating controls   │     │     │
+│     │ - Autocomplete  │     │     │   └─────────────────────┘     │     │
+│     │ - Error hints   │     │     │                               │     │
+│     │                 │     │     │   ────────●──────────────     │     │
+│     │           [💡]  │     │     │   Step slider                 │     │
+│     │    (hints icon) │     │     │                               │     │
+│     └─────────────────┘     │     └───────────────────────────────┘     │
+│                             │                                           │
+│     ┌──────────────────┐    │     ┌───────────────────────────────┐     │
+│     │ Examples         │    │     │  Test Results (All 3)         │     │
+│     └──────────────────┘    │     │  ✓ Easy  ✗ Medium  ○ Hard     │     │
+│                             │     └───────────────────────────────┘     │
+│                             │                                           │
+│     ┌─────────────────┐     │     ┌───────────────────────────────┐     │
+│     │ Test Cases (×3) │     │     │  Console Output               │     │
+│     │ - Easy          │     │     │  - Logs                       │     │
+│     │ - Medium        │     │     │  - Return values              │     │
+│     │ - Hard          │     │     └───────────────────────────────┘     │
+│     └─────────────────┘     │                                           │
+└─────────────────────────────┴───────────────────────────────────────────┘
 ```
 
 ---
@@ -599,36 +605,34 @@ Each data structure includes 3 test cases (Easy, Medium, Hard).
 ### 1. `<App />`
 
 - Main layout with resizable split panes (`react-resizable-panels`)
-- Global state management (Zustand or React Context)
-- Route handling for data structure selection
+- Global state management (Zustand)
+- Single theme (no dark mode toggle)
 
 ### 2. `<EditorPanel />`
 
-- Monaco Editor wrapper (`@monaco-editor/react`)
+- CodeMirror 6 wrapper
+- Play button for running all tests (positioned above editor)
+- Data structure dropdown selector
+- Examples button (no emoji)
+- Hints icon button (absolute positioned, top right) opens modal
 - Skeleton code templates with TODOs
-- Run/Test/Step controls
-- Hints panel with progressive reveal
 
 ### 3. `<VisualizationPanel />`
 
 - Dynamic renderer based on selected data structure
-- Mode selector (User Code / Expected / Reference)
-- Animation controller (play, pause, step, speed control)
-- Zoom/pan controls
+- Auto-plays all steps immediately on code execution
+- Floating controls: Replay, Step Back, Step Forward
+- Horizontal slider for manual step navigation
+- No speed controls
 
 ### 4. `<TestPanel />`
 
-- Test case selector (Easy/Medium/Hard)
-- Run individual or all tests
-- Display pass/fail status with error messages
-- Show expected vs actual output diff
+- Displays all 3 test cases simultaneously (Easy, Medium, Hard)
+- No difficulty filter buttons
+- Shows pass/fail status with error messages
+- Displays expected vs actual output diff
 
-### 5. `<DataStructureSelector />`
-
-- Toolbar to switch between data structures
-- Loads corresponding skeleton code, tests, and visualization
-
-### 6. Data Structure Visualizers
+### 5. Data Structure Visualizers
 
 - `<ArrayVisualizer />`
 - `<LinkedListVisualizer />`
@@ -637,19 +641,34 @@ Each data structure includes 3 test cases (Easy, Medium, Hard).
 - `<GraphVisualizer />`
 - `<HashMapVisualizer />`
 
-### 7. `<ConsoleOutput />`
+### 6. `<ConsoleOutput />`
 
 - Displays console.log output from user code
 - Shows execution results and errors
 - Test assertion failures with details
 
+### 7. `<HintModal />`
+
+- Modal dialog for progressive hint reveal
+- Triggered by hints icon in editor panel
+- Shows total hints and reveals progressively
+- Close button with icon
+
+### 8. `<PresetSelector />`
+
+- Modal dialog for algorithm examples
+- Category filtering
+- Complexity badges
+- Loads preset code into editor
+- No emoji in trigger button
+
 ---
 
 ## Execution Model
 
-### Instrumented Execution via Babel
+### Instrumented Execution via SWC
 
-User code is transformed at runtime using `@babel/standalone` to capture each operation:
+User code is transformed at runtime using `@swc/wasm-web` to capture each operation:
 
 ```javascript
 // User writes:
@@ -665,43 +684,28 @@ arr.sort((a, b) => a - b);
 
 Each captured operation becomes an animation step.
 
-### Babel Transformation Plugin
+### SWC Transformation Plugin
 
 ```javascript
 // src/lib/execution/instrumenter.ts
 
-import { transform } from '@babel/standalone';
+import { initializeSWC } from '@swc/wasm-web';
 
-const instrumentPlugin = {
-  visitor: {
-    CallExpression(path) {
-      // Detect method calls on tracked objects
-      if (path.node.callee.type === 'MemberExpression') {
-        const methodName = path.node.callee.property.name;
-        const trackedMethods = ['push', 'pop', 'shift', 'unshift', 'sort', 'reverse', 'splice'];
-
-        if (trackedMethods.includes(methodName)) {
-          // Insert capture call before the original
-          path.insertBefore(
-            t.callExpression(
-              t.identifier('__capture'),
-              [
-                t.stringLiteral(methodName),
-                path.node.callee.object,
-                t.arrayExpression(path.node.arguments)
-              ]
-            )
-          );
-        }
-      }
-    }
-  }
-};
+// Initialize once on app mount
+await initializeSWC();
 
 export function instrumentCode(code: string): string {
-  const result = transform(code, {
-    plugins: [instrumentPlugin],
-    sourceMaps: 'inline'
+  const result = transformSync(code, {
+    jsc: {
+      parser: {
+        syntax: 'ecmascript',
+      },
+      transform: {
+        // Inject loop counters for infinite loop detection
+        // Add __capture() calls for operation tracking
+      },
+    },
+    sourceMaps: 'inline',
   });
   return result.code;
 }
@@ -709,13 +713,13 @@ export function instrumentCode(code: string): string {
 
 ### Execution Flow
 
-1. User writes/modifies code
-2. Code is parsed and instrumented via Babel
+1. User clicks play button above editor
+2. Code is parsed and instrumented via SWC
 3. Instrumented code runs in sandboxed iframe
 4. Operations are captured as "steps" via `__capture()`
 5. Steps sent to main app via `postMessage`
-6. Visualization panel animates the steps
-7. User can play all steps or step through manually
+6. Visualization panel auto-plays all steps immediately
+7. User can replay or step through manually via slider/floating buttons
 
 ### Sandbox Security
 
@@ -729,9 +733,38 @@ Security measures:
   - Same-origin access to parent
   - Form submission
   - Popups and navigation
-- CSP headers in srcdoc
 - Timeout mechanism (5 second default)
-- `postMessage` with origin verification
+- `postMessage` with type whitelist and schema validation
+- Message correlation with unique IDs
+
+---
+
+## Visualization Controls
+
+### Auto-Play Behavior
+
+When user code executes successfully:
+
+1. **Immediate Auto-Play**: All steps play automatically (no speed control)
+2. **Completion**: Animation plays through all steps once
+3. **Controls Appear**: Replay button and step controls become available
+
+### Manual Controls
+
+**Floating Action Buttons** (positioned over visualization):
+
+- **Replay Button** (`IconPlayerPlay` or `IconReload`): Restarts animation from beginning
+- **Step Back** (`IconArrowLeft` or `IconChevronLeft`): Go to previous step
+- **Step Forward** (`IconArrowRight` or `IconChevronRight`): Go to next step
+
+**Horizontal Slider**:
+
+- Positioned below visualization area
+- Allows precise navigation to any step
+- Thumb position indicates current step
+- Total steps visible
+
+**No Speed Controls**: Speed option removed for simplicity. All animations play at consistent, optimized speed.
 
 ---
 
@@ -749,18 +782,20 @@ vis/
 │   ├── components/
 │   │   ├── EditorPanel/
 │   │   │   ├── EditorPanel.tsx
-│   │   │   ├── MonacoEditor.tsx
-│   │   │   ├── Controls.tsx
-│   │   │   └── HintSystem.tsx
+│   │   │   ├── CodeMirrorEditor.tsx
+│   │   │   ├── DataStructureDropdown.tsx
+│   │   │   ├── RunButton.tsx
+│   │   │   ├── HintButton.tsx
+│   │   │   └── HintModal.tsx
 │   │   ├── VisualizationPanel/
 │   │   │   ├── VisualizationPanel.tsx
 │   │   │   ├── AnimationController.tsx
-│   │   │   └── ModeSelector.tsx
+│   │   │   ├── StepSlider.tsx
+│   │   │   └── FloatingControls.tsx
 │   │   ├── TestPanel/
 │   │   │   ├── TestPanel.tsx
-│   │   │   ├── TestCaseSelector.tsx
 │   │   │   └── TestResults.tsx
-│   │   ├── DataStructureSelector.tsx
+│   │   ├── PresetSelector.tsx
 │   │   ├── ConsoleOutput.tsx
 │   │   └── visualizers/
 │   │       ├── ArrayVisualizer.tsx
@@ -780,11 +815,12 @@ vis/
 │   │   │   └── HashMap.ts
 │   │   ├── execution/
 │   │   │   ├── sandbox.ts           # Sandboxed iframe execution
-│   │   │   ├── instrumenter.ts      # Babel AST transformation
+│   │   │   ├── instrumenter.ts      # SWC AST transformation
+│   │   │   ├── messageValidation.ts # Defense-in-depth validation
 │   │   │   └── timeout.ts           # Infinite loop protection
 │   │   ├── testing/
 │   │   │   ├── testRunner.ts        # Client-side test execution
-│   │   │   ├── assertions.ts        # Chai wrapper utilities
+│   │   │   ├── expectBundle.ts      # Bundled Vitest expect
 │   │   │   └── testCases/           # Test definitions per DS
 │   │   │       ├── arrayTests.ts
 │   │   │       ├── linkedListTests.ts
@@ -792,47 +828,58 @@ vis/
 │   │   │       ├── treeTests.ts
 │   │   │       ├── graphTests.ts
 │   │   │       └── hashMapTests.ts
-│   │   └── animation/
-│   │       ├── stepper.ts           # Animation step management
-│   │       └── transitions.ts       # Framer Motion presets
+│   │   ├── animation/
+│   │   │   ├── stepper.ts           # Animation step management
+│   │   │   └── transitions.ts       # Framer Motion presets
+│   │   └── presets/                 # Algorithm examples
+│   │       ├── array.ts
+│   │       ├── linkedList.ts
+│   │       └── ...
 │   ├── store/
 │   │   └── useAppStore.ts           # Zustand store for global state
 │   ├── templates/                   # Skeleton code per DS/test
 │   │   ├── array/
-│   │   │   ├── easy.js
-│   │   │   ├── medium.js
-│   │   │   └── hard.js
+│   │   │   ├── easy.ts
+│   │   │   ├── medium.ts
+│   │   │   └── hard.ts
 │   │   ├── linkedList/
+│   │   │   ├── easy.ts
+│   │   │   ├── medium.ts
+│   │   │   └── hard.ts
+│   │   ├── stack/
+│   │   ├── queue/
 │   │   ├── tree/
+│   │   ├── graph/
+│   │   ├── hashMap/
 │   │   └── ...
 │   └── styles/
 │       ├── global.css
-│       └── themes.css
+│       └── components.css
 └── public/
     └── favicon.svg
 ```
 
 ---
 
-## Implementation Phases
+## Implementation Status
 
-### Phase 1: Project Setup
+### Phase 1: Project Setup ✓
 
 - [x] Initialize Vite + React 19 project
-- [x] Install dependencies (CodeMirror 6, D3, Framer Motion, Chai, SWC)
+- [x] Install dependencies (CodeMirror 6, D3, Framer Motion, Vitest, SWC)
 - [x] Set up basic layout with `react-resizable-panels`
 - [x] Configure CodeMirror 6 editor
 - [x] Set up Zustand store for app state
 
-### Phase 2: Core Infrastructure
+### Phase 2: Core Infrastructure ✓
 
 - [x] Implement sandboxed iframe execution with `srcdoc`
 - [x] Create SWC-based code instrumentation (loop injection)
 - [x] Build step capture and `postMessage` communication
 - [x] Implement timeout/infinite loop protection
-- [x] Set up client-side test runner with Vitest expect
+- [x] Set up client-side test runner with bundled Vitest expect
 
-### Phase 3: Test Cases System
+### Phase 3: Test Cases System ✓
 
 - [x] Define TestCase interface and structure
 - [x] Create test cases for Arrays (Easy/Medium/Hard)
@@ -840,7 +887,7 @@ vis/
 - [x] Implement skeleton code system with TODOs
 - [x] Add progressive hints system
 
-### Phase 4: First Visualizer - Arrays
+### Phase 4: First Visualizer - Arrays ✓
 
 - [x] Create ArrayVisualizer component with SVG
 - [x] Implement TrackedArray with operation capture
@@ -848,7 +895,7 @@ vis/
 - [x] Connect editor → execution → visualization pipeline
 - [x] Implement all 3 array test cases
 
-### Phase 5: Visualization Modes
+### Phase 5: Visualization Modes ✓
 
 - [x] Build ModeSelector component
 - [x] Implement "Expected Output" mode
@@ -856,36 +903,57 @@ vis/
 - [x] Add side-by-side comparison view
 - [x] Handle incomplete code gracefully
 
-### Phase 6: Additional Data Structures
+### Phase 6: Additional Data Structures ✓
 
-- [x] LinkedList data structure (TrackedLinkedList with operation capture)
-- [x] LinkedList visualizer (SVG rendering with D3 transitions)
-- [x] LinkedList test cases (Easy/Medium/Hard) with TrackedLinkedList integration
-- [x] Stack/Queue visualizer (StackQueueVisualizer with SVG rendering for both data structures)
-- [x] Stack/Queue test cases (3 test cases: Easy - Balanced Parentheses, Medium - Queue Using Two Stacks, Hard - Min Stack)
-- [x] Binary Tree data structure (TrackedBinaryTree with operation capture)
-- [x] Binary Tree visualizer (D3 layout)
-- [x] Binary Tree test cases (3 test cases: Easy/Medium/Hard)
-- [x] Graph data structure (TrackedGraph with operation capture)
-- [x] Graph visualizer (D3 force layout) + 3 test cases
-- [x] HashMap data structure (TrackedHashMap with operation capture)
-- [x] HashMap visualizer (bucket visualization with collision chains) + 3 test cases
+- [x] LinkedList (data structure, visualizer, test cases)
+- [x] Stack/Queue (visualizer, test cases)
+- [x] Binary Tree (data structure, visualizer, test cases)
+- [x] Graph (data structure, visualizer, test cases)
+- [x] HashMap (data structure, visualizer, test cases)
 
-### Phase 7: Polish & UX
+### Phase 7: Polish & UX ✓
 
-- [x] Data structure selector toolbar
 - [x] Console output panel with formatting
-- [x] Animation speed controls
+- [x] Animation controls
 - [x] Step-through debugging mode
-- [x] Dark/light theme toggle
 - [x] Mobile-responsive layout (limited)
 
-### Phase 8: Advanced Features
+### Phase 8: Advanced Features ✓
 
-- [x] Export/share code snippets (URL encoding)
 - [x] Local storage for progress persistence
 - [x] Preset algorithm examples (sorting, traversals)
 - [x] Performance metrics display (time/space complexity)
+
+### Phase 9: UI/UX Refinements (Planned)
+
+**Removals**:
+
+- [ ] Remove dark mode toggle and theme switching system
+- [ ] Remove DataStructureSelector button container
+- [ ] Remove test case difficulty filter
+- [ ] Remove "Your code here" comments from skeleton templates
+- [ ] Remove emoji before "Examples" button
+- [ ] Remove share functionality
+- [ ] Remove speed controls from visualization
+
+**Changes**:
+
+- [ ] Convert data structure selector to dropdown in EditorPanel
+- [ ] Convert hints section to icon button with modal
+- [ ] Add Tabler icons throughout UI (strategically)
+- [ ] Fix Examples dialog UI/UX
+- [ ] Move "Example usage" comments to top of skeleton functions
+- [ ] Show all 3 test cases simultaneously (no filter)
+- [ ] Add play button above editor for running all tests
+- [ ] Implement auto-play visualization on code execution
+- [ ] Add replay button for visualization
+- [ ] Add floating step back/forward controls
+- [ ] Add horizontal slider for step navigation
+
+**Bug Fixes**:
+
+- [ ] Fix skeleton template loading for linkedList and other data structures
+- [ ] Ensure all data structure templates exist for easy/medium/hard
 
 ---
 
@@ -896,15 +964,15 @@ vis/
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@monaco-editor/react": "^4.6.0",
-    "monaco-editor": "^0.52.0",
+    "@uiw/react-codemirror": "^4.23.0",
+    "@codemirror/lang-javascript": "^6.2.0",
     "d3": "^7.9.0",
     "framer-motion": "^12.0.0",
     "react-resizable-panels": "^2.1.0",
-    "@babel/standalone": "^7.26.0",
-    "@babel/parser": "^7.26.0",
-    "chai": "^5.1.0",
-    "zustand": "^5.0.0"
+    "@swc/wasm-web": "^1.4.0",
+    "vitest": "^4.0.0",
+    "zustand": "^5.0.0",
+    "@tabler/icons-react": "^3.0.0"
   },
   "devDependencies": {
     "vite": "^6.0.0",
@@ -912,7 +980,8 @@ vis/
     "typescript": "^5.7.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@types/d3": "^7.4.0"
+    "@types/d3": "^7.4.0",
+    "oxlint": "^0.14.0"
   }
 }
 ```
@@ -921,17 +990,19 @@ vis/
 
 ## Key Technical Decisions
 
-| Decision       | Choice                 | Rationale                                                        |
-| -------------- | ---------------------- | ---------------------------------------------------------------- |
-| Framework      | React 19               | Massive ecosystem, battle-tested, excellent library support      |
-| Editor         | Monaco                 | VS Code experience, best JS/TS IntelliSense, user preference     |
-| Visualization  | D3.js + SVG            | Industry standard, excellent tree/graph layout algorithms        |
-| Animation      | Framer Motion          | Comprehensive API, variant system, excellent React integration   |
-| Code Transform | Babel Standalone       | Browser-based AST transformation, source maps, well-documented   |
-| Testing        | Chai (browser)         | No dependencies, runs entirely client-side, BDD-style assertions |
-| Execution      | Sandboxed iframe       | Secure isolation, `postMessage` communication, timeout control   |
-| State          | Zustand                | Lightweight, no boilerplate, works well with React 19            |
-| Layout         | react-resizable-panels | Well-maintained, accessible, smooth resizing                     |
+| Decision       | Choice                  | Rationale                                                         |
+| -------------- | ----------------------- | ----------------------------------------------------------------- |
+| Framework      | React 19                | Massive ecosystem, battle-tested, excellent library support       |
+| Editor         | CodeMirror 6            | Lightweight (~300KB), excellent performance, modern API           |
+| Visualization  | D3.js + SVG             | Industry standard, excellent tree/graph layout algorithms         |
+| Animation      | Framer Motion           | Comprehensive API, variant system, excellent React integration    |
+| Code Transform | SWC WASM                | 20-70x faster than Babel, browser-based AST transformation        |
+| Testing        | Vitest expect (bundled) | BDD-style assertions, runs entirely client-side                   |
+| Execution      | Sandboxed iframe        | Secure isolation, `postMessage` communication, timeout control    |
+| State          | Zustand                 | Lightweight, no boilerplate, works well with React 19             |
+| Layout         | react-resizable-panels  | Well-maintained, accessible, smooth resizing                      |
+| Icons          | Tabler Icons            | Comprehensive, consistent design, tree-shakeable                  |
+| Theme          | Single theme only       | Simplifies UI, reduces maintenance, focuses on core functionality |
 
 ---
 
@@ -951,27 +1022,26 @@ The `sandbox` attribute with only `allow-scripts`:
 - Blocks top-level navigation
 - Blocks pointer lock and orientation lock
 
-### Content Security Policy
-
-```html
-<meta
-  http-equiv="Content-Security-Policy"
-  content="default-src 'none'; script-src 'unsafe-inline' https://unpkg.com/chai/"
-/>
-```
-
 ### postMessage Security
 
 ```javascript
-// Main app - verify origin
+// Main app - defense-in-depth validation
+const ALLOWED_MESSAGE_TYPES = new Set(['test-result', 'execution-complete', ...]);
+
 window.addEventListener("message", (event) => {
-  // Only accept messages from our sandbox
-  if (event.origin !== "null") return; // sandboxed iframes have null origin
+  // 1. Structure validation
+  if (!event.data || typeof event.data !== 'object') return;
 
-  // Validate message structure
-  if (!event.data || typeof event.data.type !== "string") return;
+  // 2. Type whitelist
+  if (!ALLOWED_MESSAGE_TYPES.has(event.data.type)) return;
 
-  // Process message
+  // 3. Schema validation
+  if (!validateMessageSchema(event.data)) return;
+
+  // 4. Source check
+  if (event.source !== expectedIframe.contentWindow) return;
+
+  // 5. Process validated message
   handleSandboxMessage(event.data);
 });
 ```
@@ -979,21 +1049,64 @@ window.addEventListener("message", (event) => {
 ### Timeout Protection
 
 ```javascript
-// In sandbox
-const TIMEOUT_MS = 5000;
-const timeoutId = setTimeout(() => {
-  parent.postMessage(
-    {
-      type: "error",
-      error: "Execution timeout - possible infinite loop",
-    },
-    "*",
-  );
-}, TIMEOUT_MS);
-
-// Clear on successful completion
-clearTimeout(timeoutId);
+// Injected via SWC transformation
+let __loopCount_1 = 0;
+while (condition) {
+  if (++__loopCount_1 > 100000) {
+    throw new Error("Infinite loop detected");
+  }
+  body;
+}
 ```
+
+---
+
+## UI/UX Best Practices Applied
+
+### Modal Design
+
+Based on [modal UX best practices](https://www.eleken.co/blog-posts/modal-ux), the hints modal:
+
+- Has clear title explaining purpose
+- Provides obvious close button
+- Shows progressive content reveal
+- Uses clear CTAs ("Reveal Hint N")
+
+### Timeline Controls
+
+Inspired by [video player timeline patterns](https://support.syncsketch.com/hc/en-us/articles/32393850754196-Timeline-Navigation-and-Playback-Controls):
+
+- Horizontal slider for precise step navigation
+- Floating controls for replay/step actions
+- Auto-play on first execution for immediate feedback
+- Frame-by-frame stepping with arrow buttons
+
+### Floating Action Buttons
+
+Following [FAB design guidelines](https://mobbin.com/glossary/floating-action-button):
+
+- Used for primary visualization controls (replay, step back/forward)
+- Positioned consistently
+- Icon-only for compact display
+- Higher z-index to float above content
+
+### Minimalist Design
+
+Adhering to [2026 UI/UX trends](https://uidesignz.com/blogs/ui-ux-design-best-practices):
+
+- Removes clutter (single theme, no dark mode toggle)
+- Focuses on essential elements
+- Strategic icon usage (not overwhelming)
+- Immediate visual feedback
+
+### Icon Usage
+
+Following [accessibility best practices](https://www.eleken.co/blog-posts/modal-ux):
+
+- Descriptive aria-labels for icon buttons
+- Icons used strategically, not everywhere
+- Consistent icon library (Tabler Icons)
+- Icon + label for important actions
 
 ---
 
@@ -1012,10 +1125,8 @@ clearTimeout(timeoutId);
 
 ### Client-Side Testing
 
-- [Mocha Browser Support](https://mochajs.org/)
-- [Chai.js Documentation](https://www.chaijs.com/)
+- [Vitest Browser Mode](https://vitest.dev/guide/browser.html)
 - [freeCodeCamp Testing Architecture](https://forum.freecodecamp.org/t/how-does-freecodecamp-run-test-our-code/591458)
-- [CodePen Unit Testing](https://codepen.io/brownerd/post/4-ways-to-unit-test-js-in-codepen)
 
 ### Sandbox Security
 
@@ -1031,6 +1142,13 @@ clearTimeout(timeoutId);
 
 ### Code Instrumentation
 
-- [Babel AST Manipulation - Trickster Dev](https://www.trickster.dev/post/javascript-ast-manipulation-with-babel-transform-prototyping-and-plugin-development/)
-- [AST Explorer](https://astexplorer.net/)
-- [Heap's Babel Transform Approach](https://www.heap.io/blog/how-we-leveraged-asts-and-babel-to-capture-everything-on-react-native-apps)
+- [SWC Documentation](https://swc.rs/)
+- [AST Manipulation Best Practices](https://www.trickster.dev/post/javascript-ast-manipulation-with-babel-transform-prototyping-and-plugin-development/)
+
+### UI/UX Research (2026)
+
+- [Modal UX Best Practices - Eleken](https://www.eleken.co/blog-posts/modal-ux)
+- [UI Design Best Practices 2026](https://uidesignz.com/blogs/ui-ux-design-best-practices)
+- [Timeline Navigation and Playback Controls - SyncSketch](https://support.syncsketch.com/hc/en-us/articles/32393850754196-Timeline-Navigation-and-Playback-Controls)
+- [Floating Action Buttons - Mobbin](https://mobbin.com/glossary/floating-action-button)
+- [Tooltips Best Practices - Appcues](https://www.appcues.com/blog/tooltips)

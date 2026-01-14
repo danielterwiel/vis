@@ -2,8 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   saveUserCode,
   loadUserCode,
-  saveTheme,
-  loadTheme,
   saveAnimationSpeed,
   loadAnimationSpeed,
   saveHintsRevealed,
@@ -52,25 +50,6 @@ describe("localStorage", () => {
       const code = "// 你好 emoji: 🚀";
       saveUserCode("tree", "easy", code);
       expect(loadUserCode("tree", "easy")).toBe(code);
-    });
-  });
-
-  describe("saveTheme / loadTheme", () => {
-    it("should save and load theme", () => {
-      saveTheme("dark");
-      expect(loadTheme()).toBe("dark");
-
-      saveTheme("light");
-      expect(loadTheme()).toBe("light");
-    });
-
-    it("should return null for non-existent theme", () => {
-      expect(loadTheme()).toBeNull();
-    });
-
-    it("should return null for invalid theme", () => {
-      localStorage.setItem("vis_app_v1_theme", "invalid");
-      expect(loadTheme()).toBeNull();
     });
   });
 
@@ -158,7 +137,6 @@ describe("localStorage", () => {
     it("should clear all stored data", () => {
       saveUserCode("array", "easy", "code1");
       saveUserCode("linkedList", "medium", "code2");
-      saveTheme("dark");
       saveAnimationSpeed(1.5);
       saveHintsRevealed("tree", "hard", 3);
 
@@ -166,7 +144,6 @@ describe("localStorage", () => {
 
       expect(loadUserCode("array", "easy")).toBeNull();
       expect(loadUserCode("linkedList", "medium")).toBeNull();
-      expect(loadTheme()).toBeNull();
       expect(loadAnimationSpeed()).toBeNull();
       expect(loadHintsRevealed("tree", "hard")).toBeNull();
     });
@@ -213,14 +190,6 @@ describe("localStorage", () => {
 
     it("should return null when loading user code", () => {
       expect(loadUserCode("array", "easy")).toBeNull();
-    });
-
-    it("should fail silently when saving theme", () => {
-      expect(() => saveTheme("dark")).not.toThrow();
-    });
-
-    it("should return null when loading theme", () => {
-      expect(loadTheme()).toBeNull();
     });
 
     it("should fail silently when saving animation speed", () => {
