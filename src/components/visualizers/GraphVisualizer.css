@@ -1,0 +1,80 @@
+.graph-visualizer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #1e1e1e;
+  position: relative;
+}
+
+.graph-visualizer svg {
+  flex: 1;
+  background-color: #1e1e1e;
+}
+
+.graph-visualizer .node-circle {
+  fill: #3b82f6;
+  stroke: #60a5fa;
+  stroke-width: 2;
+  transition:
+    fill 0.3s,
+    stroke 0.3s;
+}
+
+.graph-visualizer .node-circle.active {
+  fill: #10b981;
+  stroke: #34d399;
+}
+
+.graph-visualizer .node-circle.current {
+  fill: #f59e0b;
+  stroke: #fbbf24;
+}
+
+.graph-visualizer .node-circle.visited {
+  fill: #8b5cf6;
+  stroke: #a78bfa;
+}
+
+.graph-visualizer .node-circle:hover {
+  fill: #60a5fa;
+  stroke: #93c5fd;
+}
+
+.graph-visualizer .node-label {
+  fill: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  pointer-events: none;
+  user-select: none;
+}
+
+.graph-visualizer .link {
+  stroke: #999;
+  stroke-opacity: 0.6;
+  transition:
+    stroke 0.3s,
+    stroke-opacity 0.3s;
+}
+
+.graph-visualizer .link:hover {
+  stroke-opacity: 1;
+}
+
+.graph-visualizer .empty-message {
+  fill: #9ca3af;
+  font-size: 16px;
+}
+
+.graph-visualizer .step-indicator {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 400px;
+}
