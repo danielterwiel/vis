@@ -57,7 +57,6 @@ export function PresetSelector({
         disabled={disabled}
         title="Load algorithm examples"
       >
-        <span className="preset-icon">📚</span>
         Examples
       </button>
 

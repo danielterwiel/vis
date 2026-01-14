@@ -16,7 +16,6 @@ import {
 } from "./lib/testing/testCases";
 import type { TestCase } from "./lib/testing/types";
 import useAppStore from "./store/useAppStore";
-import { extractSharedState } from "./lib/sharing/urlEncoder";
 
 // Hook to detect mobile screen size
 function useIsMobile() {
@@ -47,32 +46,14 @@ function App() {
     setTestResult,
     setCurrentSteps,
     setVisualizationMode,
-    setSelectedDataStructure,
     setConsoleLogs,
     clearConsoleLogs,
-    setUserCode,
-    setSelectedDifficulty,
   } = useAppStore();
 
   // Apply dark theme to document root
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", "dark");
   }, []);
-
-  // Load shared state from URL on mount
-  useEffect(() => {
-    const sharedState = extractSharedState();
-    if (sharedState) {
-      setSelectedDataStructure(sharedState.dataStructure);
-      setSelectedDifficulty(sharedState.difficulty);
-      setUserCode(sharedState.code);
-
-      // Clear the share parameter from URL after loading
-      const url = new URL(window.location.href);
-      url.searchParams.delete("share");
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, [setSelectedDataStructure, setSelectedDifficulty, setUserCode]);
 
   useEffect(() => {
     initializeSWC()

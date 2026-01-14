@@ -199,39 +199,6 @@ body {
   border: 1px solid #a78bfa;
 }
 
-.share-button {
-  padding: 0.25rem 0.75rem;
-  background-color: #646cff;
-  color: white;
-  border: 1px solid #535bf2;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.share-button:hover:not(:disabled) {
-  background-color: #535bf2;
-  border-color: #4c51bf;
-}
-
-.share-button:disabled {
-  cursor: default;
-  opacity: 0.8;
-}
-
-[data-theme="light"] .share-button {
-  background-color: #535bf2;
-  border-color: #4c51bf;
-}
-
-[data-theme="light"] .share-button:hover:not(:disabled) {
-  background-color: #4c51bf;
-  border-color: #434190;
-}
-
 .codemirror-wrapper {
   flex: 1;
   overflow: hidden;

@@ -945,8 +945,8 @@ vis/
 - [x] Remove DataStructureSelector button container
 - [x] Remove test case difficulty filter
 - [x] Remove "Your code here" comments from skeleton templates
-- [ ] Remove emoji before "Examples" button
-- [ ] Remove share functionality
+- [x] Remove emoji before "Examples" button
+- [x] Remove share functionality
 - [ ] Remove speed controls from visualization
 
 **Changes**:
