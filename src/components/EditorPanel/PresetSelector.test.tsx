@@ -101,7 +101,7 @@ describe("PresetSelector", () => {
     fireEvent.click(screen.getByText("Examples"));
     expect(screen.getByText("Algorithm Examples")).toBeTruthy();
 
-    const closeButton = screen.getByLabelText("Close");
+    const closeButton = screen.getByLabelText("Close examples dialog");
     fireEvent.click(closeButton);
 
     expect(screen.queryByText("Algorithm Examples")).toBeNull();
@@ -170,5 +170,59 @@ describe("PresetSelector", () => {
       const count = parseInt(match[1], 10);
       expect(count).toBeGreaterThan(0);
     }
+  });
+
+  it("should close modal when ESC key is pressed", () => {
+    render(<PresetSelector dataStructure="array" onSelectPreset={mockOnSelectPreset} />);
+
+    fireEvent.click(screen.getByText("Examples"));
+    expect(screen.getByText("Algorithm Examples")).toBeTruthy();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    expect(screen.queryByText("Algorithm Examples")).toBeNull();
+  });
+
+  it("should have proper ARIA attributes for accessibility", () => {
+    render(<PresetSelector dataStructure="array" onSelectPreset={mockOnSelectPreset} />);
+
+    fireEvent.click(screen.getByText("Examples"));
+
+    const modal = screen.getByRole("dialog");
+    expect(modal).toBeTruthy();
+    expect(modal.getAttribute("aria-modal")).toBe("true");
+    expect(modal.getAttribute("aria-labelledby")).toBe("preset-modal-title");
+  });
+
+  it("should reset category filter when modal is closed", () => {
+    render(<PresetSelector dataStructure="array" onSelectPreset={mockOnSelectPreset} />);
+
+    // Open modal
+    fireEvent.click(screen.getByText("Examples"));
+
+    // Select a category
+    const sortingButton = screen.getByText(/Sorting \(\d+\)/);
+    fireEvent.click(sortingButton);
+    expect(sortingButton.className).toContain("active");
+
+    // Close modal
+    const closeButton = screen.getByLabelText("Close examples dialog");
+    fireEvent.click(closeButton);
+
+    // Reopen modal
+    fireEvent.click(screen.getByText("Examples"));
+
+    // Check that "All" is selected again
+    const allButton = screen.getByText(/All \(\d+\)/);
+    expect(allButton.className).toContain("active");
+  });
+
+  it("should render preset cards as buttons for accessibility", () => {
+    render(<PresetSelector dataStructure="array" onSelectPreset={mockOnSelectPreset} />);
+
+    fireEvent.click(screen.getByText("Examples"));
+
+    const presetCard = screen.getByLabelText(/Load Bubble Sort example/);
+    expect(presetCard.tagName).toBe("BUTTON");
   });
 });

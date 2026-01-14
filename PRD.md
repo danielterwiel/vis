@@ -954,7 +954,7 @@ vis/
 - [x] Convert data structure selector to dropdown in EditorPanel
 - [x] Convert hints section to icon button with modal
 - [x] Add Tabler icons throughout UI (strategically)
-- [ ] Fix Examples dialog UI/UX
+- [x] Fix Examples dialog UI/UX
 - [ ] Move "Example usage" comments to top of skeleton functions
 - [ ] Show all 3 test cases simultaneously (no filter)
 - [ ] Add play button above editor for running all tests

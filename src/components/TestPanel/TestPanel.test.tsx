@@ -196,9 +196,9 @@ describe("TestPanel", () => {
       );
 
       // Check for not-run CSS class instead of icon text
-      const testItems = screen.getAllByRole("generic", { hidden: true }).filter(
-        (el) => el.className === "test-item not-run",
-      );
+      const testItems = screen
+        .getAllByRole("generic", { hidden: true })
+        .filter((el) => el.className === "test-item not-run");
       expect(testItems.length).toBe(3);
     });
 
@@ -235,9 +235,9 @@ describe("TestPanel", () => {
       );
 
       // Check for passed CSS class instead of icon text
-      const testItems = screen.getAllByRole("generic", { hidden: true }).filter(
-        (el) => el.className === "test-item passed",
-      );
+      const testItems = screen
+        .getAllByRole("generic", { hidden: true })
+        .filter((el) => el.className === "test-item passed");
       expect(testItems.length).toBe(1);
       expect(screen.getByText("Passed in 42ms")).toBeInTheDocument();
       expect(screen.getByText("1 operations captured")).toBeInTheDocument();
@@ -269,9 +269,9 @@ describe("TestPanel", () => {
       );
 
       // Check for failed CSS class instead of icon text
-      const testItems = screen.getAllByRole("generic", { hidden: true }).filter(
-        (el) => el.className === "test-item failed",
-      );
+      const testItems = screen
+        .getAllByRole("generic", { hidden: true })
+        .filter((el) => el.className === "test-item failed");
       expect(testItems.length).toBe(1);
       expect(screen.getByText("Expected [1,2,3] but got [3,2,1]")).toBeInTheDocument();
       expect(screen.getByText("Failed after 25ms")).toBeInTheDocument();
@@ -366,9 +366,9 @@ describe("TestPanel", () => {
       );
 
       // Check for not-run CSS class instead of icon text
-      let testItems = screen.getAllByRole("generic", { hidden: true }).filter(
-        (el) => el.className === "test-item not-run",
-      );
+      let testItems = screen
+        .getAllByRole("generic", { hidden: true })
+        .filter((el) => el.className === "test-item not-run");
       expect(testItems.length).toBe(3);
 
       // Simulate test results being added
@@ -389,9 +389,9 @@ describe("TestPanel", () => {
       );
 
       // Check for passed CSS class after re-render
-      testItems = screen.getAllByRole("generic", { hidden: true }).filter(
-        (el) => el.className === "test-item passed",
-      );
+      testItems = screen
+        .getAllByRole("generic", { hidden: true })
+        .filter((el) => el.className === "test-item passed");
       expect(testItems.length).toBe(1);
       expect(screen.getByText("1/1 passed")).toBeInTheDocument();
     });

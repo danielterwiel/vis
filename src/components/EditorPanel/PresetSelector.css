@@ -74,23 +74,26 @@
 .preset-close {
   background: none;
   border: none;
-  font-size: 2rem;
-  line-height: 1;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 0;
-  width: 2rem;
-  height: 2rem;
+  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
   transition: all 0.2s;
 }
 
 .preset-close:hover {
   background: var(--button-hover-bg);
   color: var(--text-primary);
+}
+
+.preset-close:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 /* Categories */
@@ -147,6 +150,10 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 .preset-card:hover {
@@ -154,6 +161,11 @@
   background: var(--button-hover-bg);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.preset-card:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 .preset-card-header {
@@ -269,4 +281,39 @@
 .preset-list::-webkit-scrollbar-thumb:hover,
 .preset-categories::-webkit-scrollbar-thumb:hover {
   background: var(--text-tertiary);
+}
+
+/* Empty State */
+.preset-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+}
+
+.preset-empty-state p {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+}
+
+.preset-empty-state button {
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 0.375rem;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preset-empty-state button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.preset-empty-state button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
