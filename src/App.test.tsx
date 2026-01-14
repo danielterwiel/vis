@@ -66,6 +66,15 @@ describe("App", () => {
     });
   });
 
+  it("renders the data structure selector after initialization", async () => {
+    render(<App />);
+    await waitFor(() => {
+      expect(screen.getByText("Data Structure")).toBeDefined();
+      expect(screen.getByRole("button", { name: "Array" })).toBeDefined();
+      expect(screen.getByRole("button", { name: "Linked List" })).toBeDefined();
+    });
+  });
+
   it("displays error message on initialization failure", async () => {
     vi.mocked(swcInitializer.initializeSWC).mockRejectedValueOnce(new Error("Failed to load SWC"));
 

@@ -3,9 +3,17 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import EditorPanel from "./components/EditorPanel/EditorPanel";
 import VisualizationPanel from "./components/VisualizationPanel/VisualizationPanel";
 import { TestPanel } from "./components/TestPanel/TestPanel";
+import { DataStructureSelector } from "./components/DataStructureSelector";
 import { initializeSWC } from "./lib/execution/swcInitializer";
 import { runTest } from "./lib/testing/testRunner";
-import { arrayTests } from "./lib/testing/testCases";
+import {
+  arrayTests,
+  linkedListTests,
+  stackQueueTests,
+  binaryTreeTests,
+  graphTests,
+  hashMapTests,
+} from "./lib/testing/testCases";
 import type { TestCase } from "./lib/testing/types";
 import useAppStore from "./store/useAppStore";
 
@@ -13,8 +21,14 @@ function App() {
   const [swcReady, setSwcReady] = useState(false);
   const [swcError, setSwcError] = useState<string | null>(null);
 
-  const { selectedDataStructure, userCode, setTestResult, setCurrentSteps, setVisualizationMode } =
-    useAppStore();
+  const {
+    selectedDataStructure,
+    userCode,
+    setTestResult,
+    setCurrentSteps,
+    setVisualizationMode,
+    setSelectedDataStructure,
+  } = useAppStore();
 
   useEffect(() => {
     initializeSWC()
@@ -30,7 +44,17 @@ function App() {
     switch (selectedDataStructure) {
       case "array":
         return arrayTests;
-      // TODO: Add other data structures
+      case "linkedList":
+        return linkedListTests;
+      case "stack":
+      case "queue":
+        return stackQueueTests;
+      case "tree":
+        return binaryTreeTests;
+      case "graph":
+        return graphTests;
+      case "hashMap":
+        return hashMapTests;
       default:
         return arrayTests;
     }
@@ -100,6 +124,10 @@ function App() {
       <header className="app-header">
         <h1>Data Structure Visualizer</h1>
       </header>
+      <DataStructureSelector
+        selectedDataStructure={selectedDataStructure}
+        onSelectDataStructure={setSelectedDataStructure}
+      />
       <PanelGroup direction="horizontal" className="panels-container">
         <Panel defaultSize={50} minSize={30}>
           <PanelGroup direction="vertical">

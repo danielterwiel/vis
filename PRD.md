@@ -873,7 +873,7 @@ vis/
 
 ### Phase 7: Polish & UX
 
-- [ ] Data structure selector toolbar
+- [x] Data structure selector toolbar
 - [ ] Console output panel with formatting
 - [ ] Animation speed controls
 - [ ] Step-through debugging mode

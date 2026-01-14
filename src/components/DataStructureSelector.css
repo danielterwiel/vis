@@ -1,0 +1,72 @@
+.data-structure-selector {
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333;
+  padding: 1rem 1.5rem;
+}
+
+.selector-header {
+  margin-bottom: 0.75rem;
+}
+
+.selector-header h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.selector-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #888;
+}
+
+.selector-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ds-button {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ds-button:hover {
+  background-color: #333;
+  border-color: #646cff;
+}
+
+.ds-button.active {
+  background-color: #646cff;
+  border-color: #646cff;
+  color: #ffffff;
+}
+
+.ds-button:focus {
+  outline: 2px solid #646cff;
+  outline-offset: 2px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .data-structure-selector {
+    padding: 0.75rem 1rem;
+  }
+
+  .selector-buttons {
+    gap: 0.375rem;
+  }
+
+  .ds-button {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+}
