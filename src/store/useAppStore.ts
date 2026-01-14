@@ -37,6 +37,8 @@ export interface TestResult {
   consoleLogs: Array<{ level: string; args: unknown[] }>;
 }
 
+export type Theme = "light" | "dark";
+
 export interface AppState {
   // Data structure selection
   selectedDataStructure: DataStructureType;
@@ -62,6 +64,9 @@ export interface AppState {
 
   // Console output
   consoleLogs: ConsoleLog[];
+
+  // Theme
+  theme: Theme;
 
   // Actions - Data structure selection
   setSelectedDataStructure: (dataStructure: DataStructureType) => void;
@@ -95,6 +100,10 @@ export interface AppState {
   setConsoleLogs: (logs: ConsoleLog[]) => void;
   clearConsoleLogs: () => void;
 
+  // Actions - Theme
+  setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
+
   // Actions - Reset
   resetVisualization: () => void;
 }
@@ -119,6 +128,8 @@ const useAppStore = create<AppState>((set, get) => ({
   hintsRevealed: 0,
 
   consoleLogs: [],
+
+  theme: "dark",
 
   // Actions - Data structure selection
   setSelectedDataStructure: (dataStructure) =>
@@ -215,6 +226,10 @@ const useAppStore = create<AppState>((set, get) => ({
   setConsoleLogs: (logs) => set({ consoleLogs: logs }),
 
   clearConsoleLogs: () => set({ consoleLogs: [] }),
+
+  // Actions - Theme
+  setTheme: (theme) => set({ theme }),
+  toggleTheme: () => set((state) => ({ theme: state.theme === "dark" ? "light" : "dark" })),
 
   // Actions - Reset
   resetVisualization: () =>

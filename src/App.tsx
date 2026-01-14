@@ -5,6 +5,7 @@ import VisualizationPanel from "./components/VisualizationPanel/VisualizationPan
 import { TestPanel } from "./components/TestPanel/TestPanel";
 import { DataStructureSelector } from "./components/DataStructureSelector";
 import { ConsoleOutput } from "./components/ConsoleOutput";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { initializeSWC } from "./lib/execution/swcInitializer";
 import { runTest } from "./lib/testing/testRunner";
 import {
@@ -26,6 +27,7 @@ function App() {
     selectedDataStructure,
     userCode,
     consoleLogs,
+    theme,
     setTestResult,
     setCurrentSteps,
     setVisualizationMode,
@@ -33,6 +35,11 @@ function App() {
     setConsoleLogs,
     clearConsoleLogs,
   } = useAppStore();
+
+  // Apply theme to document root
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     initializeSWC()
@@ -137,6 +144,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>Data Structure Visualizer</h1>
+        <ThemeToggle />
       </header>
       <DataStructureSelector
         selectedDataStructure={selectedDataStructure}

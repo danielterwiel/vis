@@ -1778,3 +1778,65 @@ Implementation notes:
 - Integration with animation speed controls allows fine-tuned playback control
 
 Next: Dark/light theme toggle (Phase 7 next task)
+
+
+2026-01-14 19:04 - Phase 7: Dark/Light Theme Toggle COMPLETED
+- Added theme state management to Zustand store (src/store/useAppStore.ts)
+  * New Theme type: "light" | "dark"
+  * theme state property (default: "dark")
+  * setTheme(theme) action to set theme directly
+  * toggleTheme() action to switch between light and dark
+- Created comprehensive ThemeToggle component (src/components/ThemeToggle.tsx)
+  * Icon-based toggle button with sun icon (dark mode) and moon icon (light mode)
+  * Accessible button with aria-label and title attributes
+  * Clean SVG icons with proper stroke styling
+  * Click handler calls toggleTheme() from store
+  * CSS styling in ThemeToggle.css with hover and focus states
+- Integrated theme toggle into app header (src/App.tsx)
+  * Added ThemeToggle component import
+  * Placed toggle button in app-header next to title
+  * Updated app-header CSS to flexbox layout (justify-content: space-between)
+  * Added useEffect to apply theme attribute to document root
+  * Sets data-theme="dark" or data-theme="light" on document.documentElement
+- Added comprehensive light theme CSS support (src/styles/global.css)
+  * Root level theme variables with [data-theme="dark"] and [data-theme="light"]
+  * Dark theme: #242424 background, rgba(255,255,255,0.87) text
+  * Light theme: #ffffff background, rgba(0,0,0,0.87) text
+  * Component-specific light theme overrides:
+    - app-header: #f5f5f5 background, #d0d0d0 border
+    - resize-handle: #d0d0d0 background
+    - editor-panel: #fafafa background
+    - editor-header: #f0f0f0 background, #d0d0d0 border
+    - data-structure-select: white background, #1a1a1a text, #d0d0d0 border
+    - visualization-panel: white background
+    - visualization-header: #f0f0f0 background, #d0d0d0 border
+    - control-button: white background, #1a1a1a text, #d0d0d0 border
+    - step-counter: white background, #1a1a1a text, #d0d0d0 border
+    - visualizer-container/inner: #fafafa background
+    - skeleton-overlay: rgba(255,255,255,0.85) background
+    - skeleton-message: white background, lighter shadow
+- Created comprehensive test suite (src/components/ThemeToggle.test.tsx)
+  * 13 tests covering all functionality
+  * Rendering tests: button, sun icon (dark), moon icon (light)
+  * Accessibility tests: aria-label, title attribute for both themes
+  * Interaction tests: toggle dark→light, light→dark, multiple toggles
+  * CSS class tests: theme-toggle class
+  * Accessibility tests: button role, SVG aria-hidden
+  * All tests passing ✓
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 1137 passed, 12 skipped ✓
+
+Implementation notes:
+- Theme toggle provides instant visual feedback with icon change
+- Light theme uses professional grayscale palette (#f5f5f5, #d0d0d0, etc.)
+- Dark theme remains default for developer-focused users
+- All components styled consistently across both themes
+- Theme preference resets on page reload (no localStorage persistence yet)
+- data-theme attribute on document root enables CSS cascade for theme-specific styles
+- Component fully accessible with semantic HTML and ARIA attributes
+- Ready for users to switch between themes based on preference
+
+Next: Mobile-responsive layout (Phase 7 next task)

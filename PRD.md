@@ -877,7 +877,7 @@ vis/
 - [x] Console output panel with formatting
 - [x] Animation speed controls
 - [x] Step-through debugging mode
-- [ ] Dark/light theme toggle
+- [x] Dark/light theme toggle
 - [ ] Mobile-responsive layout (limited)
 
 ### Phase 8: Advanced Features
