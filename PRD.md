@@ -850,7 +850,7 @@ vis/
 
 ### Phase 5: Visualization Modes
 
-- [ ] Build ModeSelector component
+- [x] Build ModeSelector component
 - [ ] Implement "Expected Output" mode
 - [ ] Implement "Reference Solution" mode
 - [ ] Add side-by-side comparison view

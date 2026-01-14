@@ -1,0 +1,83 @@
+.mode-selector {
+  padding: 1rem;
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #333;
+}
+
+.mode-selector-header {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.mode-selector-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.mode-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background-color: #2a2a2a;
+  color: #ccc;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-button:hover:not(:disabled) {
+  background-color: #333;
+  border-color: #555;
+  color: #fff;
+}
+
+.mode-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mode-button.active {
+  background-color: #007acc;
+  border-color: #007acc;
+  color: #fff;
+}
+
+.mode-button-warning {
+  border-color: #d97706;
+}
+
+.mode-button-warning:hover:not(:disabled) {
+  background-color: #d97706;
+  border-color: #d97706;
+  color: #fff;
+}
+
+.mode-button-warning.active {
+  background-color: #d97706;
+  border-color: #d97706;
+}
+
+.mode-description {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: #999;
+  line-height: 1.5;
+}
+
+.mode-description p {
+  margin: 0;
+}
+
+.mode-description .warning-text {
+  color: #d97706;
+}
+
+.mode-description .warning-text strong {
+  color: #f59e0b;
+}

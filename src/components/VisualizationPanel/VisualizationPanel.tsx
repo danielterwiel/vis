@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import useAppStore from "../../store/useAppStore";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { arrayTests } from "../../lib/testing/testCases";
+import { ModeSelector } from "./ModeSelector";
 
 function VisualizationPanel() {
   const {
@@ -10,10 +11,13 @@ function VisualizationPanel() {
     currentSteps,
     currentStepIndex,
     isAnimating,
+    visualizationMode,
+    codeStatus,
     nextStep,
     previousStep,
     setCurrentStepIndex,
     setIsAnimating,
+    setVisualizationMode,
   } = useAppStore();
 
   // Get initial data from current test case
@@ -68,6 +72,12 @@ function VisualizationPanel() {
 
   return (
     <div className="visualization-panel">
+      <ModeSelector
+        currentMode={visualizationMode}
+        onModeChange={setVisualizationMode}
+        codeStatus={codeStatus}
+        hasSteps={currentSteps.length > 0}
+      />
       <div className="visualization-header">
         <h2>Visualization</h2>
         <div className="visualization-controls">

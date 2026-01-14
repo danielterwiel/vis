@@ -8,6 +8,15 @@ describe("VisualizationPanel", () => {
     expect(screen.getByText("Visualization")).toBeDefined();
   });
 
+  it("renders ModeSelector component", () => {
+    render(<VisualizationPanel />);
+    expect(screen.getByText("Visualization Mode")).toBeInTheDocument();
+    expect(screen.getByText("Run My Code")).toBeInTheDocument();
+    expect(screen.getByText("Show Expected")).toBeInTheDocument();
+    expect(screen.getByText("Skeleton")).toBeInTheDocument();
+    expect(screen.getByText("Show Solution")).toBeInTheDocument();
+  });
+
   it("renders visualization controls", () => {
     render(<VisualizationPanel />);
     expect(screen.getByText("← Previous")).toBeDefined();

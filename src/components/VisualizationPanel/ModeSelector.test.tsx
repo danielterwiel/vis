@@ -1,0 +1,179 @@
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { ModeSelector } from "./ModeSelector";
+import type { VisualizationMode } from "../../store/useAppStore";
+
+describe("ModeSelector", () => {
+  const defaultProps = {
+    currentMode: "skeleton" as VisualizationMode,
+    onModeChange: vi.fn(),
+    codeStatus: "incomplete" as const,
+    hasSteps: false,
+  };
+
+  it("renders all mode buttons", () => {
+    render(<ModeSelector {...defaultProps} />);
+
+    expect(screen.getByText("Run My Code")).toBeInTheDocument();
+    expect(screen.getByText("Show Expected")).toBeInTheDocument();
+    expect(screen.getByText("Skeleton")).toBeInTheDocument();
+    expect(screen.getByText("Show Solution")).toBeInTheDocument();
+  });
+
+  it("displays mode description for current mode", () => {
+    render(<ModeSelector {...defaultProps} currentMode="skeleton" />);
+
+    expect(screen.getByText(/Showing initial state/i)).toBeInTheDocument();
+  });
+
+  it("highlights active mode button", () => {
+    render(<ModeSelector {...defaultProps} currentMode="skeleton" />);
+
+    const skeletonButton = screen.getByText("Skeleton");
+    expect(skeletonButton).toHaveClass("active");
+  });
+
+  it("disables 'Run My Code' when code is incomplete", () => {
+    render(<ModeSelector {...defaultProps} codeStatus="incomplete" hasSteps />);
+
+    const runButton = screen.getByText("Run My Code");
+    expect(runButton).toBeDisabled();
+  });
+
+  it("disables 'Run My Code' when there are no steps", () => {
+    render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps={false} />);
+
+    const runButton = screen.getByText("Run My Code");
+    expect(runButton).toBeDisabled();
+  });
+
+  it("enables 'Run My Code' when code is complete and has steps", () => {
+    render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps />);
+
+    const runButton = screen.getByText("Run My Code");
+    expect(runButton).not.toBeDisabled();
+  });
+
+  it("calls onModeChange when clicking 'Show Expected'", async () => {
+    const onModeChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(<ModeSelector {...defaultProps} onModeChange={onModeChange} />);
+
+    await user.click(screen.getByText("Show Expected"));
+
+    expect(onModeChange).toHaveBeenCalledWith("expected-output");
+  });
+
+  it("calls onModeChange when clicking 'Skeleton'", async () => {
+    const onModeChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(<ModeSelector {...defaultProps} currentMode="user-code" onModeChange={onModeChange} />);
+
+    await user.click(screen.getByText("Skeleton"));
+
+    expect(onModeChange).toHaveBeenCalledWith("skeleton");
+  });
+
+  it("shows confirmation dialog before switching to reference mode", async () => {
+    const onModeChange = vi.fn();
+    const user = userEvent.setup();
+
+    // Mock window.confirm to return true
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+
+    render(<ModeSelector {...defaultProps} onModeChange={onModeChange} />);
+
+    await user.click(screen.getByText("Show Solution"));
+
+    expect(confirmSpy).toHaveBeenCalledWith("This will reveal the solution. Continue?");
+    expect(onModeChange).toHaveBeenCalledWith("reference");
+
+    confirmSpy.mockRestore();
+  });
+
+  it("does not switch to reference mode if user cancels confirmation", async () => {
+    const onModeChange = vi.fn();
+    const user = userEvent.setup();
+
+    // Mock window.confirm to return false
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+
+    render(<ModeSelector {...defaultProps} onModeChange={onModeChange} />);
+
+    await user.click(screen.getByText("Show Solution"));
+
+    expect(confirmSpy).toHaveBeenCalled();
+    expect(onModeChange).not.toHaveBeenCalled();
+
+    confirmSpy.mockRestore();
+  });
+
+  it("displays user-code mode description", () => {
+    render(<ModeSelector {...defaultProps} currentMode="user-code" />);
+
+    expect(screen.getByText(/Visualizing your code execution/i)).toBeInTheDocument();
+  });
+
+  it("displays expected-output mode description", () => {
+    render(<ModeSelector {...defaultProps} currentMode="expected-output" />);
+
+    expect(screen.getByText(/Showing the expected output/i)).toBeInTheDocument();
+  });
+
+  it("displays reference mode description with warning", () => {
+    render(<ModeSelector {...defaultProps} currentMode="reference" />);
+
+    expect(screen.getByText(/Solution revealed!/i)).toBeInTheDocument();
+    expect(screen.getByText(/Study the reference implementation/i)).toBeInTheDocument();
+  });
+
+  it("applies warning styling to 'Show Solution' button", () => {
+    render(<ModeSelector {...defaultProps} />);
+
+    const solutionButton = screen.getByText("Show Solution");
+    expect(solutionButton).toHaveClass("mode-button-warning");
+  });
+
+  it("calls onModeChange when clicking enabled 'Run My Code'", async () => {
+    const onModeChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <ModeSelector {...defaultProps} codeStatus="complete" hasSteps onModeChange={onModeChange} />,
+    );
+
+    await user.click(screen.getByText("Run My Code"));
+
+    expect(onModeChange).toHaveBeenCalledWith("user-code");
+  });
+
+  it("displays correct title for disabled 'Run My Code' (incomplete code)", () => {
+    render(<ModeSelector {...defaultProps} codeStatus="incomplete" hasSteps />);
+
+    const runButton = screen.getByText("Run My Code");
+    expect(runButton).toHaveAttribute("title", "Complete the code to run it");
+  });
+
+  it("displays correct title for disabled 'Run My Code' (no steps)", () => {
+    render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps={false} />);
+
+    const runButton = screen.getByText("Run My Code");
+    expect(runButton).toHaveAttribute("title", "Run tests to see visualization");
+  });
+
+  it("displays correct title for enabled 'Run My Code'", () => {
+    render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps />);
+
+    const runButton = screen.getByText("Run My Code");
+    expect(runButton).toHaveAttribute("title", "Visualize your code execution");
+  });
+
+  it("renders mode selector header", () => {
+    render(<ModeSelector {...defaultProps} />);
+
+    expect(screen.getByText("Visualization Mode")).toBeInTheDocument();
+  });
+});
