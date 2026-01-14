@@ -7,3 +7,6 @@
 
 export { TrackedArray, createTrackedArray } from "./TrackedArray";
 export type { OperationCallback } from "./TrackedArray";
+
+export { TrackedLinkedList, createTrackedLinkedList } from "./TrackedLinkedList";
+export type { LinkedListNode } from "./TrackedLinkedList";

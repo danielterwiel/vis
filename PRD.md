@@ -858,6 +858,7 @@ vis/
 
 ### Phase 6: Additional Data Structures
 
+- [x] LinkedList data structure (TrackedLinkedList with operation capture)
 - [ ] LinkedList visualizer + 3 test cases
 - [ ] Stack/Queue visualizer + 3 test cases each
 - [ ] Binary Tree visualizer (D3 layout) + 3 test cases
