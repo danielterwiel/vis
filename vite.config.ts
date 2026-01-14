@@ -1,29 +1,29 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
+    environment: "jsdom",
+    setupFiles: "./src/test/setup.ts",
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      provider: "v8",
+      reporter: ["text", "json", "html"],
       thresholds: {
         statements: 80,
         branches: 75,
         functions: 80,
-        lines: 80
+        lines: 80,
       },
       exclude: [
-        'node_modules/',
-        'src/test/',
-        '**/*.test.{ts,tsx}',
-        '**/*.config.{ts,js}',
-        '**/vite-env.d.ts'
-      ]
-    }
-  }
-})
+        "node_modules/",
+        "src/test/",
+        "**/*.test.{ts,tsx}",
+        "**/*.config.{ts,js}",
+        "**/vite-env.d.ts",
+      ],
+    },
+  },
+});

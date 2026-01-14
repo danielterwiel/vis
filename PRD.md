@@ -289,10 +289,7 @@ interface TestResult {
   steps: VisualizationStep[]; // Captured for animation
 }
 
-async function runTest(
-  userCode: string,
-  testCase: TestCase,
-): Promise<TestResult> {
+async function runTest(userCode: string, testCase: TestCase): Promise<TestResult> {
   return new Promise((resolve) => {
     const iframe = document.createElement("iframe");
     iframe.sandbox = "allow-scripts";
@@ -410,16 +407,11 @@ type VisualizationMode =
 function ModeSelector({ currentMode, onModeChange, codeStatus }) {
   return (
     <div className="mode-selector">
-      <button
-        onClick={() => onModeChange("user-code")}
-        disabled={codeStatus === "incomplete"}
-      >
+      <button onClick={() => onModeChange("user-code")} disabled={codeStatus === "incomplete"}>
         Run My Code
       </button>
 
-      <button onClick={() => onModeChange("expected-output")}>
-        Show Expected
-      </button>
+      <button onClick={() => onModeChange("expected-output")}>Show Expected</button>
 
       <button
         onClick={() => {
@@ -829,7 +821,7 @@ vis/
 - [x] Initialize Vite + React 19 project
 - [x] Install dependencies (CodeMirror 6, D3, Framer Motion, Chai, SWC)
 - [x] Set up basic layout with `react-resizable-panels`
-- [ ] Configure CodeMirror 6 editor
+- [x] Configure CodeMirror 6 editor
 - [ ] Set up Zustand store for app state
 
 ### Phase 2: Core Infrastructure

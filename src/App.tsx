@@ -1,6 +1,6 @@
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import EditorPanel from './components/EditorPanel/EditorPanel'
-import VisualizationPanel from './components/VisualizationPanel/VisualizationPanel'
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import EditorPanel from "./components/EditorPanel/EditorPanel";
+import VisualizationPanel from "./components/VisualizationPanel/VisualizationPanel";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         </Panel>
       </PanelGroup>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

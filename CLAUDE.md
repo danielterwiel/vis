@@ -51,6 +51,7 @@ npm run preview          # Preview production build
 ### 1. Sandboxed Code Execution
 
 User JavaScript runs in isolated iframe with `sandbox="allow-scripts"`:
+
 - **Loop Protection**: Inject counters during SWC transformation (NOT setTimeout - won't fire if thread blocked)
 - **Operation Capture**: Instrument code with `__capture()` calls for visualization steps
 - **Security**: Defense-in-depth postMessage validation (type whitelist + schema + source check)
@@ -75,7 +76,7 @@ function D3Visualization({ data }) {
     const svg = d3.select(svgRef.current);
     // All D3 manipulations here
 
-    return () => svg.selectAll('*').remove();
+    return () => svg.selectAll("*").remove();
   }, [data]);
 
   // React renders once, then hands off to D3
@@ -88,11 +89,13 @@ function D3Visualization({ data }) {
 ### 3. Dual Testing Architecture
 
 **Development Testing** (Vitest + Browser Mode):
+
 - Tests application components, utilities, stores
 - Run via `npm test` during development
 - Coverage thresholds: 80% statements, 75% branches (enforced)
 
 **Runtime Sandbox Testing** (Bundled Vitest expect):
+
 - Tests user code in sandboxed iframe
 - Bundle Vitest's `expect` function for sandbox use
 - Configured in `vite.config.ts` with separate entry point
@@ -102,6 +105,7 @@ function D3Visualization({ data }) {
 Initialize SWC WASM once on app mount: `await initializeSWC()`
 
 Transform user code to:
+
 1. Inject loop counters (detect infinite loops at 100k iterations)
 2. Add `__capture()` calls for operation tracking
 3. Add error boundaries
@@ -162,15 +166,17 @@ Transform loops to inject counters:
 
 ```javascript
 // User writes:
-while (condition) { body }
+while (condition) {
+  body;
+}
 
 // SWC transforms to:
 let __loopCount_1 = 0;
 while (condition) {
   if (++__loopCount_1 > 100000) {
-    throw new Error('Infinite loop detected');
+    throw new Error("Infinite loop detected");
   }
-  body
+  body;
 }
 ```
 
@@ -183,6 +189,7 @@ Apply to: `while`, `for`, `do-while`, and recursive functions (call stack depth)
 ## Test Case System
 
 Each data structure has 3 difficulty levels (Easy/Medium/Hard):
+
 - **skeletonCode**: Template with TODOs for user to fill
 - **assertions**: Vitest expect syntax run in sandbox
 - **referenceSolution**: Shown when user clicks "Show Solution"
@@ -194,12 +201,14 @@ Test files in `src/lib/testing/testCases/[dataStructure]Tests.ts`
 ## Validation & Quality Gates
 
 **Pre-commit hooks** (via Lefthook) enforce:
+
 1. Linting (oxlint)
 2. Formatting (oxfmt)
 3. Type checking (tsc)
 4. Tests passing (vitest)
 
 Coverage thresholds create backpressure:
+
 - 80% statements
 - 75% branches
 - 80% functions
@@ -224,6 +233,7 @@ Exit code ≠ 0 blocks commits. CI stays green.
 This project uses the **Ralph Wiggum methodology** for autonomous agent development:
 
 ### Core Principles
+
 - **Iteration over perfection**: Clean slate iterations until completion
 - **Clear success criteria**: Tests pass, types resolve, builds succeed
 - **CI green guarantee**: Never commit broken code
@@ -231,13 +241,16 @@ This project uses the **Ralph Wiggum methodology** for autonomous agent developm
 - **Machine-verifiable signals**: Objective criteria (test pass/fail, exit codes)
 
 ### Support Files
+
 - `AGENTS.md`: Operational guide (≤1000 words) loaded each iteration
 - `IMPLEMENTATION_PLAN.md`: Persistent task tracking between loops
 - `prd.json`: Machine-readable user stories with acceptance criteria
 - `specs/`: One markdown file per topic of concern
 
 ### Completion Criteria
+
 Tasks are complete when ALL conditions met:
+
 - Tests passing (`npm run test:run` exits 0)
 - Types valid (`npm run typecheck` exits 0)
 - Linting passes (`npm run lint` exits 0)
@@ -256,6 +269,7 @@ Use `npm run validate` to check all criteria.
 ## Reference Documentation
 
 See PRD.md for:
+
 - Comprehensive security architecture
 - Detailed visualization specifications
 - Complete test case examples

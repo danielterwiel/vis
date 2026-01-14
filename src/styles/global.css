@@ -67,14 +67,40 @@ body {
 .editor-panel,
 .visualization-panel {
   height: 100%;
-  padding: 1rem;
   overflow: auto;
 }
 
 .editor-panel {
   background-color: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-header {
+  padding: 1rem;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333;
+}
+
+.editor-header h2 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.codemirror-wrapper {
+  flex: 1;
+  overflow: hidden;
+}
+
+.codemirror-wrapper .cm-editor {
+  height: 100%;
+}
+
+.codemirror-wrapper .cm-scroller {
+  overflow: auto;
 }
 
 .visualization-panel {
   background-color: #242424;
+  padding: 1rem;
 }
