@@ -1080,3 +1080,46 @@ Implementation notes:
 - Ready for integration with test runner and UI components
 
 Next: Begin Stack/Queue visualizer + 3 test cases each (Phase 6 next task)
+2026-01-14 17:54 - Phase 6: TrackedStack and TrackedQueue Data Structures COMPLETED (First subtask)
+- Created comprehensive TrackedStack class (src/lib/dataStructures/TrackedStack.ts)
+  * Generic class TrackedStack<T> for LIFO (Last-In-First-Out) implementation
+  * Full operation set: push, pop, peek, clear, isEmpty, getSize, getData, toArray
+  * All 8 methods capture operations for visualization via VisualizationStep
+  * Operation metadata includes: index, value, empty flag, previousSize
+  * Static from() method and createTrackedStack() helper function
+  * Chaining support for push and clear operations
+- Created comprehensive TrackedQueue class (src/lib/dataStructures/TrackedQueue.ts)
+  * Generic class TrackedQueue<T> for FIFO (First-In-First-Out) implementation
+  * Full operation set: enqueue, dequeue, peek, clear, isEmpty, getSize, getData, toArray
+  * All 8 methods capture operations for visualization via VisualizationStep
+  * Operation metadata includes: index, value, empty flag, previousSize
+  * Static from() method and createTrackedQueue() helper function
+  * Chaining support for enqueue and clear operations
+- Updated dataStructures barrel export (src/lib/dataStructures/index.ts)
+  * Exported TrackedStack, createTrackedStack
+  * Exported TrackedQueue, createTrackedQueue
+- Created comprehensive test suites:
+  * TrackedStack.test.ts: 41 tests covering all functionality
+  * TrackedQueue.test.ts: 41 tests covering all functionality
+  * Tests for constructor, all operations (push/pop, enqueue/dequeue, peek, clear)
+  * Tests for callback integration and step structure
+  * Tests for LIFO/FIFO behavior verification
+  * Tests with number, string, and object generic types
+  * Tests for edge cases (single element, large datasets, complex objects)
+  * All 82 tests passing ✓
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 673 passed, 12 skipped ✓
+
+Implementation notes:
+- Both classes follow same pattern as TrackedArray/TrackedLinkedList (operation capture via callback)
+- Stack uses push/pop on end of array (LIFO), Queue uses push on end/shift from front (FIFO)
+- All operations emit VisualizationStep with type, target, args, result, metadata
+- Metadata provides rich context for visualization (indices, values, flags)
+- Ready to be bundled for sandbox execution (similar to TrackedArray/TrackedLinkedList bundling)
+- Next steps: Create Stack/Queue visualizer components and 3 test cases each (Easy/Medium/Hard)
+
+Next: Create StackQueueVisualizer component with SVG rendering for both data structures
+
