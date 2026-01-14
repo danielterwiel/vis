@@ -929,7 +929,7 @@ vis/
 **Removals**:
 
 - [x] Remove dark mode toggle and theme switching system
-- [ ] Remove DataStructureSelector button container
+- [x] Remove DataStructureSelector button container
 - [ ] Remove test case difficulty filter
 - [ ] Remove "Your code here" comments from skeleton templates
 - [ ] Remove emoji before "Examples" button
@@ -938,7 +938,7 @@ vis/
 
 **Changes**:
 
-- [ ] Convert data structure selector to dropdown in EditorPanel
+- [x] Convert data structure selector to dropdown in EditorPanel
 - [ ] Convert hints section to icon button with modal
 - [ ] Add Tabler icons throughout UI (strategically)
 - [ ] Fix Examples dialog UI/UX

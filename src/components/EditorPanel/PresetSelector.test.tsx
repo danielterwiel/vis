@@ -2,12 +2,16 @@
  * Tests for PresetSelector component
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { PresetSelector } from "./PresetSelector";
 
 describe("PresetSelector", () => {
   const mockOnSelectPreset = vi.fn();
+
+  beforeEach(() => {
+    mockOnSelectPreset.mockClear();
+  });
 
   it("should render trigger button", () => {
     render(<PresetSelector dataStructure="array" onSelectPreset={mockOnSelectPreset} />);

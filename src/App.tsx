@@ -3,7 +3,6 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import EditorPanel from "./components/EditorPanel/EditorPanel";
 import VisualizationPanel from "./components/VisualizationPanel/VisualizationPanel";
 import { TestPanel } from "./components/TestPanel/TestPanel";
-import { DataStructureSelector } from "./components/DataStructureSelector";
 import { ConsoleOutput } from "./components/ConsoleOutput";
 import { initializeSWC } from "./lib/execution/swcInitializer";
 import { runTest } from "./lib/testing/testRunner";
@@ -179,10 +178,6 @@ function App() {
       <header className="app-header">
         <h1>Data Structure Visualizer</h1>
       </header>
-      <DataStructureSelector
-        selectedDataStructure={selectedDataStructure}
-        onSelectDataStructure={setSelectedDataStructure}
-      />
       <PanelGroup direction={isMobile ? "vertical" : "horizontal"} className="panels-container">
         <Panel defaultSize={50} minSize={isMobile ? 20 : 30}>
           <PanelGroup direction="vertical">

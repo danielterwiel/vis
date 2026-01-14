@@ -4,6 +4,9 @@ import useAppStore from "./useAppStore";
 
 describe("useAppStore", () => {
   beforeEach(() => {
+    // Clear localStorage before each test to prevent state leakage
+    localStorage.clear();
+
     // Reset store to initial state before each test
     const { result } = renderHook(() => useAppStore());
     act(() => {

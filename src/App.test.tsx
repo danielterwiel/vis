@@ -66,12 +66,14 @@ describe("App", () => {
     });
   });
 
-  it("renders the data structure selector after initialization", async () => {
+  it("renders the data structure dropdown in editor panel after initialization", async () => {
     render(<App />);
     await waitFor(() => {
-      expect(screen.getByText("Data Structure")).toBeDefined();
-      expect(screen.getByRole("button", { name: "Array" })).toBeDefined();
-      expect(screen.getByRole("button", { name: "Linked List" })).toBeDefined();
+      // Data structure selection is now in the EditorPanel as a dropdown
+      const dropdown = screen.getByRole("combobox");
+      expect(dropdown).toBeDefined();
+      expect(dropdown.querySelector("option[value='array']")).toBeDefined();
+      expect(dropdown.querySelector("option[value='linkedList']")).toBeDefined();
     });
   });
 
