@@ -13,9 +13,10 @@ describe("EditorPanel", () => {
     expect(container.querySelector(".codemirror-wrapper")).toBeInTheDocument();
   });
 
-  it("displays data structure and difficulty badges", () => {
+  it("displays data structure selector and difficulty badge", () => {
     render(<EditorPanel />);
-    expect(screen.getByText("array")).toBeDefined();
+    const select = screen.getByRole("combobox");
+    expect(select).toHaveValue("array");
     expect(screen.getByText("easy")).toBeDefined();
   });
 

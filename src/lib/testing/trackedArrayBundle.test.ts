@@ -87,11 +87,11 @@ describe("trackedArrayBundle", () => {
       const context = {} as {
         TrackedArray: new (
           data: number[],
-          callback: (step: unknown) => void,
+          callback: (operation: string, target: string, args: unknown[], result: unknown) => void,
         ) => {
           push: (value: number) => number;
         };
-        steps: unknown[];
+        steps: Array<{ operation: string; target: string; args: unknown[]; result: unknown }>;
       };
 
       // Execute the bundle code
@@ -104,12 +104,19 @@ describe("trackedArrayBundle", () => {
       `,
       )(context);
 
-      // Create array with callback
-      const arr = new context.TrackedArray([1, 2], (step) => context.steps.push(step));
+      // Create array with callback that matches __capture signature (4 separate args)
+      const arr = new context.TrackedArray([1, 2], (operation, target, args, result) =>
+        context.steps.push({ operation, target, args, result }),
+      );
       arr.push(3);
 
       expect(context.steps.length).toBe(1);
-      expect(context.steps[0]).toHaveProperty("type", "push");
+      const step = context.steps[0];
+      expect(step).toBeDefined();
+      expect(step).toHaveProperty("operation", "push");
+      expect(step).toHaveProperty("target", "array");
+      expect(step).toHaveProperty("result");
+      expect(step?.result).toEqual([1, 2, 3]);
     });
   });
 });

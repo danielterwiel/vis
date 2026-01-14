@@ -15,7 +15,7 @@ describe("ModeSelector", () => {
   it("renders all mode buttons", () => {
     render(<ModeSelector {...defaultProps} />);
 
-    expect(screen.getByText("Run My Code")).toBeInTheDocument();
+    expect(screen.getByText("My Execution")).toBeInTheDocument();
     expect(screen.getByText("Show Expected")).toBeInTheDocument();
     expect(screen.getByText("Skeleton")).toBeInTheDocument();
     expect(screen.getByText("Show Solution")).toBeInTheDocument();
@@ -24,7 +24,7 @@ describe("ModeSelector", () => {
   it("displays mode description for current mode", () => {
     render(<ModeSelector {...defaultProps} currentMode="skeleton" />);
 
-    expect(screen.getByText(/Showing initial state/i)).toBeInTheDocument();
+    expect(screen.getByText(/Showing initial array state/i)).toBeInTheDocument();
   });
 
   it("highlights active mode button", () => {
@@ -34,24 +34,24 @@ describe("ModeSelector", () => {
     expect(skeletonButton).toHaveClass("active");
   });
 
-  it("disables 'Run My Code' when code is incomplete", () => {
-    render(<ModeSelector {...defaultProps} codeStatus="incomplete" hasSteps />);
+  it("disables 'My Execution' when there are no steps (regardless of code status)", () => {
+    render(<ModeSelector {...defaultProps} codeStatus="incomplete" hasSteps={false} />);
 
-    const runButton = screen.getByText("Run My Code");
+    const runButton = screen.getByText("My Execution");
     expect(runButton).toBeDisabled();
   });
 
-  it("disables 'Run My Code' when there are no steps", () => {
+  it("disables 'My Execution' when there are no steps even with complete code", () => {
     render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps={false} />);
 
-    const runButton = screen.getByText("Run My Code");
+    const runButton = screen.getByText("My Execution");
     expect(runButton).toBeDisabled();
   });
 
-  it("enables 'Run My Code' when code is complete and has steps", () => {
+  it("enables 'My Execution' when has steps", () => {
     render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps />);
 
-    const runButton = screen.getByText("Run My Code");
+    const runButton = screen.getByText("My Execution");
     expect(runButton).not.toBeDisabled();
   });
 
@@ -111,8 +111,14 @@ describe("ModeSelector", () => {
     confirmSpy.mockRestore();
   });
 
-  it("displays user-code mode description", () => {
-    render(<ModeSelector {...defaultProps} currentMode="user-code" />);
+  it("displays user-code mode description when no steps", () => {
+    render(<ModeSelector {...defaultProps} currentMode="user-code" hasSteps={false} />);
+
+    expect(screen.getByText(/Run a test to see your code/i)).toBeInTheDocument();
+  });
+
+  it("displays user-code mode description when has steps", () => {
+    render(<ModeSelector {...defaultProps} currentMode="user-code" hasSteps />);
 
     expect(screen.getByText(/Visualizing your code execution/i)).toBeInTheDocument();
   });
@@ -137,7 +143,7 @@ describe("ModeSelector", () => {
     expect(solutionButton).toHaveClass("mode-button-warning");
   });
 
-  it("calls onModeChange when clicking enabled 'Run My Code'", async () => {
+  it("calls onModeChange when clicking enabled 'My Execution'", async () => {
     const onModeChange = vi.fn();
     const user = userEvent.setup();
 
@@ -145,30 +151,23 @@ describe("ModeSelector", () => {
       <ModeSelector {...defaultProps} codeStatus="complete" hasSteps onModeChange={onModeChange} />,
     );
 
-    await user.click(screen.getByText("Run My Code"));
+    await user.click(screen.getByText("My Execution"));
 
     expect(onModeChange).toHaveBeenCalledWith("user-code");
   });
 
-  it("displays correct title for disabled 'Run My Code' (incomplete code)", () => {
-    render(<ModeSelector {...defaultProps} codeStatus="incomplete" hasSteps />);
-
-    const runButton = screen.getByText("Run My Code");
-    expect(runButton).toHaveAttribute("title", "Complete the code to run it");
-  });
-
-  it("displays correct title for disabled 'Run My Code' (no steps)", () => {
+  it("displays correct title for disabled 'My Execution' (no steps)", () => {
     render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps={false} />);
 
-    const runButton = screen.getByText("Run My Code");
-    expect(runButton).toHaveAttribute("title", "Run tests to see visualization");
+    const runButton = screen.getByText("My Execution");
+    expect(runButton).toHaveAttribute("title", "Run a test first to see your code visualization");
   });
 
-  it("displays correct title for enabled 'Run My Code'", () => {
+  it("displays correct title for enabled 'My Execution'", () => {
     render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps />);
 
-    const runButton = screen.getByText("Run My Code");
-    expect(runButton).toHaveAttribute("title", "Visualize your code execution");
+    const runButton = screen.getByText("My Execution");
+    expect(runButton).toHaveAttribute("title", "View your code execution steps");
   });
 
   it("renders mode selector header", () => {

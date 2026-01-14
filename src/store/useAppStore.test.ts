@@ -27,7 +27,9 @@ describe("useAppStore", () => {
       expect(result.current.userCode).toBe("");
       expect(result.current.codeStatus).toBe("incomplete");
       expect(result.current.visualizationMode).toBe("skeleton");
-      expect(result.current.currentSteps).toEqual([]);
+      expect(result.current.userCodeSteps).toEqual([]);
+      expect(result.current.expectedOutputSteps).toEqual([]);
+      expect(result.current.referenceSteps).toEqual([]);
       expect(result.current.currentStepIndex).toBe(0);
       expect(result.current.isAnimating).toBe(false);
       expect(result.current.animationSpeed).toBe(1);
@@ -72,7 +74,9 @@ describe("useAppStore", () => {
 
       // Should reset to defaults
       expect(result.current.selectedDifficulty).toBe("easy");
-      expect(result.current.currentSteps).toEqual([]);
+      expect(result.current.userCodeSteps).toEqual([]);
+      expect(result.current.expectedOutputSteps).toEqual([]);
+      expect(result.current.referenceSteps).toEqual([]);
       expect(result.current.currentStepIndex).toBe(0);
       expect(result.current.hintsRevealed).toBe(0);
       expect(result.current.testResults.size).toBe(0);
@@ -103,7 +107,9 @@ describe("useAppStore", () => {
         result.current.setSelectedDifficulty("hard");
       });
 
-      expect(result.current.currentSteps).toEqual([]);
+      expect(result.current.userCodeSteps).toEqual([]);
+      expect(result.current.expectedOutputSteps).toEqual([]);
+      expect(result.current.referenceSteps).toEqual([]);
       expect(result.current.currentStepIndex).toBe(0);
       expect(result.current.hintsRevealed).toBe(0);
     });
@@ -161,7 +167,7 @@ describe("useAppStore", () => {
         result.current.setCurrentSteps(steps);
       });
 
-      expect(result.current.currentSteps).toEqual(steps);
+      expect(result.current.userCodeSteps).toEqual(steps);
       expect(result.current.currentStepIndex).toBe(0); // Should reset to 0
     });
 
@@ -175,6 +181,7 @@ describe("useAppStore", () => {
 
       act(() => {
         result.current.setCurrentSteps(steps);
+        result.current.setVisualizationMode("user-code"); // Set mode so getCurrentSteps() works
       });
 
       expect(result.current.currentStepIndex).toBe(0);
@@ -199,6 +206,7 @@ describe("useAppStore", () => {
 
       act(() => {
         result.current.setCurrentSteps(steps);
+        result.current.setVisualizationMode("user-code"); // Set mode so getCurrentSteps() works
         result.current.setCurrentStepIndex(1); // Last step
       });
 
@@ -219,6 +227,7 @@ describe("useAppStore", () => {
 
       act(() => {
         result.current.setCurrentSteps(steps);
+        result.current.setVisualizationMode("user-code"); // Set mode so getCurrentSteps() works
         result.current.setCurrentStepIndex(2);
       });
 
@@ -242,6 +251,7 @@ describe("useAppStore", () => {
 
       act(() => {
         result.current.setCurrentSteps(steps);
+        result.current.setVisualizationMode("user-code"); // Set mode so getCurrentSteps() works
       });
 
       act(() => {
@@ -296,7 +306,9 @@ describe("useAppStore", () => {
         result.current.resetVisualization();
       });
 
-      expect(result.current.currentSteps).toEqual([]);
+      expect(result.current.userCodeSteps).toEqual([]);
+      expect(result.current.expectedOutputSteps).toEqual([]);
+      expect(result.current.referenceSteps).toEqual([]);
       expect(result.current.currentStepIndex).toBe(0);
       expect(result.current.isAnimating).toBe(false);
     });

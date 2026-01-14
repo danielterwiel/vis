@@ -5,15 +5,10 @@ interface ModeSelectorProps {
   currentMode: VisualizationMode;
   onModeChange: (mode: VisualizationMode) => void;
   codeStatus: "incomplete" | "complete" | "error";
-  hasSteps: boolean;
+  hasSteps: boolean; // Whether user has run tests and captured execution steps
 }
 
-export function ModeSelector({
-  currentMode,
-  onModeChange,
-  codeStatus,
-  hasSteps,
-}: ModeSelectorProps) {
+export function ModeSelector({ currentMode, onModeChange, hasSteps }: ModeSelectorProps) {
   const handleReferenceModeClick = () => {
     const confirmed = confirm("This will reveal the solution. Continue?");
     if (confirmed) {
@@ -28,18 +23,14 @@ export function ModeSelector({
         <button
           className={`mode-button ${currentMode === "user-code" ? "active" : ""}`}
           onClick={() => onModeChange("user-code")}
-          disabled={codeStatus !== "complete" || !hasSteps}
+          disabled={!hasSteps}
           title={
-            codeStatus === "incomplete"
-              ? "Complete the code to run it"
-              : codeStatus === "error"
-                ? "Fix code errors before running"
-                : !hasSteps
-                  ? "Run tests to see visualization"
-                  : "Visualize your code execution"
+            !hasSteps
+              ? "Run a test first to see your code visualization"
+              : "View your code execution steps"
           }
         >
-          Run My Code
+          My Execution
         </button>
 
         <button
@@ -68,14 +59,17 @@ export function ModeSelector({
       </div>
 
       <div className="mode-description">
-        {currentMode === "user-code" && (
+        {currentMode === "user-code" && !hasSteps && (
+          <p className="hint-text">Run a test to see your code&apos;s execution visualized here.</p>
+        )}
+        {currentMode === "user-code" && hasSteps && (
           <p>Visualizing your code execution with captured operations.</p>
         )}
         {currentMode === "expected-output" && (
-          <p>Showing the expected output without revealing implementation details.</p>
+          <p>Showing the expected output - what a correct solution produces.</p>
         )}
         {currentMode === "skeleton" && (
-          <p>Showing initial state. Complete the code to see animation.</p>
+          <p>Showing initial array state. Run tests or select another mode to see animation.</p>
         )}
         {currentMode === "reference" && (
           <p className="warning-text">

@@ -46,7 +46,10 @@ export interface AppState {
 
   // Visualization state
   visualizationMode: VisualizationMode;
-  currentSteps: VisualizationStep[];
+  // Steps stored separately per mode so switching modes preserves each
+  userCodeSteps: VisualizationStep[];
+  expectedOutputSteps: VisualizationStep[];
+  referenceSteps: VisualizationStep[];
   currentStepIndex: number;
   isAnimating: boolean;
   animationSpeed: number; // 1 = normal, 2 = 2x, 0.5 = half speed
@@ -65,7 +68,11 @@ export interface AppState {
 
   // Actions - Visualization
   setVisualizationMode: (mode: VisualizationMode) => void;
-  setCurrentSteps: (steps: VisualizationStep[]) => void;
+  setUserCodeSteps: (steps: VisualizationStep[]) => void;
+  setExpectedOutputSteps: (steps: VisualizationStep[]) => void;
+  setReferenceSteps: (steps: VisualizationStep[]) => void;
+  setCurrentSteps: (steps: VisualizationStep[]) => void; // Convenience method that sets based on current mode
+  getCurrentSteps: () => VisualizationStep[]; // Get steps for current mode
   setCurrentStepIndex: (index: number) => void;
   nextStep: () => void;
   previousStep: () => void;
@@ -82,7 +89,7 @@ export interface AppState {
   resetVisualization: () => void;
 }
 
-const useAppStore = create<AppState>((set) => ({
+const useAppStore = create<AppState>((set, get) => ({
   // Initial state
   selectedDataStructure: "array",
   selectedDifficulty: "easy",
@@ -91,7 +98,9 @@ const useAppStore = create<AppState>((set) => ({
   codeStatus: "incomplete",
 
   visualizationMode: "skeleton",
-  currentSteps: [],
+  userCodeSteps: [],
+  expectedOutputSteps: [],
+  referenceSteps: [],
   currentStepIndex: 0,
   isAnimating: false,
   animationSpeed: 1,
@@ -105,7 +114,9 @@ const useAppStore = create<AppState>((set) => ({
       selectedDataStructure: dataStructure,
       // Reset related state when switching data structures
       selectedDifficulty: "easy",
-      currentSteps: [],
+      userCodeSteps: [],
+      expectedOutputSteps: [],
+      referenceSteps: [],
       currentStepIndex: 0,
       testResults: new Map(),
       hintsRevealed: 0,
@@ -115,7 +126,9 @@ const useAppStore = create<AppState>((set) => ({
     set({
       selectedDifficulty: difficulty,
       // Reset test-specific state
-      currentSteps: [],
+      userCodeSteps: [],
+      expectedOutputSteps: [],
+      referenceSteps: [],
       currentStepIndex: 0,
       hintsRevealed: 0,
     }),
@@ -125,14 +138,39 @@ const useAppStore = create<AppState>((set) => ({
   setCodeStatus: (status) => set({ codeStatus: status }),
 
   // Actions - Visualization
-  setVisualizationMode: (mode) => set({ visualizationMode: mode }),
-  setCurrentSteps: (steps) => set({ currentSteps: steps, currentStepIndex: 0 }),
+  setVisualizationMode: (mode) => set({ visualizationMode: mode, currentStepIndex: 0 }),
+
+  setUserCodeSteps: (steps) => set({ userCodeSteps: steps, currentStepIndex: 0 }),
+  setExpectedOutputSteps: (steps) => set({ expectedOutputSteps: steps, currentStepIndex: 0 }),
+  setReferenceSteps: (steps) => set({ referenceSteps: steps, currentStepIndex: 0 }),
+
+  // Convenience method that sets steps for user-code mode (used by test runner)
+  setCurrentSteps: (steps) => set({ userCodeSteps: steps, currentStepIndex: 0 }),
+
+  // Get steps for current visualization mode
+  getCurrentSteps: () => {
+    const state = get();
+    switch (state.visualizationMode) {
+      case "user-code":
+        return state.userCodeSteps;
+      case "expected-output":
+        return state.expectedOutputSteps;
+      case "reference":
+        return state.referenceSteps;
+      default:
+        return [];
+    }
+  },
+
   setCurrentStepIndex: (index) => set({ currentStepIndex: index }),
 
   nextStep: () =>
-    set((state) => ({
-      currentStepIndex: Math.min(state.currentStepIndex + 1, state.currentSteps.length - 1),
-    })),
+    set((state) => {
+      const steps = get().getCurrentSteps();
+      return {
+        currentStepIndex: Math.min(state.currentStepIndex + 1, steps.length - 1),
+      };
+    }),
 
   previousStep: () =>
     set((state) => ({
@@ -159,7 +197,9 @@ const useAppStore = create<AppState>((set) => ({
   // Actions - Reset
   resetVisualization: () =>
     set({
-      currentSteps: [],
+      userCodeSteps: [],
+      expectedOutputSteps: [],
+      referenceSteps: [],
       currentStepIndex: 0,
       isAnimating: false,
     }),

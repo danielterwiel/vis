@@ -188,6 +188,23 @@ describe("ArrayVisualizer", () => {
     expect(svg).toHaveAttribute("preserveAspectRatio", "xMidYMid meet");
   });
 
+  it("renders correct number of bars for initial data", () => {
+    const testData = [5, 2, 8, 1, 9];
+    const { container } = render(<ArrayVisualizer data={testData} />);
+    const bars = container.querySelectorAll("g.bar");
+    expect(bars).toHaveLength(testData.length);
+  });
+
+  it("renders a bar for each data point including small values", () => {
+    const testData = [10, 1, 5]; // Includes value 1 which is small
+    const { container } = render(<ArrayVisualizer data={testData} />);
+    const bars = container.querySelectorAll("g.bar");
+    expect(bars).toHaveLength(3);
+    // Each bar should have a rect
+    const rects = container.querySelectorAll("g.bar rect");
+    expect(rects).toHaveLength(3);
+  });
+
   it("re-renders when data changes", () => {
     const { container, rerender } = render(<ArrayVisualizer data={[1, 2, 3]} />);
     const svg = container.querySelector("svg");

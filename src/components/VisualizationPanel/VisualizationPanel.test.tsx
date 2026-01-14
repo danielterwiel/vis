@@ -15,7 +15,9 @@ describe("VisualizationPanel", () => {
     vi.clearAllMocks();
     // Reset store to initial state
     useAppStore.setState({
-      currentSteps: [],
+      userCodeSteps: [],
+      expectedOutputSteps: [],
+      referenceSteps: [],
       currentStepIndex: 0,
       visualizationMode: "skeleton",
     });
@@ -29,7 +31,7 @@ describe("VisualizationPanel", () => {
   it("renders ModeSelector component", () => {
     render(<VisualizationPanel />);
     expect(screen.getByText("Visualization Mode")).toBeInTheDocument();
-    expect(screen.getByText("Run My Code")).toBeInTheDocument();
+    expect(screen.getByText("My Execution")).toBeInTheDocument();
     expect(screen.getByText("Show Expected")).toBeInTheDocument();
     expect(screen.getByText("Skeleton")).toBeInTheDocument();
     expect(screen.getByText("Show Solution")).toBeInTheDocument();
@@ -78,7 +80,7 @@ describe("VisualizationPanel", () => {
     await act(async () => {
       useAppStore.setState({
         visualizationMode: "expected-output",
-        currentSteps: [],
+        expectedOutputSteps: [],
         isAnimating: false, // Disable animations in test to prevent D3 timing issues
       });
     });
@@ -93,7 +95,7 @@ describe("VisualizationPanel", () => {
     // Verify steps were set in store
     await act(async () => {
       const state = useAppStore.getState();
-      expect(state.currentSteps).toEqual(mockSteps);
+      expect(state.expectedOutputSteps).toEqual(mockSteps);
       expect(state.currentStepIndex).toBe(0);
     });
 
@@ -121,7 +123,7 @@ describe("VisualizationPanel", () => {
 
     useAppStore.setState({
       visualizationMode: "expected-output",
-      currentSteps: existingSteps,
+      expectedOutputSteps: existingSteps,
     });
 
     render(<VisualizationPanel />);
@@ -134,7 +136,7 @@ describe("VisualizationPanel", () => {
   it("does not load expected output when mode is not expected-output", async () => {
     useAppStore.setState({
       visualizationMode: "user-code",
-      currentSteps: [],
+      userCodeSteps: [],
     });
 
     render(<VisualizationPanel />);
@@ -157,7 +159,7 @@ describe("VisualizationPanel", () => {
     await act(async () => {
       useAppStore.setState({
         visualizationMode: "expected-output",
-        currentSteps: [],
+        expectedOutputSteps: [],
         isAnimating: false,
       });
     });
@@ -171,7 +173,7 @@ describe("VisualizationPanel", () => {
     // Steps should remain empty on failure
     await act(async () => {
       const state = useAppStore.getState();
-      expect(state.currentSteps).toEqual([]);
+      expect(state.expectedOutputSteps).toEqual([]);
     });
 
     await act(async () => {

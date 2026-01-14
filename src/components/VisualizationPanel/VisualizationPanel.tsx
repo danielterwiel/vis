@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useCallback, useRef } from "react";
 import useAppStore from "../../store/useAppStore";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { arrayTests } from "../../lib/testing/testCases";
@@ -9,9 +9,12 @@ function VisualizationPanel() {
   const {
     selectedDataStructure,
     selectedDifficulty,
-    currentSteps,
+    userCodeSteps,
+    expectedOutputSteps,
+    referenceSteps,
     currentStepIndex,
     isAnimating,
+    animationSpeed,
     visualizationMode,
     codeStatus,
     nextStep,
@@ -19,35 +22,116 @@ function VisualizationPanel() {
     setCurrentStepIndex,
     setIsAnimating,
     setVisualizationMode,
+    setExpectedOutputSteps,
+    setReferenceSteps,
   } = useAppStore();
 
+  // Track if we're loading expected/reference steps
+  const loadingRef = useRef(false);
+
+  // Get current steps based on visualization mode
+  const currentSteps = useMemo(() => {
+    switch (visualizationMode) {
+      case "user-code":
+        return userCodeSteps;
+      case "expected-output":
+        return expectedOutputSteps;
+      case "reference":
+        return referenceSteps;
+      default:
+        return [];
+    }
+  }, [visualizationMode, userCodeSteps, expectedOutputSteps, referenceSteps]);
+
   // Get initial data from current test case
-  const getCurrentTestCase = () => {
+  const getCurrentTestCase = useCallback(() => {
     switch (selectedDataStructure) {
       case "array":
         return arrayTests.find((t) => t.difficulty === selectedDifficulty);
       default:
         return arrayTests.find((t) => t.difficulty === selectedDifficulty);
     }
-  };
+  }, [selectedDataStructure, selectedDifficulty]);
 
   const currentTestCase = getCurrentTestCase();
   const initialData = currentTestCase?.initialData || [];
 
-  // Run reference solution when "Expected Output" mode is selected
+  // Load expected output steps when mode is selected and not already loaded
   useEffect(() => {
     const loadExpectedOutput = async () => {
-      if (visualizationMode === "expected-output" && currentTestCase && currentSteps.length === 0) {
+      if (
+        visualizationMode === "expected-output" &&
+        currentTestCase &&
+        expectedOutputSteps.length === 0 &&
+        !loadingRef.current
+      ) {
+        loadingRef.current = true;
         const result = await runReferenceSolution(currentTestCase);
         if (result.success) {
-          useAppStore.getState().setCurrentSteps(result.steps);
-          useAppStore.getState().setCurrentStepIndex(0);
+          setExpectedOutputSteps(result.steps);
         }
+        loadingRef.current = false;
       }
     };
 
     loadExpectedOutput();
-  }, [visualizationMode, currentTestCase, currentSteps.length]);
+  }, [visualizationMode, currentTestCase, expectedOutputSteps.length, setExpectedOutputSteps]);
+
+  // Load reference solution steps when mode is selected
+  useEffect(() => {
+    const loadReferenceSolution = async () => {
+      if (
+        visualizationMode === "reference" &&
+        currentTestCase &&
+        referenceSteps.length === 0 &&
+        !loadingRef.current
+      ) {
+        loadingRef.current = true;
+        const result = await runReferenceSolution(currentTestCase);
+        if (result.success) {
+          setReferenceSteps(result.steps);
+        }
+        loadingRef.current = false;
+      }
+    };
+
+    loadReferenceSolution();
+  }, [visualizationMode, currentTestCase, referenceSteps.length, setReferenceSteps]);
+
+  // Auto-animation loop - advance steps automatically when playing
+  useEffect(() => {
+    if (!isAnimating || currentSteps.length === 0) {
+      return;
+    }
+
+    // Calculate interval based on animation speed (base 800ms)
+    const interval = 800 / animationSpeed;
+
+    const timer = setInterval(() => {
+      const state = useAppStore.getState();
+      const steps = (() => {
+        switch (state.visualizationMode) {
+          case "user-code":
+            return state.userCodeSteps;
+          case "expected-output":
+            return state.expectedOutputSteps;
+          case "reference":
+            return state.referenceSteps;
+          default:
+            return [];
+        }
+      })();
+
+      if (state.currentStepIndex >= steps.length - 1) {
+        // Reached the end, stop animation
+        setIsAnimating(false);
+      } else {
+        nextStep();
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [isAnimating, animationSpeed, currentSteps.length, nextStep, setIsAnimating]);
 
   // Extract current array data from steps or use initial data
   const currentData = useMemo(() => {
@@ -92,7 +176,7 @@ function VisualizationPanel() {
         currentMode={visualizationMode}
         onModeChange={setVisualizationMode}
         codeStatus={codeStatus}
-        hasSteps={currentSteps.length > 0}
+        hasSteps={userCodeSteps.length > 0}
       />
       <div className="visualization-header">
         <h2>Visualization</h2>
@@ -129,7 +213,9 @@ function VisualizationPanel() {
           </button>
         </div>
       </div>
-      <div className="visualizer-container">{renderVisualizer()}</div>
+      <div className="visualizer-container">
+        <div className="visualizer-inner">{renderVisualizer()}</div>
+      </div>
     </div>
   );
 }

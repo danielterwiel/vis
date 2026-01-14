@@ -1,9 +1,19 @@
 import { useEffect } from "react";
 import { CodeMirrorEditor } from "./CodeMirrorEditor";
 import { HintSystem } from "./HintSystem";
-import useAppStore from "../../store/useAppStore";
+import useAppStore, { DataStructureType } from "../../store/useAppStore";
 import { skeletonCodeSystem } from "../../templates";
 import { arrayTests } from "../../lib/testing/testCases";
+
+const DATA_STRUCTURE_OPTIONS: { value: DataStructureType; label: string }[] = [
+  { value: "array", label: "Array" },
+  { value: "linkedList", label: "Linked List" },
+  { value: "stack", label: "Stack" },
+  { value: "queue", label: "Queue" },
+  { value: "tree", label: "Binary Tree" },
+  { value: "graph", label: "Graph" },
+  { value: "hashMap", label: "Hash Map" },
+];
 
 function EditorPanel() {
   const {
@@ -12,6 +22,7 @@ function EditorPanel() {
     userCode,
     setUserCode,
     setCodeStatus,
+    setSelectedDataStructure,
     resetHints,
   } = useAppStore();
 
@@ -57,7 +68,17 @@ function EditorPanel() {
       <div className="editor-header">
         <h2>Editor</h2>
         <div className="editor-info">
-          <span className="data-structure-badge">{selectedDataStructure}</span>
+          <select
+            className="data-structure-select"
+            value={selectedDataStructure}
+            onChange={(e) => setSelectedDataStructure(e.target.value as DataStructureType)}
+          >
+            {DATA_STRUCTURE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
           <span className={`difficulty-badge difficulty-${selectedDifficulty}`}>
             {selectedDifficulty}
           </span>

@@ -208,7 +208,8 @@ class TrackedArray {
 
   emitStep(step) {
     if (this.onOperation) {
-      this.onOperation(step);
+      // __capture expects (operation, target, args, result) as separate arguments
+      this.onOperation(step.type, step.target, step.args, step.result);
     }
   }
 

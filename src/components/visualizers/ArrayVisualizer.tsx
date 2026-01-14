@@ -62,8 +62,9 @@ export function ArrayVisualizer({
     }
     g.attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Data join for bars
-    const bars = g.selectAll<SVGGElement, number>("g.bar").data(data, (d, i) => `${i}-${d}`);
+    // Data join for bars - use index as key for position-based animations
+    // This ensures bars update in place rather than exit/enter when values swap
+    const bars = g.selectAll<SVGGElement, number>("g.bar").data(data, (_, i) => `${i}`);
 
     // EXIT: Remove bars that are no longer in the data
     bars.exit().transition().duration(duration).style("opacity", 0).remove();
@@ -166,16 +167,7 @@ export function ArrayVisualizer({
     };
   }, [data, steps, currentStepIndex, isAnimating]);
 
-  return (
-    <svg
-      ref={svgRef}
-      className="array-visualizer"
-      width="100%"
-      height="100%"
-      viewBox="0 0 800 400"
-      preserveAspectRatio="xMidYMid meet"
-    />
-  );
+  return <svg ref={svgRef} className="array-visualizer" />;
 }
 
 /**

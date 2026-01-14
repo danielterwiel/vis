@@ -13,7 +13,8 @@ function App() {
   const [swcReady, setSwcReady] = useState(false);
   const [swcError, setSwcError] = useState<string | null>(null);
 
-  const { selectedDataStructure, userCode, setTestResult, setCurrentSteps } = useAppStore();
+  const { selectedDataStructure, userCode, setTestResult, setCurrentSteps, setVisualizationMode } =
+    useAppStore();
 
   useEffect(() => {
     initializeSWC()
@@ -43,9 +44,11 @@ function App() {
       const result = await runTest(userCode, testCase);
       setTestResult(testCase.id, result);
 
-      // Update visualization with captured steps
-      if (result.passed && result.steps.length > 0) {
+      // Update visualization with captured steps (regardless of pass/fail)
+      // Even failing tests can show partial visualization of what the code did
+      if (result.steps.length > 0) {
         setCurrentSteps(result.steps);
+        setVisualizationMode("user-code");
       }
     } catch (error) {
       console.error("Test execution failed:", error);

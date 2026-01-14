@@ -50,6 +50,7 @@ body {
 
 .panels-container {
   flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -64,13 +65,10 @@ body {
   background-color: #646cff;
 }
 
-.editor-panel,
-.visualization-panel {
-  height: 100%;
-  overflow: auto;
-}
-
 .editor-panel {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
   background-color: #1e1e1e;
   display: flex;
   flex-direction: column;
@@ -95,14 +93,32 @@ body {
   gap: 0.5rem;
 }
 
-.data-structure-badge {
+.data-structure-select {
   padding: 0.25rem 0.75rem;
-  background-color: #646cff;
+  background-color: #333;
   color: white;
+  border: 1px solid #555;
   border-radius: 4px;
   font-size: 0.875rem;
   font-weight: 500;
-  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.data-structure-select:hover {
+  background-color: #444;
+  border-color: #646cff;
+}
+
+.data-structure-select:focus {
+  outline: none;
+  border-color: #646cff;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.3);
+}
+
+.data-structure-select option {
+  background-color: #333;
+  color: white;
 }
 
 .difficulty-badge {
@@ -141,9 +157,10 @@ body {
 
 .visualization-panel {
   background-color: #242424;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
   height: 100%;
+  overflow: hidden;
 }
 
 .visualization-header {
@@ -200,7 +217,20 @@ body {
 }
 
 .visualizer-container {
-  flex: 1;
-  overflow: auto;
-  padding: 1rem;
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  background-color: #1e1e1e;
+}
+
+.visualizer-inner {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  overflow: hidden;
+  background-color: #1e1e1e;
+  contain: strict;
 }
