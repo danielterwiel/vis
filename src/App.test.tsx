@@ -85,4 +85,50 @@ describe("App", () => {
       expect(screen.getByText("Failed to load SWC")).toBeDefined();
     });
   });
+
+  it("detects mobile screen size (width <= 768)", async () => {
+    // Mock window.innerWidth for mobile
+    const originalInnerWidth = window.innerWidth;
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      configurable: true,
+      value: 768,
+    });
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Data Structure Visualizer")).toBeDefined();
+    });
+
+    // Restore original width
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      configurable: true,
+      value: originalInnerWidth,
+    });
+  });
+
+  it("detects desktop screen size (width > 768)", async () => {
+    // Mock window.innerWidth for desktop
+    const originalInnerWidth = window.innerWidth;
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Data Structure Visualizer")).toBeDefined();
+    });
+
+    // Restore original width
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      configurable: true,
+      value: originalInnerWidth,
+    });
+  });
 });

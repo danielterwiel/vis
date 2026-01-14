@@ -19,9 +19,27 @@ import {
 import type { TestCase } from "./lib/testing/types";
 import useAppStore from "./store/useAppStore";
 
+// Hook to detect mobile screen size
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  return isMobile;
+}
+
 function App() {
   const [swcReady, setSwcReady] = useState(false);
   const [swcError, setSwcError] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   const {
     selectedDataStructure,
@@ -150,8 +168,8 @@ function App() {
         selectedDataStructure={selectedDataStructure}
         onSelectDataStructure={setSelectedDataStructure}
       />
-      <PanelGroup direction="horizontal" className="panels-container">
-        <Panel defaultSize={50} minSize={30}>
+      <PanelGroup direction={isMobile ? "vertical" : "horizontal"} className="panels-container">
+        <Panel defaultSize={50} minSize={isMobile ? 20 : 30}>
           <PanelGroup direction="vertical">
             <Panel defaultSize={60} minSize={30}>
               <EditorPanel />
@@ -167,7 +185,7 @@ function App() {
           </PanelGroup>
         </Panel>
         <PanelResizeHandle className="resize-handle" />
-        <Panel defaultSize={50} minSize={30}>
+        <Panel defaultSize={50} minSize={isMobile ? 20 : 30}>
           <PanelGroup direction="vertical">
             <Panel defaultSize={70} minSize={30}>
               <VisualizationPanel />
