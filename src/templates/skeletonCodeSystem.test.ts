@@ -229,7 +229,7 @@ describe("createSkeletonCode", () => {
 
     expect(result).toContain("function sort(arr)");
     expect(result).toContain("// TODO: Implement sorting algorithm");
-    expect(result).toContain("/* your code here */");
+    expect(result).not.toContain("/* your code here */");
   });
 
   it("should include hints when provided", () => {

@@ -234,7 +234,6 @@ export function createSkeletonCode(options: {
     if (hint) {
       parts.push(`  // Hint: ${hint}`);
     }
-    parts.push("  /* your code here */");
     parts.push("");
   }
 

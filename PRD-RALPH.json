@@ -1,0 +1,285 @@
+{
+  "project": "Data Structure Visualization Application",
+  "description": "Minimalist CodePen-like application with code editor on left and real-time data structure visualization on right. 100% client-side rendered.",
+  "reference_doc": "PRD.md",
+  "technology_stack": {
+    "framework": "React 19",
+    "editor": "CodeMirror 6",
+    "visualization": "D3.js + SVG",
+    "animation": "Framer Motion",
+    "icons": "Tabler Icons",
+    "state": "Zustand",
+    "testing": "Vitest"
+  },
+  "iteration_cap": 30,
+  "tasks": [
+    {
+      "id": "bug-001",
+      "priority": "critical",
+      "category": "bug",
+      "title": "Fix skeleton template loading error for all data structures",
+      "description": "When selecting linkedList or other non-array data structures, the app shows black screen with error: 'Uncaught Error: No skeleton template found for linkedList (easy)'. All data structures must have skeleton templates for easy/medium/hard difficulties in src/templates/[dataStructure]/ directories.",
+      "acceptance_criteria": [
+        "No console errors when switching between data structures",
+        "All data structures (array, linkedList, stack, queue, tree, graph, hashMap) load successfully",
+        "Each data structure has easy.ts, medium.ts, and hard.ts skeleton templates",
+        "Skeleton templates follow format: '// Example usage:' comment at top, one empty line, then function with TODOs"
+      ],
+      "passes": false,
+      "blocked_by": [],
+      "notes": "CRITICAL BUG - blocks all non-array data structure usage. Must fix before UI improvements."
+    },
+    {
+      "id": "refactor-001",
+      "priority": "high",
+      "category": "removal",
+      "title": "Remove 'Your code here' comments from all skeleton templates",
+      "description": "All skeleton code templates currently contain 'Your code here' placeholder comments. Per PRD section 'Skeleton Code Format', skeleton templates should only have 'Example usage' comment at top, one empty line, then function with TODO comments and implementation hints. No 'Your code here' comments.",
+      "acceptance_criteria": [
+        "Search codebase finds zero instances of 'Your code here' in src/templates/**/*.ts files",
+        "All skeleton templates start with '// Example usage:' comment",
+        "One empty line between 'Example usage' comment and function",
+        "Only TODO comments with specific hints inside function bodies"
+      ],
+      "passes": false,
+      "blocked_by": ["bug-001"],
+      "notes": "Can only verify after skeleton templates exist for all data structures."
+    },
+    {
+      "id": "ui-001",
+      "priority": "high",
+      "category": "removal",
+      "title": "Remove emoji before Examples button",
+      "description": "The Examples button in EditorPanel currently has an emoji prefix. Per minimalist design principles, remove the emoji. Button should show 'Examples' text only, optionally with Tabler icon.",
+      "acceptance_criteria": [
+        "Examples button contains no emoji characters",
+        "Button shows 'Examples' text clearly",
+        "Optionally: uses appropriate Tabler icon (IconBooks, IconCode, etc.) positioned before text"
+      ],
+      "passes": false,
+      "blocked_by": [],
+      "notes": "Simple UI cleanup following minimalist design principles."
+    },
+    {
+      "id": "feature-001",
+      "priority": "high",
+      "category": "ui-conversion",
+      "title": "Convert hints section to icon button with modal",
+      "description": "Currently hints are displayed inline in EditorPanel. Convert to: (1) Single icon button positioned absolute top-right of editor using Tabler IconBulb or IconLightbulb, (2) Button opens modal dialog showing progressive hint reveal, (3) Modal follows HintModal component spec from PRD with clear close button and 'Reveal Hint N' buttons.",
+      "acceptance_criteria": [
+        "Hints section removed from inline display",
+        "Icon button (IconBulb/IconLightbulb) positioned absolute top-right of editor",
+        "Clicking icon opens modal dialog",
+        "Modal shows 'Hints (revealed/total)' header",
+        "Modal has close button with IconX",
+        "Unrevealed hints show 'Reveal Hint N' buttons",
+        "Revealed hints show full hint text",
+        "Modal dismissible with ESC key or click outside"
+      ],
+      "passes": false,
+      "blocked_by": [],
+      "notes": "Saves significant real estate while maintaining hint accessibility."
+    },
+    {
+      "id": "feature-002",
+      "priority": "high",
+      "category": "visualization",
+      "title": "Remove speed controls from visualization panel",
+      "description": "Per PRD 'Immediate Feedback' principles, speed controls are unnecessary. Visualization should auto-play all steps immediately at optimized speed with no user speed adjustment. Remove any speed control UI elements (sliders, dropdowns, speed buttons).",
+      "acceptance_criteria": [
+        "No speed control UI elements visible in VisualizationPanel",
+        "Animations play at consistent, optimized speed",
+        "Auto-play executes immediately after code execution",
+        "Replay button still available to restart animation",
+        "Step back/forward controls still functional"
+      ],
+      "passes": false,
+      "blocked_by": [],
+      "notes": "Simplifies UI by removing non-essential controls."
+    },
+    {
+      "id": "feature-003",
+      "priority": "high",
+      "category": "test-display",
+      "title": "Show all 3 test cases simultaneously without difficulty filter",
+      "description": "TestPanel currently may have difficulty filter buttons (Easy/Medium/Hard). Remove any filtering - display all 3 test cases for selected data structure simultaneously. User should see pass/fail status for all difficulties at once.",
+      "acceptance_criteria": [
+        "No difficulty filter buttons or dropdown in TestPanel",
+        "All 3 test cases (Easy, Medium, Hard) visible simultaneously",
+        "Each test case shows: name, description, pass/fail status",
+        "Failed tests show error message and expected vs actual diff",
+        "Test results update after running code"
+      ],
+      "passes": false,
+      "blocked_by": [],
+      "notes": "Eliminates unnecessary filtering, provides immediate feedback on all difficulty levels."
+    },
+    {
+      "id": "feature-004",
+      "priority": "medium",
+      "category": "ui-controls",
+      "title": "Add play button above editor for running all tests",
+      "description": "Currently 'Run all tests' button may be embedded in layout. Move/create prominent play button positioned directly above CodeMirror editor. Use Tabler IconPlayerPlay. Button should trigger test execution for all 3 test cases of current data structure.",
+      "acceptance_criteria": [
+        "Play button positioned above CodeMirror editor",
+        "Uses IconPlayerPlay from Tabler",
+        "Clear label like 'Run Tests' or 'Run All Tests'",
+        "Clicking runs all 3 test cases for current data structure",
+        "Button disabled during test execution",
+        "Visual feedback during execution (loading state)"
+      ],
+      "passes": false,
+      "blocked_by": [],
+      "notes": "Makes test execution more prominent and discoverable."
+    },
+    {
+      "id": "feature-005",
+      "priority": "medium",
+      "category": "visualization",
+      "title": "Implement auto-play visualization on code execution",
+      "description": "After user clicks play and tests execute successfully, visualization should immediately auto-play through all captured steps without user interaction. No need to click 'play' on visualization - it should start automatically. Animation plays once through all steps, then controls become available.",
+      "acceptance_criteria": [
+        "Visualization starts playing immediately after successful test execution",
+        "Plays through all captured steps automatically",
+        "Plays at consistent, optimized speed (no speed control)",
+        "After completion, replay button and step controls become available",
+        "If test fails, visualization shows error state instead of auto-play"
+      ],
+      "passes": false,
+      "blocked_by": [],
+      "notes": "Provides immediate visual feedback as per UX principles."
+    },
+    {
+      "id": "feature-006",
+      "priority": "medium",
+      "category": "visualization",
+      "title": "Add replay button for visualization",
+      "description": "After visualization completes auto-play, add floating replay button over visualization area. Use IconReload or IconPlayerPlay from Tabler. Button should restart animation from beginning. Position consistent with other floating controls.",
+      "acceptance_criteria": [
+        "Replay button appears after animation completes",
+        "Uses IconReload or IconPlayerPlay from Tabler",
+        "Positioned as floating action button over visualization",
+        "Clicking restarts animation from step 0",
+        "Button has appropriate aria-label for accessibility"
+      ],
+      "passes": false,
+      "blocked_by": ["feature-005"],
+      "notes": "Enables users to re-watch animation without re-running code."
+    },
+    {
+      "id": "feature-007",
+      "priority": "medium",
+      "category": "visualization",
+      "title": "Add floating step back/forward controls",
+      "description": "Add floating action buttons for manual step navigation. Two buttons: Step Back (IconArrowLeft/IconChevronLeft) and Step Forward (IconArrowRight/IconChevronRight). Position consistently over visualization area. Buttons should be disabled at boundaries (back at step 0, forward at last step).",
+      "acceptance_criteria": [
+        "Two floating buttons visible over visualization",
+        "Step Back button uses IconArrowLeft or IconChevronLeft",
+        "Step Forward button uses IconArrowRight or IconChevronRight",
+        "Buttons positioned consistently (e.g., bottom-left and bottom-right)",
+        "Step Back disabled at step 0",
+        "Step Forward disabled at last step",
+        "Clicking updates visualization to previous/next step",
+        "Works independently of auto-play"
+      ],
+      "passes": false,
+      "blocked_by": ["feature-005"],
+      "notes": "Enables frame-by-frame debugging of visualization."
+    },
+    {
+      "id": "feature-008",
+      "priority": "medium",
+      "category": "visualization",
+      "title": "Add horizontal slider for step navigation",
+      "description": "Add horizontal slider positioned below visualization area for precise step navigation. Slider thumb position indicates current step. Shows total steps. Dragging slider jumps to specific step. Inspired by video player timeline controls (SyncSketch pattern).",
+      "acceptance_criteria": [
+        "Horizontal slider positioned below visualization area",
+        "Slider range matches total steps (0 to steps.length - 1)",
+        "Thumb position indicates current step number",
+        "Dragging slider updates visualization in real-time",
+        "Display shows 'Step X / Y' or similar",
+        "Large enough thumb for easy interaction (accessibility)",
+        "Works independently of auto-play and floating controls"
+      ],
+      "passes": false,
+      "blocked_by": ["feature-005"],
+      "notes": "Provides precise navigation like video player timeline."
+    },
+    {
+      "id": "feature-009",
+      "priority": "low",
+      "category": "ui-enhancement",
+      "title": "Add strategic Tabler icons throughout UI",
+      "description": "Following best practices for icon usage (icons with labels for important actions, standalone only for universal icons), add appropriate Tabler icons to UI controls. Examples: Examples button (IconBooks), Hints button (IconBulb), Settings if any (IconSettings). Don't overuse - strategic placement only.",
+      "acceptance_criteria": [
+        "Examples button has appropriate icon (IconBooks, IconCode, etc.)",
+        "Hints icon button uses IconBulb or IconLightbulb",
+        "Play button uses IconPlayerPlay",
+        "Floating controls use appropriate arrow/replay icons",
+        "All icon buttons have descriptive aria-labels",
+        "Icons don't clutter interface - used strategically",
+        "Icon size consistent across UI"
+      ],
+      "passes": false,
+      "blocked_by": ["feature-001", "feature-004", "feature-006", "feature-007"],
+      "notes": "Low priority - enhances visual appeal but not critical functionality."
+    },
+    {
+      "id": "ui-002",
+      "priority": "low",
+      "category": "polish",
+      "title": "Fix Examples dialog UI/UX",
+      "description": "The PresetSelector modal (Examples dialog) needs UX improvements. Ensure: clear modal structure, category filtering works correctly, complexity badges visible, code preview if applicable, obvious close button, responsive layout.",
+      "acceptance_criteria": [
+        "Modal opens/closes smoothly",
+        "Category filters work correctly",
+        "Each example shows: name, description, complexity badge",
+        "Clicking example loads code into editor and closes modal",
+        "Close button clearly visible (IconX)",
+        "Modal dismissible with ESC key",
+        "Responsive layout on different screen sizes",
+        "No layout issues or overlapping elements"
+      ],
+      "passes": false,
+      "blocked_by": [],
+      "notes": "Polish task - improves UX but not blocking other features."
+    },
+    {
+      "id": "feature-010",
+      "priority": "low",
+      "category": "removal",
+      "title": "Remove share functionality",
+      "description": "If any share functionality exists (share buttons, share links, export features for sharing), remove it entirely. This is a local-only educational tool - sharing features add unnecessary complexity.",
+      "acceptance_criteria": [
+        "No share buttons or links in UI",
+        "No share-related code in components",
+        "No export-for-sharing functionality",
+        "Local storage persistence still works (different from sharing)"
+      ],
+      "passes": false,
+      "blocked_by": [],
+      "notes": "Simplifies codebase by removing non-core feature. Only remove if exists."
+    }
+  ],
+  "validation_criteria": {
+    "tests_pass": "npm run test:run exits with code 0",
+    "types_valid": "npm run typecheck exits with code 0",
+    "linting_passes": "npm run lint exits with code 0",
+    "formatting_correct": "npm run format:check exits with code 0",
+    "coverage_threshold": "80% statements, 75% branches",
+    "app_builds": "npm run build succeeds",
+    "no_console_errors": "Dev server runs without errors"
+  },
+  "exit_conditions": [
+    "All tasks have passes: true",
+    "All validation_criteria met",
+    "No failing tests",
+    "No TypeScript errors",
+    "App loads successfully with no console errors"
+  ],
+  "notes": {
+    "iteration_strategy": "Prioritize bug-001 first (critical blocker). Then tackle other high-priority items. Save polish tasks (low priority) for final iterations.",
+    "testing_approach": "Run npm run validate after each task completion to ensure no regressions.",
+    "reference_documentation": "See PRD.md for comprehensive technical specifications, architecture details, and UI/UX best practices."
+  }
+}

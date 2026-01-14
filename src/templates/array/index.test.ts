@@ -49,8 +49,8 @@ describe("Array Templates", () => {
       expect(hints[0]).toContain("sort()");
     });
 
-    it("should contain placeholder", () => {
-      expect(easySkeleton).toContain("/* your code here */");
+    it("should not contain placeholder", () => {
+      expect(easySkeleton).not.toContain("/* your code here */");
     });
 
     it("should contain example usage", () => {
@@ -147,10 +147,10 @@ describe("Array Templates", () => {
       expect(skeletonCodeSystem.extractTodos(hardSkeleton).length).toBeGreaterThan(0);
     });
 
-    it("all templates should have at least one placeholder", () => {
-      expect(easySkeleton).toContain("/* your code here */");
-      expect(mediumSkeleton).toContain("/* your code here */");
-      expect(hardSkeleton).toContain("/* your code here */");
+    it("all templates should not contain placeholders", () => {
+      expect(easySkeleton).not.toContain("/* your code here */");
+      expect(mediumSkeleton).not.toContain("/* your code here */");
+      expect(hardSkeleton).not.toContain("/* your code here */");
     });
 
     it("all templates should have example usage", () => {

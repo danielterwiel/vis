@@ -13,7 +13,6 @@ import { skeletonCodeSystem } from "../skeletonCodeSystem";
 const easySkeleton = `function sort(arr) {
   // TODO: Implement sorting algorithm
   // Hint: You can use arr.sort() with a compare function
-  /* your code here */
 
 }
 
@@ -31,14 +30,11 @@ const mediumSkeleton = `function bubbleSort(arr) {
 
   // TODO: Implement nested loops
   // Outer loop: iterate n-1 times
-  /* your code here */
 
     // TODO: Inner loop: compare adjacent elements and swap if needed
-    /* your code here */
 
       // TODO: Compare and swap adjacent elements
       // Hint: Use destructuring to swap: [arr[j], arr[j+1]] = [arr[j+1], arr[j]]
-      /* your code here */
 
   return arr;
 }
@@ -55,13 +51,10 @@ const mediumSkeleton = `function bubbleSort(arr) {
 const hardSkeleton = `function quickSort(arr, low = 0, high = arr.length - 1) {
   // TODO: Implement recursive quick sort
   // Base case: if low >= high, return
-  /* your code here */
 
   // TODO: 1. Call partition to get pivot index
-  /* your code here */
 
   // TODO: 2. Recursively sort left and right subarrays
-  /* your code here */
 
   return arr;
 }
@@ -69,13 +62,10 @@ const hardSkeleton = `function quickSort(arr, low = 0, high = arr.length - 1) {
 function partition(arr, low, high) {
   // TODO: Implement partition
   // 1. Choose pivot (last element)
-  /* your code here */
 
   // TODO: 2. Move smaller elements to left of pivot
-  /* your code here */
 
   // TODO: 3. Return final pivot position
-  /* your code here */
 
 }
 

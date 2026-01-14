@@ -6,6 +6,19 @@ A minimalist CodePen-like application with a code editor on the left and real-ti
 
 ---
 
+## 📋 Document Purpose
+
+This PRD serves as **comprehensive reference documentation** for the project's architecture, design decisions, and technical specifications.
+
+**For AI Agent Development (Ralph Wiggum):**
+
+- Use **PRD-RALPH.json** as the primary task list
+- PRD-RALPH.json follows Ralph Wiggum methodology with JSON structure and `passes` field
+- This document (PRD.md) provides supporting context and detailed specifications
+- Ralph agents should reference this document for technical details but execute tasks from PRD-RALPH.json
+
+---
+
 ## Technology Stack
 
 ### Framework: **React 19**
@@ -931,7 +944,7 @@ vis/
 - [x] Remove dark mode toggle and theme switching system
 - [x] Remove DataStructureSelector button container
 - [x] Remove test case difficulty filter
-- [ ] Remove "Your code here" comments from skeleton templates
+- [x] Remove "Your code here" comments from skeleton templates
 - [ ] Remove emoji before "Examples" button
 - [ ] Remove share functionality
 - [ ] Remove speed controls from visualization
