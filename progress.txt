@@ -430,3 +430,43 @@ Implementation notes:
 
 Next: Add progressive hints system (Phase 3 final task)
 
+2026-01-14 15:13 - Phase 3: Progressive Hints System COMPLETED (Phase 3 COMPLETE)
+- Created comprehensive HintSystem component (src/components/EditorPanel/HintSystem.tsx)
+  * Displays hint count in header (revealed/total format)
+  * Progressive reveal: shows revealed hints, hides unrevealed with reveal button
+  * One button at a time: only next unrevealed hint has button
+  * Warning message after first hint revealed (encourages solving without hints)
+  * Completion message when all hints revealed
+  * Empty state handling (no test case, no hints)
+  * Integration with Zustand store (hintsRevealed, revealHint action)
+- Created CSS styling (src/components/EditorPanel/HintSystem.css)
+  * Dark theme matching editor panel
+  * Revealed hints: blue left border, numbered labels
+  * Unrevealed hints: button with hover effects
+  * Completion message: green background with checkmark
+  * Warning message: orange italic text
+- Created comprehensive test suite (src/components/EditorPanel/HintSystem.test.tsx)
+  * 21 tests covering rendering, progressive reveal, store integration, edge cases
+  * Tests for empty states (no test case, no hints)
+  * Tests for sequential reveal behavior
+  * Tests for store integration (reads hintsRevealed, calls revealHint)
+  * Tests for edge cases (single hint, many hints, switching test cases)
+  * Tests for accessibility (semantic HTML, button labels, headings)
+  * All tests passing ✓
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 312 passed, 9 skipped (require browser) ✓
+
+Implementation notes:
+- Store already had hintsRevealed, revealHint(), resetHints() (completed in Phase 1)
+- HintSystem reads from store and calls revealHint() on button click
+- Only shows button for next unrevealed hint (index === hintsRevealed)
+- Does not render future hints at all (better UX than showing all as disabled)
+- Component is fully controlled by store state (easy to reset when switching tests)
+- Type-safe with proper null checks for testCase and hints array
+- Warning message provides gentle nudge toward learning without hints
+
+Next: Begin Phase 4 - Create ArrayVisualizer component with SVG
+
