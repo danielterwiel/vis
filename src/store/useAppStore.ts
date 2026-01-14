@@ -23,6 +23,7 @@ export interface VisualizationStep {
   args?: any[];
   result?: any;
   timestamp: number;
+  metadata?: Record<string, any>;
 }
 
 export interface TestResult {
