@@ -924,11 +924,11 @@ vis/
 - [x] Preset algorithm examples (sorting, traversals)
 - [x] Performance metrics display (time/space complexity)
 
-### Phase 9: UI/UX Refinements (Planned)
+### Phase 9: UI/UX Refinements (In Progress)
 
 **Removals**:
 
-- [ ] Remove dark mode toggle and theme switching system
+- [x] Remove dark mode toggle and theme switching system
 - [ ] Remove DataStructureSelector button container
 - [ ] Remove test case difficulty filter
 - [ ] Remove "Your code here" comments from skeleton templates
