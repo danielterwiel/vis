@@ -42,6 +42,19 @@ export function ModeSelector({ currentMode, onModeChange, hasSteps }: ModeSelect
         </button>
 
         <button
+          className={`mode-button ${currentMode === "comparison" ? "active" : ""}`}
+          onClick={() => onModeChange("comparison")}
+          disabled={!hasSteps}
+          title={
+            !hasSteps
+              ? "Run a test first to compare your code with expected output"
+              : "Compare your code execution side-by-side with expected output"
+          }
+        >
+          Compare
+        </button>
+
+        <button
           className={`mode-button ${currentMode === "skeleton" ? "active" : ""}`}
           onClick={() => onModeChange("skeleton")}
           title="Show initial state"
@@ -67,6 +80,14 @@ export function ModeSelector({ currentMode, onModeChange, hasSteps }: ModeSelect
         )}
         {currentMode === "expected-output" && (
           <p>Showing the expected output - what a correct solution produces.</p>
+        )}
+        {currentMode === "comparison" && !hasSteps && (
+          <p className="hint-text">
+            Run a test to compare your code with expected output side-by-side.
+          </p>
+        )}
+        {currentMode === "comparison" && hasSteps && (
+          <p>Comparing your execution (left) with expected output (right) side-by-side.</p>
         )}
         {currentMode === "skeleton" && (
           <p>Showing initial array state. Run tests or select another mode to see animation.</p>

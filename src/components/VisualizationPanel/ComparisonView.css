@@ -1,0 +1,69 @@
+.comparison-view {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  gap: 0;
+}
+
+.comparison-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Allow flex items to shrink below content size */
+}
+
+.comparison-header {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.comparison-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.comparison-visualizer {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.comparison-divider {
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.2) 10%,
+    rgba(255, 255, 255, 0.2) 90%,
+    transparent
+  );
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 1024px) {
+  .comparison-view {
+    flex-direction: column;
+  }
+
+  .comparison-divider {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(255, 255, 255, 0.2) 10%,
+      rgba(255, 255, 255, 0.2) 90%,
+      transparent
+    );
+  }
+
+  .comparison-panel {
+    min-height: 300px;
+  }
+}

@@ -17,6 +17,7 @@ describe("ModeSelector", () => {
 
     expect(screen.getByText("My Execution")).toBeInTheDocument();
     expect(screen.getByText("Show Expected")).toBeInTheDocument();
+    expect(screen.getByText("Compare")).toBeInTheDocument();
     expect(screen.getByText("Skeleton")).toBeInTheDocument();
     expect(screen.getByText("Show Solution")).toBeInTheDocument();
   });
@@ -174,5 +175,38 @@ describe("ModeSelector", () => {
     render(<ModeSelector {...defaultProps} />);
 
     expect(screen.getByText("Visualization Mode")).toBeInTheDocument();
+  });
+
+  it("disables 'Compare' button when there are no steps", () => {
+    render(<ModeSelector {...defaultProps} hasSteps={false} />);
+
+    const compareButton = screen.getByText("Compare");
+    expect(compareButton).toBeDisabled();
+  });
+
+  it("enables 'Compare' button when there are steps", () => {
+    render(<ModeSelector {...defaultProps} hasSteps />);
+
+    const compareButton = screen.getByText("Compare");
+    expect(compareButton).not.toBeDisabled();
+  });
+
+  it("calls onModeChange with 'comparison' when Compare button clicked", async () => {
+    const onModeChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(<ModeSelector {...defaultProps} hasSteps onModeChange={onModeChange} />);
+
+    await user.click(screen.getByText("Compare"));
+
+    expect(onModeChange).toHaveBeenCalledWith("comparison");
+  });
+
+  it("displays comparison mode description when active", () => {
+    render(<ModeSelector {...defaultProps} currentMode="comparison" hasSteps />);
+
+    expect(
+      screen.getByText(/Comparing your execution .* with expected output/i),
+    ).toBeInTheDocument();
   });
 });

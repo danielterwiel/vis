@@ -3,6 +3,7 @@ import useAppStore from "../../store/useAppStore";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { arrayTests } from "../../lib/testing/testCases";
 import { ModeSelector } from "./ModeSelector";
+import { ComparisonView } from "./ComparisonView";
 import { runReferenceSolution } from "../../lib/execution/referenceSolutionRunner";
 
 function VisualizationPanel() {
@@ -60,7 +61,7 @@ function VisualizationPanel() {
   useEffect(() => {
     const loadExpectedOutput = async () => {
       if (
-        visualizationMode === "expected-output" &&
+        (visualizationMode === "expected-output" || visualizationMode === "comparison") &&
         currentTestCase &&
         expectedOutputSteps.length === 0 &&
         !loadingRef.current
@@ -145,8 +146,43 @@ function VisualizationPanel() {
     return initialData;
   }, [currentSteps, currentStepIndex, initialData]);
 
-  // Render visualizer based on data structure
+  // Extract data for comparison view (left = user code, right = expected output)
+  const comparisonLeftData = useMemo(() => {
+    if (userCodeSteps.length === 0) return initialData;
+    if (currentStepIndex >= 0 && currentStepIndex < userCodeSteps.length) {
+      return userCodeSteps[currentStepIndex]?.result || initialData;
+    }
+    return initialData;
+  }, [userCodeSteps, currentStepIndex, initialData]);
+
+  const comparisonRightData = useMemo(() => {
+    if (expectedOutputSteps.length === 0) return initialData;
+    if (currentStepIndex >= 0 && currentStepIndex < expectedOutputSteps.length) {
+      return expectedOutputSteps[currentStepIndex]?.result || initialData;
+    }
+    return initialData;
+  }, [expectedOutputSteps, currentStepIndex, initialData]);
+
+  // Render visualizer based on data structure and mode
   const renderVisualizer = () => {
+    // Comparison view renders side-by-side visualizers
+    if (visualizationMode === "comparison") {
+      return (
+        <ComparisonView
+          dataStructure={selectedDataStructure}
+          leftData={comparisonLeftData}
+          rightData={comparisonRightData}
+          leftSteps={userCodeSteps}
+          rightSteps={expectedOutputSteps}
+          currentStepIndex={currentStepIndex}
+          isAnimating={isAnimating}
+          leftLabel="Your Code"
+          rightLabel="Expected Output"
+        />
+      );
+    }
+
+    // Single visualizer for other modes
     switch (selectedDataStructure) {
       case "array":
         return (

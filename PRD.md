@@ -853,7 +853,7 @@ vis/
 - [x] Build ModeSelector component
 - [x] Implement "Expected Output" mode
 - [x] Implement "Reference Solution" mode
-- [ ] Add side-by-side comparison view
+- [x] Add side-by-side comparison view
 - [ ] Handle incomplete code gracefully
 
 ### Phase 6: Additional Data Structures

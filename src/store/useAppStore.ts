@@ -15,7 +15,8 @@ export type VisualizationMode =
   | "user-code" // Visualize user's actual code execution
   | "expected-output" // Show what the result SHOULD look like
   | "reference" // Animate the reference solution
-  | "skeleton"; // Show initial state, waiting for code
+  | "skeleton" // Show initial state, waiting for code
+  | "comparison"; // Side-by-side comparison of user code vs expected output
 
 export interface VisualizationStep {
   type: string;
