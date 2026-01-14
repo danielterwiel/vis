@@ -13,3 +13,6 @@ export type { LinkedListNode } from "./TrackedLinkedList";
 
 export { TrackedStack, createTrackedStack } from "./TrackedStack";
 export { TrackedQueue, createTrackedQueue } from "./TrackedQueue";
+
+export { TrackedBinaryTree, createTrackedBinaryTree } from "./TrackedBinaryTree";
+export type { BinaryTreeNode } from "./TrackedBinaryTree";
