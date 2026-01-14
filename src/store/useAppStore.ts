@@ -1,5 +1,15 @@
 import { create } from "zustand";
 import type { ConsoleLog } from "../components/ConsoleOutput";
+import {
+  loadUserCode,
+  saveUserCode,
+  loadTheme,
+  saveTheme,
+  loadAnimationSpeed,
+  saveAnimationSpeed,
+  loadHintsRevealed,
+  saveHintsRevealed,
+} from "../lib/storage/localStorage";
 
 export type DataStructureType =
   | "array"
@@ -108,138 +118,191 @@ export interface AppState {
   resetVisualization: () => void;
 }
 
-const useAppStore = create<AppState>((set, get) => ({
-  // Initial state
-  selectedDataStructure: "array",
-  selectedDifficulty: "easy",
+const useAppStore = create<AppState>((set, get) => {
+  // Load initial state from localStorage
+  const initialDataStructure: DataStructureType = "array";
+  const initialDifficulty: DifficultyLevel = "easy";
+  const savedCode = loadUserCode(initialDataStructure, initialDifficulty);
+  const savedTheme = loadTheme();
+  const savedAnimationSpeed = loadAnimationSpeed();
+  const savedHintsRevealed = loadHintsRevealed(initialDataStructure, initialDifficulty);
 
-  userCode: "",
-  codeStatus: "incomplete",
+  return {
+    // Initial state
+    selectedDataStructure: initialDataStructure,
+    selectedDifficulty: initialDifficulty,
 
-  visualizationMode: "skeleton",
-  userCodeSteps: [],
-  expectedOutputSteps: [],
-  referenceSteps: [],
-  currentStepIndex: 0,
-  isAnimating: false,
-  animationSpeed: 1,
+    userCode: savedCode || "",
+    codeStatus: "incomplete",
 
-  testResults: new Map(),
-  hintsRevealed: 0,
+    visualizationMode: "skeleton",
+    userCodeSteps: [],
+    expectedOutputSteps: [],
+    referenceSteps: [],
+    currentStepIndex: 0,
+    isAnimating: false,
+    animationSpeed: savedAnimationSpeed ?? 1,
 
-  consoleLogs: [],
+    testResults: new Map(),
+    hintsRevealed: savedHintsRevealed ?? 0,
 
-  theme: "dark",
+    consoleLogs: [],
 
-  // Actions - Data structure selection
-  setSelectedDataStructure: (dataStructure) =>
-    set({
-      selectedDataStructure: dataStructure,
-      // Reset related state when switching data structures
-      selectedDifficulty: "easy",
-      userCodeSteps: [],
-      expectedOutputSteps: [],
-      referenceSteps: [],
-      currentStepIndex: 0,
-      testResults: new Map(),
-      hintsRevealed: 0,
-    }),
+    theme: savedTheme ?? "dark",
 
-  setSelectedDifficulty: (difficulty) =>
-    set({
-      selectedDifficulty: difficulty,
-      // Reset test-specific state
-      userCodeSteps: [],
-      expectedOutputSteps: [],
-      referenceSteps: [],
-      currentStepIndex: 0,
-      hintsRevealed: 0,
-    }),
+    // Actions - Data structure selection
+    setSelectedDataStructure: (dataStructure) => {
+      const state = get();
+      // Save current code before switching
+      saveUserCode(state.selectedDataStructure, state.selectedDifficulty, state.userCode);
 
-  // Actions - Editor
-  setUserCode: (code) => set({ userCode: code }),
-  setCodeStatus: (status) => set({ codeStatus: status }),
+      // Load code for new data structure (default to easy)
+      const newDifficulty: DifficultyLevel = "easy";
+      const savedCode = loadUserCode(dataStructure, newDifficulty);
+      const savedHints = loadHintsRevealed(dataStructure, newDifficulty);
 
-  // Actions - Visualization
-  setVisualizationMode: (mode) => set({ visualizationMode: mode, currentStepIndex: 0 }),
+      set({
+        selectedDataStructure: dataStructure,
+        selectedDifficulty: newDifficulty,
+        userCode: savedCode || "",
+        userCodeSteps: [],
+        expectedOutputSteps: [],
+        referenceSteps: [],
+        currentStepIndex: 0,
+        testResults: new Map(),
+        hintsRevealed: savedHints ?? 0,
+      });
+    },
 
-  setUserCodeSteps: (steps) => set({ userCodeSteps: steps, currentStepIndex: 0 }),
-  setExpectedOutputSteps: (steps) => set({ expectedOutputSteps: steps, currentStepIndex: 0 }),
-  setReferenceSteps: (steps) => set({ referenceSteps: steps, currentStepIndex: 0 }),
+    setSelectedDifficulty: (difficulty) => {
+      const state = get();
+      // Save current code before switching
+      saveUserCode(state.selectedDataStructure, state.selectedDifficulty, state.userCode);
 
-  // Convenience method that sets steps for user-code mode (used by test runner)
-  setCurrentSteps: (steps) => set({ userCodeSteps: steps, currentStepIndex: 0 }),
+      // Load code for new difficulty
+      const savedCode = loadUserCode(state.selectedDataStructure, difficulty);
+      const savedHints = loadHintsRevealed(state.selectedDataStructure, difficulty);
 
-  // Get steps for current visualization mode
-  getCurrentSteps: () => {
-    const state = get();
-    switch (state.visualizationMode) {
-      case "user-code":
-        return state.userCodeSteps;
-      case "expected-output":
-        return state.expectedOutputSteps;
-      case "reference":
-        return state.referenceSteps;
-      default:
-        return [];
-    }
-  },
+      set({
+        selectedDifficulty: difficulty,
+        userCode: savedCode || "",
+        userCodeSteps: [],
+        expectedOutputSteps: [],
+        referenceSteps: [],
+        currentStepIndex: 0,
+        hintsRevealed: savedHints ?? 0,
+      });
+    },
 
-  setCurrentStepIndex: (index) => set({ currentStepIndex: index }),
+    // Actions - Editor
+    setUserCode: (code) => {
+      const state = get();
+      saveUserCode(state.selectedDataStructure, state.selectedDifficulty, code);
+      set({ userCode: code });
+    },
+    setCodeStatus: (status) => set({ codeStatus: status }),
 
-  nextStep: () =>
-    set((state) => {
-      const steps = get().getCurrentSteps();
-      return {
-        currentStepIndex: Math.min(state.currentStepIndex + 1, steps.length - 1),
-      };
-    }),
+    // Actions - Visualization
+    setVisualizationMode: (mode) => set({ visualizationMode: mode, currentStepIndex: 0 }),
 
-  previousStep: () =>
-    set((state) => ({
-      currentStepIndex: Math.max(state.currentStepIndex - 1, 0),
-    })),
+    setUserCodeSteps: (steps) => set({ userCodeSteps: steps, currentStepIndex: 0 }),
+    setExpectedOutputSteps: (steps) => set({ expectedOutputSteps: steps, currentStepIndex: 0 }),
+    setReferenceSteps: (steps) => set({ referenceSteps: steps, currentStepIndex: 0 }),
 
-  setIsAnimating: (isAnimating) => set({ isAnimating }),
-  setAnimationSpeed: (speed) => set({ animationSpeed: speed }),
+    // Convenience method that sets steps for user-code mode (used by test runner)
+    setCurrentSteps: (steps) => set({ userCodeSteps: steps, currentStepIndex: 0 }),
 
-  // Actions - Testing
-  setTestResult: (testId, result) =>
-    set((state) => {
-      const newResults = new Map(state.testResults);
-      newResults.set(testId, result);
-      return { testResults: newResults };
-    }),
+    // Get steps for current visualization mode
+    getCurrentSteps: () => {
+      const state = get();
+      switch (state.visualizationMode) {
+        case "user-code":
+          return state.userCodeSteps;
+        case "expected-output":
+          return state.expectedOutputSteps;
+        case "reference":
+          return state.referenceSteps;
+        default:
+          return [];
+      }
+    },
 
-  clearTestResults: () => set({ testResults: new Map() }),
+    setCurrentStepIndex: (index) => set({ currentStepIndex: index }),
 
-  revealHint: () => set((state) => ({ hintsRevealed: state.hintsRevealed + 1 })),
+    nextStep: () =>
+      set((state) => {
+        const steps = get().getCurrentSteps();
+        return {
+          currentStepIndex: Math.min(state.currentStepIndex + 1, steps.length - 1),
+        };
+      }),
 
-  resetHints: () => set({ hintsRevealed: 0 }),
+    previousStep: () =>
+      set((state) => ({
+        currentStepIndex: Math.max(state.currentStepIndex - 1, 0),
+      })),
 
-  // Actions - Console
-  addConsoleLog: (log) =>
-    set((state) => ({
-      consoleLogs: [...state.consoleLogs, { ...log, timestamp: Date.now() }],
-    })),
+    setIsAnimating: (isAnimating) => set({ isAnimating }),
+    setAnimationSpeed: (speed) => {
+      saveAnimationSpeed(speed);
+      set({ animationSpeed: speed });
+    },
 
-  setConsoleLogs: (logs) => set({ consoleLogs: logs }),
+    // Actions - Testing
+    setTestResult: (testId, result) =>
+      set((state) => {
+        const newResults = new Map(state.testResults);
+        newResults.set(testId, result);
+        return { testResults: newResults };
+      }),
 
-  clearConsoleLogs: () => set({ consoleLogs: [] }),
+    clearTestResults: () => set({ testResults: new Map() }),
 
-  // Actions - Theme
-  setTheme: (theme) => set({ theme }),
-  toggleTheme: () => set((state) => ({ theme: state.theme === "dark" ? "light" : "dark" })),
+    revealHint: () => {
+      const state = get();
+      const newCount = state.hintsRevealed + 1;
+      saveHintsRevealed(state.selectedDataStructure, state.selectedDifficulty, newCount);
+      set({ hintsRevealed: newCount });
+    },
 
-  // Actions - Reset
-  resetVisualization: () =>
-    set({
-      userCodeSteps: [],
-      expectedOutputSteps: [],
-      referenceSteps: [],
-      currentStepIndex: 0,
-      isAnimating: false,
-    }),
-}));
+    resetHints: () => {
+      const state = get();
+      saveHintsRevealed(state.selectedDataStructure, state.selectedDifficulty, 0);
+      set({ hintsRevealed: 0 });
+    },
+
+    // Actions - Console
+    addConsoleLog: (log) =>
+      set((state) => ({
+        consoleLogs: [...state.consoleLogs, { ...log, timestamp: Date.now() }],
+      })),
+
+    setConsoleLogs: (logs) => set({ consoleLogs: logs }),
+
+    clearConsoleLogs: () => set({ consoleLogs: [] }),
+
+    // Actions - Theme
+    setTheme: (theme) => {
+      saveTheme(theme);
+      set({ theme });
+    },
+    toggleTheme: () => {
+      const state = get();
+      const newTheme = state.theme === "dark" ? "light" : "dark";
+      saveTheme(newTheme);
+      set({ theme: newTheme });
+    },
+
+    // Actions - Reset
+    resetVisualization: () =>
+      set({
+        userCodeSteps: [],
+        expectedOutputSteps: [],
+        referenceSteps: [],
+        currentStepIndex: 0,
+        isAnimating: false,
+      }),
+  };
+});
 
 export default useAppStore;
