@@ -220,3 +220,45 @@ Integration notes:
 
 Next: Implement timeout/infinite loop protection (already partially done via loop injection, need full timeout system)
 
+2026-01-14 14:48 - Phase 2: Timeout/Infinite Loop Protection COMPLETED
+- Created comprehensive timeout protection module (src/lib/execution/timeout.ts)
+  * Two-layer protection architecture:
+    1. Loop injection (primary defense) - throws error inside sandbox after N iterations
+    2. External timeout (failsafe) - kills execution from outside after T milliseconds
+  * TimeoutError class with context (type, elapsed time, iterations, depth)
+  * createExternalTimeout() - cancellable timeout with callback
+  * validateTimeoutConfig() - config validation with sensible ranges
+  * Helper functions: isTimeoutError(), isInfiniteLoopError(), formatTimeoutError()
+  * createTimeoutConfig() - convenience function for passing config to instrumenter/sandbox
+- Default configuration:
+  * maxLoopIterations: 100,000
+  * maxRecursionDepth: 1,000
+  * externalTimeoutMs: 5,000ms
+  * Validation ranges: 1-10M iterations, 1-10K depth, 100ms-60s timeout
+- Created comprehensive test suite (src/lib/execution/timeout.test.ts)
+  * 33 tests covering all functions and edge cases
+  * Tests for TimeoutError construction with different types
+  * Tests for external timeout creation, cancellation, and invocation
+  * Tests for config validation with valid and invalid inputs
+  * Tests for error detection and formatting helpers
+  * Tests for config creation utility
+  * All 33 tests passing ✓
+- Integration notes:
+  * Loop injection already implemented in instrumenter.ts (throws inside sandbox)
+  * External timeout already implemented in sandbox.ts (kills from outside)
+  * This module provides unified API and error handling for both mechanisms
+  * Components can use createTimeoutConfig() to get consistent config for both layers
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 141 passed, 9 skipped (require browser) ✓
+
+Technical notes:
+- External timeout is failsafe, not primary defense (won't fire if thread blocked)
+- Loop injection is critical - must inject counters during transformation
+- TimeoutError provides rich context for user-friendly error messages
+- Config validation prevents nonsensical values (e.g., 1ms timeout)
+
+Next: Set up client-side test runner with Chai
+

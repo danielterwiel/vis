@@ -829,7 +829,7 @@ vis/
 - [x] Implement sandboxed iframe execution with `srcdoc`
 - [x] Create SWC-based code instrumentation (loop injection)
 - [x] Build step capture and `postMessage` communication
-- [ ] Implement timeout/infinite loop protection
+- [x] Implement timeout/infinite loop protection
 - [ ] Set up client-side test runner with Chai
 
 ### Phase 3: Test Cases System
