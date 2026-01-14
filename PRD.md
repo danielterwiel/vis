@@ -842,7 +842,7 @@ vis/
 
 ### Phase 4: First Visualizer - Arrays
 
-- [ ] Create ArrayVisualizer component with SVG
+- [x] Create ArrayVisualizer component with SVG
 - [ ] Implement TrackedArray with operation capture
 - [ ] Add Framer Motion animations for push, pop, swap, sort
 - [ ] Connect editor → execution → visualization pipeline
