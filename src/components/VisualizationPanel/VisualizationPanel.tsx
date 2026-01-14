@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import useAppStore from "../../store/useAppStore";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { arrayTests } from "../../lib/testing/testCases";
 import { ModeSelector } from "./ModeSelector";
+import { runReferenceSolution } from "../../lib/execution/referenceSolutionRunner";
 
 function VisualizationPanel() {
   const {
@@ -32,6 +33,21 @@ function VisualizationPanel() {
 
   const currentTestCase = getCurrentTestCase();
   const initialData = currentTestCase?.initialData || [];
+
+  // Run reference solution when "Expected Output" mode is selected
+  useEffect(() => {
+    const loadExpectedOutput = async () => {
+      if (visualizationMode === "expected-output" && currentTestCase && currentSteps.length === 0) {
+        const result = await runReferenceSolution(currentTestCase);
+        if (result.success) {
+          useAppStore.getState().setCurrentSteps(result.steps);
+          useAppStore.getState().setCurrentStepIndex(0);
+        }
+      }
+    };
+
+    loadExpectedOutput();
+  }, [visualizationMode, currentTestCase, currentSteps.length]);
 
   // Extract current array data from steps or use initial data
   const currentData = useMemo(() => {

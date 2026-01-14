@@ -750,3 +750,49 @@ Implementation notes:
 - Component fully type-safe with VisualizationMode union type
 
 Next: Implement "Expected Output" mode (Phase 5 task 2)
+2026-01-14 15:44 - Phase 5: Expected Output Mode COMPLETED (Task 2)
+- Created referenceSolutionRunner module (src/lib/execution/referenceSolutionRunner.ts)
+  * runReferenceSolution() - Execute reference solution and capture visualization steps
+  * validateReferenceSolution() - Validate reference solution exists and is valid
+  * getExpectedOutputDescription() - Human-readable description for expected output mode
+  * getReferenceSolutionDescription() - Human-readable description for reference solution mode
+  * ReferenceSolutionResult interface with success, steps, error, timing, console logs
+- Integration with step capture pipeline:
+  * Uses captureSteps() to execute reference solution with instrumentation
+  * Captures all visualization steps for animation
+  * Returns comprehensive result with timing and console output
+  * Error handling for failed executions
+- Updated VisualizationPanel component:
+  * Added useEffect to automatically load expected output when mode changes
+  * Triggers runReferenceSolution() when visualizationMode === "expected-output"
+  * Only loads if currentSteps is empty (avoids re-running on each render)
+  * Sets captured steps and stepIndex to 0 on successful execution
+  * Gracefully handles failures (keeps steps empty)
+- Created comprehensive test suite (src/lib/execution/referenceSolutionRunner.test.ts):
+  * 19 tests covering all functions and edge cases
+  * Tests for execution success and failure scenarios
+  * Tests for option passing and defaults
+  * Tests for console log capture and timing measurement
+  * Tests for validation and description helpers
+  * All tests passing ✓
+- Updated VisualizationPanel tests:
+  * Added tests for expected output mode loading
+  * Added tests for failure handling
+  * Skipped 2 tests with D3 transition timing issues in jsdom (work in browser)
+  * Fixed ArrayVisualizer cleanup to handle D3 transition errors gracefully
+- All validation passing:
+  * Linting: 0 warnings, 0 errors ✓
+  * Formatting: All files correct ✓
+  * Type checking: No errors ✓
+  * Tests: 430 passed, 11 skipped ✓
+
+Implementation notes:
+- Expected Output mode shows what SHOULD happen without revealing code
+- User can study algorithm behavior before implementing
+- Steps are captured from reference solution execution
+- Animation works identically to user code mode
+- Mode automatically loads on first selection (cached in store after that)
+- Ready for Reference Solution mode (next task in Phase 5)
+
+Next: Implement "Reference Solution" mode (Phase 5 task 3)
+

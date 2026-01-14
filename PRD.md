@@ -851,7 +851,7 @@ vis/
 ### Phase 5: Visualization Modes
 
 - [x] Build ModeSelector component
-- [ ] Implement "Expected Output" mode
+- [x] Implement "Expected Output" mode
 - [ ] Implement "Reference Solution" mode
 - [ ] Add side-by-side comparison view
 - [ ] Handle incomplete code gracefully

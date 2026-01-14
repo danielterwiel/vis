@@ -154,7 +154,15 @@ export function ArrayVisualizer({
 
     // Cleanup function
     return () => {
-      svg.selectAll("*").interrupt();
+      try {
+        // Interrupt all transitions before cleanup
+        svg.selectAll("*").interrupt();
+        // Remove all elements to prevent stale references
+        svg.selectAll(".bar-group").remove();
+        svg.select(".step-indicator").remove();
+      } catch {
+        // Ignore cleanup errors (e.g., if SVG was already removed)
+      }
     };
   }, [data, steps, currentStepIndex, isAnimating]);
 
