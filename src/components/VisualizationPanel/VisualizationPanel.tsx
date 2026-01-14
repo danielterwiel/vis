@@ -30,6 +30,16 @@ function VisualizationPanel() {
   // Track if we're loading expected/reference steps
   const loadingRef = useRef(false);
 
+  // Automatically switch to skeleton mode when code is incomplete or no user steps
+  useEffect(() => {
+    // If user-code mode is selected but code is incomplete or no steps available, switch to skeleton
+    if (visualizationMode === "user-code") {
+      if (codeStatus === "incomplete" || userCodeSteps.length === 0) {
+        setVisualizationMode("skeleton");
+      }
+    }
+  }, [visualizationMode, codeStatus, userCodeSteps.length, setVisualizationMode]);
+
   // Get current steps based on visualization mode
   const currentSteps = useMemo(() => {
     switch (visualizationMode) {
@@ -39,6 +49,8 @@ function VisualizationPanel() {
         return expectedOutputSteps;
       case "reference":
         return referenceSteps;
+      case "skeleton":
+        return []; // No steps for skeleton mode - show initial state only
       default:
         return [];
     }
@@ -250,7 +262,21 @@ function VisualizationPanel() {
         </div>
       </div>
       <div className="visualizer-container">
-        <div className="visualizer-inner">{renderVisualizer()}</div>
+        <div className="visualizer-inner">
+          {renderVisualizer()}
+          {visualizationMode === "skeleton" && (
+            <div className="skeleton-overlay">
+              <div className="skeleton-message">
+                <h3>Initial State</h3>
+                <p>Complete the function in the editor to see the animation.</p>
+                <p className="skeleton-hint">
+                  Try clicking "Show Expected" to understand what should happen, or use the hints
+                  below the editor.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

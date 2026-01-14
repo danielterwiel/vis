@@ -185,4 +185,106 @@ describe("VisualizationPanel", () => {
     // Additional wait after unmount for D3 cleanup
     await new Promise((resolve) => setTimeout(resolve, 100));
   });
+
+  describe("Skeleton Mode", () => {
+    it("displays skeleton overlay when in skeleton mode", () => {
+      useAppStore.setState({
+        visualizationMode: "skeleton",
+        codeStatus: "incomplete",
+      });
+
+      render(<VisualizationPanel />);
+
+      expect(screen.getByText("Initial State")).toBeInTheDocument();
+      expect(
+        screen.getByText("Complete the function in the editor to see the animation."),
+      ).toBeInTheDocument();
+    });
+
+    it("shows helpful hint in skeleton mode", () => {
+      useAppStore.setState({
+        visualizationMode: "skeleton",
+      });
+
+      render(<VisualizationPanel />);
+
+      expect(
+        screen.getByText(/Try clicking "Show Expected" to understand what should happen/),
+      ).toBeInTheDocument();
+    });
+
+    it("does not show skeleton overlay when not in skeleton mode", () => {
+      useAppStore.setState({
+        visualizationMode: "user-code",
+        userCodeSteps: [
+          { type: "push", target: "array", args: [5], result: [5], timestamp: Date.now() },
+        ],
+        codeStatus: "complete",
+      });
+
+      render(<VisualizationPanel />);
+
+      expect(screen.queryByText("Initial State")).not.toBeInTheDocument();
+    });
+
+    it("automatically switches to skeleton mode when code is incomplete", async () => {
+      useAppStore.setState({
+        visualizationMode: "user-code",
+        codeStatus: "incomplete",
+        userCodeSteps: [],
+      });
+
+      render(<VisualizationPanel />);
+
+      await waitFor(() => {
+        const state = useAppStore.getState();
+        expect(state.visualizationMode).toBe("skeleton");
+      });
+    });
+
+    it("automatically switches to skeleton mode when no user steps available", async () => {
+      useAppStore.setState({
+        visualizationMode: "user-code",
+        codeStatus: "complete",
+        userCodeSteps: [],
+      });
+
+      render(<VisualizationPanel />);
+
+      await waitFor(() => {
+        const state = useAppStore.getState();
+        expect(state.visualizationMode).toBe("skeleton");
+      });
+    });
+
+    it("does not switch to skeleton mode when code is complete and has steps", async () => {
+      useAppStore.setState({
+        visualizationMode: "user-code",
+        codeStatus: "complete",
+        userCodeSteps: [
+          { type: "push", target: "array", args: [5], result: [5], timestamp: Date.now() },
+        ],
+      });
+
+      render(<VisualizationPanel />);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const state = useAppStore.getState();
+      expect(state.visualizationMode).toBe("user-code");
+    });
+
+    it("shows initial data from test case in skeleton mode", () => {
+      useAppStore.setState({
+        visualizationMode: "skeleton",
+        selectedDataStructure: "array",
+        selectedDifficulty: "easy",
+      });
+
+      const { container } = render(<VisualizationPanel />);
+
+      // ArrayVisualizer should still render with initial data
+      expect(container.querySelector("svg")).toBeInTheDocument();
+    });
+  });
 });
