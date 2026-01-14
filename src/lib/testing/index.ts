@@ -11,4 +11,6 @@ export { bundleExpect, expect } from "./expectBundle";
 
 export { bundleTrackedArray } from "./trackedArrayBundle";
 
+export { bundleTrackedLinkedList } from "./trackedLinkedListBundle";
+
 export type { TestCase, TestResult, TestRunOptions, DifficultyLevel } from "./types";
