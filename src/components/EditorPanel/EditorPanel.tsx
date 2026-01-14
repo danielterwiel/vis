@@ -1,9 +1,10 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { CodeMirrorEditor } from "./CodeMirrorEditor";
 import { HintSystem } from "./HintSystem";
 import useAppStore, { DataStructureType } from "../../store/useAppStore";
 import { skeletonCodeSystem } from "../../templates";
 import { arrayTests } from "../../lib/testing/testCases";
+import { generateShareUrl, copyToClipboard } from "../../lib/sharing/urlEncoder";
 
 const DATA_STRUCTURE_OPTIONS: { value: DataStructureType; label: string }[] = [
   { value: "array", label: "Array" },
@@ -26,6 +27,8 @@ function EditorPanel() {
     setSelectedDataStructure,
     resetHints,
   } = useAppStore();
+
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "error">("idle");
 
   // Track previous mode to detect when switching to reference mode
   const prevModeRef = useRef(visualizationMode);
@@ -85,6 +88,30 @@ function EditorPanel() {
   // Editor is read-only in reference mode
   const isReadOnly = visualizationMode === "reference";
 
+  // Handle share button click
+  const handleShare = async () => {
+    try {
+      const shareUrl = generateShareUrl({
+        code: userCode,
+        dataStructure: selectedDataStructure,
+        difficulty: selectedDifficulty,
+      });
+
+      const success = await copyToClipboard(shareUrl);
+      if (success) {
+        setCopyStatus("copied");
+        setTimeout(() => setCopyStatus("idle"), 2000);
+      } else {
+        setCopyStatus("error");
+        setTimeout(() => setCopyStatus("idle"), 2000);
+      }
+    } catch (error) {
+      console.error("Failed to generate share URL:", error);
+      setCopyStatus("error");
+      setTimeout(() => setCopyStatus("idle"), 2000);
+    }
+  };
+
   return (
     <div className="editor-panel">
       <div className="editor-header">
@@ -107,6 +134,16 @@ function EditorPanel() {
           {isReadOnly && (
             <span className="reference-mode-badge">Reference Solution (Read-Only)</span>
           )}
+          <button
+            className="share-button"
+            onClick={handleShare}
+            title="Copy shareable link to clipboard"
+            disabled={copyStatus !== "idle"}
+          >
+            {copyStatus === "idle" && "Share"}
+            {copyStatus === "copied" && "Copied!"}
+            {copyStatus === "error" && "Error"}
+          </button>
         </div>
       </div>
       <CodeMirrorEditor value={userCode} onChange={handleCodeChange} readOnly={isReadOnly} />
