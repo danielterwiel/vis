@@ -878,7 +878,7 @@ vis/
 - [x] Animation speed controls
 - [x] Step-through debugging mode
 - [x] Dark/light theme toggle
-- [ ] Mobile-responsive layout (limited)
+- [x] Mobile-responsive layout (limited)
 
 ### Phase 8: Advanced Features
 
