@@ -4,10 +4,8 @@ import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { arrayTests } from "../../lib/testing/testCases";
 import { ModeSelector } from "./ModeSelector";
 import { ComparisonView } from "./ComparisonView";
-import { AnimationSpeedControl } from "./AnimationSpeedControl";
 import { PerformanceMetrics } from "./PerformanceMetrics";
 import { runReferenceSolution } from "../../lib/execution/referenceSolutionRunner";
-import "./AnimationSpeedControl.css";
 
 function VisualizationPanel() {
   const {
@@ -18,7 +16,6 @@ function VisualizationPanel() {
     referenceSteps,
     currentStepIndex,
     isAnimating,
-    animationSpeed,
     visualizationMode,
     codeStatus,
     testResults,
@@ -26,7 +23,6 @@ function VisualizationPanel() {
     previousStep,
     setCurrentStepIndex,
     setIsAnimating,
-    setAnimationSpeed,
     setVisualizationMode,
     setExpectedOutputSteps,
     setReferenceSteps,
@@ -122,8 +118,8 @@ function VisualizationPanel() {
       return;
     }
 
-    // Calculate interval based on animation speed (base 800ms)
-    const interval = 800 / animationSpeed;
+    // Fixed animation interval (800ms per step)
+    const interval = 800;
 
     const timer = setInterval(() => {
       const state = useAppStore.getState();
@@ -149,7 +145,7 @@ function VisualizationPanel() {
     }, interval);
 
     return () => clearInterval(timer);
-  }, [isAnimating, animationSpeed, currentSteps.length, nextStep, setIsAnimating]);
+  }, [isAnimating, currentSteps.length, nextStep, setIsAnimating]);
 
   // Extract current array data from steps or use initial data
   const currentData = useMemo(() => {
@@ -264,11 +260,6 @@ function VisualizationPanel() {
           >
             ⟲ Reset
           </button>
-          <AnimationSpeedControl
-            speed={animationSpeed}
-            onSpeedChange={setAnimationSpeed}
-            disabled={currentSteps.length === 0}
-          />
         </div>
       </div>
       <div className="visualizer-container">

@@ -36,7 +36,6 @@ describe("useAppStore", () => {
       expect(result.current.referenceSteps).toEqual([]);
       expect(result.current.currentStepIndex).toBe(0);
       expect(result.current.isAnimating).toBe(false);
-      expect(result.current.animationSpeed).toBe(1);
       expect(result.current.testResults.size).toBe(0);
       expect(result.current.hintsRevealed).toBe(0);
       expect(result.current.consoleLogs).toEqual([]);
@@ -280,22 +279,6 @@ describe("useAppStore", () => {
       });
 
       expect(result.current.isAnimating).toBe(false);
-    });
-
-    it("should update animation speed", () => {
-      const { result } = renderHook(() => useAppStore());
-
-      act(() => {
-        result.current.setAnimationSpeed(2);
-      });
-
-      expect(result.current.animationSpeed).toBe(2);
-
-      act(() => {
-        result.current.setAnimationSpeed(0.5);
-      });
-
-      expect(result.current.animationSpeed).toBe(0.5);
     });
 
     it("should reset visualization state", () => {

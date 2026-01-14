@@ -947,7 +947,7 @@ vis/
 - [x] Remove "Your code here" comments from skeleton templates
 - [x] Remove emoji before "Examples" button
 - [x] Remove share functionality
-- [ ] Remove speed controls from visualization
+- [x] Remove speed controls from visualization
 
 **Changes**:
 

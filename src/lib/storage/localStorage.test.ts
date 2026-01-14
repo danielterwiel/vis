@@ -2,8 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   saveUserCode,
   loadUserCode,
-  saveAnimationSpeed,
-  loadAnimationSpeed,
   saveHintsRevealed,
   loadHintsRevealed,
   clearTestProgress,
@@ -50,38 +48,6 @@ describe("localStorage", () => {
       const code = "// 你好 emoji: 🚀";
       saveUserCode("tree", "easy", code);
       expect(loadUserCode("tree", "easy")).toBe(code);
-    });
-  });
-
-  describe("saveAnimationSpeed / loadAnimationSpeed", () => {
-    it("should save and load animation speed", () => {
-      saveAnimationSpeed(1.5);
-      expect(loadAnimationSpeed()).toBe(1.5);
-
-      saveAnimationSpeed(0.5);
-      expect(loadAnimationSpeed()).toBe(0.5);
-
-      saveAnimationSpeed(2);
-      expect(loadAnimationSpeed()).toBe(2);
-    });
-
-    it("should return null for non-existent speed", () => {
-      expect(loadAnimationSpeed()).toBeNull();
-    });
-
-    it("should return null for invalid speed", () => {
-      localStorage.setItem("vis_app_v1_animation_speed", "invalid");
-      expect(loadAnimationSpeed()).toBeNull();
-    });
-
-    it("should return null for negative speed", () => {
-      localStorage.setItem("vis_app_v1_animation_speed", "-1");
-      expect(loadAnimationSpeed()).toBeNull();
-    });
-
-    it("should return null for zero speed", () => {
-      localStorage.setItem("vis_app_v1_animation_speed", "0");
-      expect(loadAnimationSpeed()).toBeNull();
     });
   });
 
@@ -137,14 +103,12 @@ describe("localStorage", () => {
     it("should clear all stored data", () => {
       saveUserCode("array", "easy", "code1");
       saveUserCode("linkedList", "medium", "code2");
-      saveAnimationSpeed(1.5);
       saveHintsRevealed("tree", "hard", 3);
 
       clearAllProgress();
 
       expect(loadUserCode("array", "easy")).toBeNull();
       expect(loadUserCode("linkedList", "medium")).toBeNull();
-      expect(loadAnimationSpeed()).toBeNull();
       expect(loadHintsRevealed("tree", "hard")).toBeNull();
     });
 
@@ -190,14 +154,6 @@ describe("localStorage", () => {
 
     it("should return null when loading user code", () => {
       expect(loadUserCode("array", "easy")).toBeNull();
-    });
-
-    it("should fail silently when saving animation speed", () => {
-      expect(() => saveAnimationSpeed(1.5)).not.toThrow();
-    });
-
-    it("should return null when loading animation speed", () => {
-      expect(loadAnimationSpeed()).toBeNull();
     });
 
     it("should fail silently when clearing progress", () => {

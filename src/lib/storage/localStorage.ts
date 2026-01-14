@@ -13,7 +13,6 @@ const STORAGE_PREFIX = "vis_app_v" + STORAGE_VERSION;
 const KEYS = {
   USER_CODE: (ds: DataStructureType, diff: DifficultyLevel) =>
     `${STORAGE_PREFIX}_code_${ds}_${diff}`,
-  ANIMATION_SPEED: `${STORAGE_PREFIX}_animation_speed`,
   HINTS_REVEALED: (ds: DataStructureType, diff: DifficultyLevel) =>
     `${STORAGE_PREFIX}_hints_${ds}_${diff}`,
 } as const;
@@ -65,41 +64,6 @@ export function loadUserCode(
   try {
     const key = KEYS.USER_CODE(dataStructure, difficulty);
     return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Save animation speed preference
- */
-export function saveAnimationSpeed(speed: number): void {
-  if (!isLocalStorageAvailable()) return;
-
-  try {
-    localStorage.setItem(KEYS.ANIMATION_SPEED, speed.toString());
-  } catch (error) {
-    if (import.meta.env.MODE !== "test") {
-      console.warn("Failed to save animation speed:", error);
-    }
-  }
-}
-
-/**
- * Load animation speed preference
- */
-export function loadAnimationSpeed(): number | null {
-  if (!isLocalStorageAvailable()) return null;
-
-  try {
-    const speed = localStorage.getItem(KEYS.ANIMATION_SPEED);
-    if (speed !== null) {
-      const parsed = Number.parseFloat(speed);
-      if (!Number.isNaN(parsed) && parsed > 0) {
-        return parsed;
-      }
-    }
-    return null;
   } catch {
     return null;
   }

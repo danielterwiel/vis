@@ -3,8 +3,6 @@ import type { ConsoleLog } from "../components/ConsoleOutput";
 import {
   loadUserCode,
   saveUserCode,
-  loadAnimationSpeed,
-  saveAnimationSpeed,
   loadHintsRevealed,
   saveHintsRevealed,
 } from "../lib/storage/localStorage";
@@ -62,7 +60,6 @@ export interface AppState {
   referenceSteps: VisualizationStep[];
   currentStepIndex: number;
   isAnimating: boolean;
-  animationSpeed: number; // 1 = normal, 2 = 2x, 0.5 = half speed
 
   // Test results
   testResults: Map<string, TestResult>;
@@ -90,7 +87,6 @@ export interface AppState {
   nextStep: () => void;
   previousStep: () => void;
   setIsAnimating: (isAnimating: boolean) => void;
-  setAnimationSpeed: (speed: number) => void;
 
   // Actions - Testing
   setTestResult: (testId: string, result: TestResult) => void;
@@ -112,7 +108,6 @@ const useAppStore = create<AppState>((set, get) => {
   const initialDataStructure: DataStructureType = "array";
   const initialDifficulty: DifficultyLevel = "easy";
   const savedCode = loadUserCode(initialDataStructure, initialDifficulty);
-  const savedAnimationSpeed = loadAnimationSpeed();
   const savedHintsRevealed = loadHintsRevealed(initialDataStructure, initialDifficulty);
 
   return {
@@ -129,7 +124,6 @@ const useAppStore = create<AppState>((set, get) => {
     referenceSteps: [],
     currentStepIndex: 0,
     isAnimating: false,
-    animationSpeed: savedAnimationSpeed ?? 1,
 
     testResults: new Map(),
     hintsRevealed: savedHintsRevealed ?? 0,
@@ -229,10 +223,6 @@ const useAppStore = create<AppState>((set, get) => {
       })),
 
     setIsAnimating: (isAnimating) => set({ isAnimating }),
-    setAnimationSpeed: (speed) => {
-      saveAnimationSpeed(speed);
-      set({ animationSpeed: speed });
-    },
 
     // Actions - Testing
     setTestResult: (testId, result) =>
