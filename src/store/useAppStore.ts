@@ -6,6 +6,12 @@ import {
   loadHintsRevealed,
   saveHintsRevealed,
 } from "../lib/storage/localStorage";
+import {
+  getUrlParams,
+  updateUrlParams,
+  isValidDataStructure,
+  isValidDifficulty,
+} from "../lib/urlParams";
 
 export type DataStructureType =
   | "array"
@@ -104,9 +110,23 @@ export interface AppState {
 }
 
 const useAppStore = create<AppState>((set, get) => {
-  // Load initial state from localStorage
-  const initialDataStructure: DataStructureType = "array";
-  const initialDifficulty: DifficultyLevel = "easy";
+  // Load initial state from URL params, fallback to defaults
+  const urlParams = getUrlParams();
+  const initialDataStructure: DataStructureType = isValidDataStructure(urlParams.dataStructure)
+    ? urlParams.dataStructure
+    : "array";
+  const initialDifficulty: DifficultyLevel = isValidDifficulty(urlParams.difficulty)
+    ? urlParams.difficulty
+    : "easy";
+
+  // Sync URL params if they weren't already valid
+  if (
+    urlParams.dataStructure !== initialDataStructure ||
+    urlParams.difficulty !== initialDifficulty
+  ) {
+    updateUrlParams(initialDataStructure, initialDifficulty);
+  }
+
   const savedCode = loadUserCode(initialDataStructure, initialDifficulty);
   const savedHintsRevealed = loadHintsRevealed(initialDataStructure, initialDifficulty);
 
@@ -141,6 +161,9 @@ const useAppStore = create<AppState>((set, get) => {
       const savedCode = loadUserCode(dataStructure, newDifficulty);
       const savedHints = loadHintsRevealed(dataStructure, newDifficulty);
 
+      // Update URL params
+      updateUrlParams(dataStructure, newDifficulty);
+
       set({
         selectedDataStructure: dataStructure,
         selectedDifficulty: newDifficulty,
@@ -162,6 +185,9 @@ const useAppStore = create<AppState>((set, get) => {
       // Load code for new difficulty
       const savedCode = loadUserCode(state.selectedDataStructure, difficulty);
       const savedHints = loadHintsRevealed(state.selectedDataStructure, difficulty);
+
+      // Update URL params
+      updateUrlParams(state.selectedDataStructure, difficulty);
 
       set({
         selectedDifficulty: difficulty,

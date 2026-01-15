@@ -5,7 +5,14 @@ import { PresetSelector } from "./PresetSelector";
 import { RunButton } from "./RunButton";
 import useAppStore, { DataStructureType } from "../../store/useAppStore";
 import { skeletonCodeSystem } from "../../templates";
-import { arrayTests } from "../../lib/testing/testCases";
+import {
+  arrayTests,
+  linkedListTests,
+  stackQueueTests,
+  binaryTreeTests,
+  graphTests,
+  hashMapTests,
+} from "../../lib/testing/testCases";
 
 const DATA_STRUCTURE_OPTIONS: { value: DataStructureType; label: string }[] = [
   { value: "array", label: "Array" },
@@ -42,7 +49,17 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
     switch (selectedDataStructure) {
       case "array":
         return arrayTests.find((t) => t.difficulty === selectedDifficulty);
-      // TODO: Add other data structures
+      case "linkedList":
+        return linkedListTests.find((t) => t.difficulty === selectedDifficulty);
+      case "stack":
+      case "queue":
+        return stackQueueTests.find((t) => t.difficulty === selectedDifficulty);
+      case "tree":
+        return binaryTreeTests.find((t) => t.difficulty === selectedDifficulty);
+      case "graph":
+        return graphTests.find((t) => t.difficulty === selectedDifficulty);
+      case "hashMap":
+        return hashMapTests.find((t) => t.difficulty === selectedDifficulty);
       default:
         return arrayTests.find((t) => t.difficulty === selectedDifficulty);
     }

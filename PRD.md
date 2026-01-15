@@ -1,1167 +1,640 @@
-# Data Structure Visualization Application PRD
+# Product Requirements Document
 
-A minimalist CodePen-like application with a code editor on the left and real-time data structure visualization on the right. Users write JavaScript algorithms that manipulate data structures, with 3 test cases per structure displayed simultaneously. **100% client-side rendered with no backend.**
+## Project: Data Structure Visualization Platform - Ralph Iteration #1
 
-**Key Constraint**: This application must be entirely client-side rendered with no backend server.
-
----
-
-## 📋 Document Purpose
-
-This PRD serves as **comprehensive reference documentation** for the project's architecture, design decisions, and technical specifications.
-
-**For AI Agent Development (Ralph Wiggum):**
-
-- Use **PRD-RALPH.json** as the primary task list
-- PRD-RALPH.json follows Ralph Wiggum methodology with JSON structure and `passes` field
-- This document (PRD.md) provides supporting context and detailed specifications
-- Ralph agents should reference this document for technical details but execute tasks from PRD-RALPH.json
+This PRD follows the [Ralph Wiggum methodology](https://www.aihero.dev/getting-started-with-ralph) for autonomous AI development.
 
 ---
 
-## Technology Stack
+## User Stories
 
-### Framework: **React 19**
+### US-001: Fix Data Structure Template Registration
 
-- Massive ecosystem with 190M+ weekly npm downloads
-- Battle-tested with extensive third-party library support
-- Framer Motion for animations integrates seamlessly
-- `react-resizable-panels` for split pane layout
+**Category**: Bug Fix - Critical
 
-**Why not SolidJS?** While SolidJS offers better raw performance, its smaller ecosystem (~500k weekly downloads) means fewer ready-made solutions. React's mature ecosystem reduces development time and risk.
+**Description**: The data structure selector throws "No skeleton template found" errors when selecting Stack, Queue, Binary Tree, Graph, or Hash Map options. Only Array and Linked List have registered templates.
 
-### Build Tool: **Vite**
+**Current Behavior**:
 
-- Fast HMR and dev server
-- Excellent React support via `@vitejs/plugin-react`
-- Modern ESM-first approach
-- Tree-shaking to reduce bundle size
+```
+Uncaught Error: No skeleton template found for stack (easy)
+    at SkeletonCodeSystemImpl.getSkeletonCode (skeletonCodeSystem.ts:43:13)
+```
 
-### Code Editor: **CodeMirror 6**
+**Expected Behavior**: All data structures should load appropriate skeleton code templates without errors.
 
-- Lightweight (~300KB vs Monaco's ~2.4MB+)
-- Full JavaScript IntelliSense
-- Syntax highlighting, error detection, autocomplete
-- Excellent performance for client-side apps
+**Steps to Verify**:
 
-### Visualization Engine: **D3.js + SVG**
+1. Run `npm run dev` and open the application
+2. Select "Stack" from the data structure dropdown
+3. Verify skeleton code loads without error
+4. Repeat for "Queue", "Binary Tree", "Graph", and "Hash Map"
+5. Switch between all difficulty levels (easy/medium/hard) for each structure
+6. Run `npm run validate` to ensure all tests pass
 
-- D3.js for layout algorithms (trees, force-directed graphs)
-- SVG-based rendering for crisp visuals
-- Industry standard with extensive documentation
+**Acceptance Criteria**:
 
-**Performance notes**:
+- [x] Stack templates registered for all 3 difficulty levels
+- [x] Queue templates registered for all 3 difficulty levels
+- [x] Binary Tree templates registered for all 3 difficulty levels
+- [x] Graph templates registered for all 3 difficulty levels
+- [x] Hash Map templates registered for all 3 difficulty levels
+- [x] No console errors when switching between any data structures
+- [x] All templates follow the same pattern as array/linkedList templates
+- [x] Templates are registered in `src/templates/index.ts`
+- [x] All existing tests continue to pass
 
-- SVG is CPU-rendered; works well for educational dataset sizes
-- Use `requestAnimationFrame` for smooth animations
-- Canvas fallback available for Graph visualizer if force layouts get heavy
+**Dependencies**: None
 
-### Animation: **Framer Motion**
+**Priority**: P0 (Blocker)
 
-- Comprehensive API with variant system
-- Excellent React integration
-- Layout animations built-in
-- Active community and documentation
+**Status**: `complete`
 
-### Code Execution: **Sandboxed iframe with srcdoc**
-
-- Execute user code safely in isolated environment
-- Use `sandbox="allow-scripts"` attribute
-- Communicate via `postMessage` with origin verification
-- Timeout mechanisms for infinite loop protection
-
-### Code Instrumentation: **SWC WASM**
-
-- `@swc/wasm-web` for browser-based AST transformation (20-70x faster than Babel)
-- Transform user code to capture operations for visualization
-- Inject loop counters for infinite loop detection
-- Generate source maps for debugging
-
-### Client-Side Testing: **Vitest expect (bundled)**
-
-- Vitest's `expect` function bundled for sandbox use
-- BDD-style assertions for readable tests
-- Executes in sandboxed iframe alongside user code
-- Results sent back via `postMessage`
-
-### Icons: **Tabler Icons**
-
-- Comprehensive icon set with consistent design
-- Tree-shakeable imports
-- Used strategically for UI controls (play, hints, examples, step controls)
+**Passes**: `true`
 
 ---
 
-## UI/UX Principles
+### US-002: Implement Proper Linked List Visualization
 
-### Minimalist Design
+**Category**: Feature - Visualization
 
-- Clean, uncluttered interfaces focusing on essential elements
-- Single theme only (no dark mode toggle)
-- Strategic use of icons without overwhelming the interface
-- Immediate visual feedback from visualizations
+**Description**: The current Linked List visualization uses a bar chart (like arrays), which doesn't properly represent the node-and-pointer structure of a linked list. Need to research and implement a proper visualization showing nodes connected by arrows/pointers.
 
-### Real Estate Optimization
+**Current Behavior**: Linked lists are visualized as bars, identical to array visualization.
 
-- Data structure selection via compact dropdown (not button grid)
-- Hints accessible via single icon button (modal on click)
-- All 3 test cases visible simultaneously (no difficulty filter)
-- Floating controls for visualization to save space
-- Play button positioned above editor for running tests
+**Expected Behavior**: Linked lists should display as a series of nodes (boxes) with arrows pointing from one node to the next, clearly showing the pointer-based structure.
 
-### Immediate Feedback
+**Research Requirements**:
 
-- Visualizations auto-play all steps immediately on code execution
-- No speed controls - instant playback with replay option
-- Horizontal slider for manual step-through
-- Floating step back/forward buttons for granular control
+- Study standard linked list visualization patterns from educational resources
+- Ensure visualization shows:
+  - Individual nodes as boxes/rectangles containing values
+  - Pointer arrows connecting nodes
+  - Head and tail markers
+  - Null pointer at the end
+  - Visual distinction between current node, comparing nodes, and found nodes during operations
 
----
+**Steps to Verify**:
 
-## Test Cases System
+1. Run `npm run dev`
+2. Select "Linked List" from dropdown
+3. Run test code and observe visualization
+4. Verify nodes appear as connected boxes with arrows
+5. Verify operations (find, reverse, cycle detection) are visually clear
+6. Run `npm run test:run` to ensure visualization tests pass
+7. Run `npm run validate` for full validation
 
-Each data structure includes **3 test cases** at different difficulty levels, all visible simultaneously. Tests run entirely client-side using bundled Vitest expect in the sandboxed iframe.
+**Acceptance Criteria**:
 
-### Test Case Structure
+- [ ] Nodes rendered as rectangles/boxes with values inside
+- [ ] Arrows/pointers connect consecutive nodes
+- [ ] Head marker clearly indicates first node
+- [ ] Tail marker clearly indicates last node
+- [ ] Null pointer visualized at list end
+- [ ] Find operation highlights nodes during traversal
+- [ ] Reverse operation shows pointer direction changes
+- [ ] Cycle detection shows slow/fast pointer movement
+- [ ] Visualization responds to all TrackedLinkedList operations
+- [ ] D3Adapter pattern maintained (no React/D3 conflicts)
+- [ ] Animation smooth at 60fps
+- [ ] Responsive to container size changes
+- [ ] Tests pass with >80% coverage
 
-```typescript
-interface TestCase {
-  id: string;
-  name: string;
-  difficulty: "easy" | "medium" | "hard";
-  description: string;
+**Dependencies**: None
 
-  // Initial data structure state
-  initialData: any;
+**Priority**: P0 (Blocker)
 
-  // Expected final state after user code runs
-  expectedOutput: any;
+**Status**: `pending`
 
-  // Vitest expect assertions (runs in sandbox)
-  assertions: string;
-
-  // Reference solution (for "Show Solution" feature)
-  referenceSolution: string;
-
-  // Skeleton code with TODOs for user to fill in
-  skeletonCode: string;
-
-  // Hints (progressively revealed via modal)
-  hints: string[];
-}
-```
-
-### Example: Array Sorting Test Cases
-
-```javascript
-const arraySortingTests = [
-  {
-    id: "array-sort-easy",
-    name: "Sort Small Array",
-    difficulty: "easy",
-    description: "Sort an array of 5 numbers in ascending order",
-    initialData: [5, 2, 8, 1, 9],
-    expectedOutput: [1, 2, 5, 8, 9],
-    assertions: `
-      expect(result).toEqual([1, 2, 5, 8, 9]);
-      expect(result).toHaveLength(5);
-    `,
-    referenceSolution: `
-      // Example usage: Sort an array of numbers
-
-      function sort(arr) {
-        return arr.slice().sort((a, b) => a - b);
-      }
-    `,
-    skeletonCode: `
-      // Example usage: Sort an array of numbers
-
-      function sort(arr) {
-        // TODO: Implement sorting algorithm
-        // Hint: You can use arr.sort() with a compare function
-
-      }
-    `,
-    hints: [
-      "JavaScript arrays have a built-in sort() method",
-      "sort() needs a compare function for numbers: (a, b) => a - b",
-      "Consider using slice() first to avoid mutating the original array",
-    ],
-  },
-  {
-    id: "array-sort-medium",
-    name: "Bubble Sort Implementation",
-    difficulty: "medium",
-    description: "Implement bubble sort without using built-in sort()",
-    initialData: [64, 34, 25, 12, 22, 11, 90],
-    expectedOutput: [11, 12, 22, 25, 34, 64, 90],
-    assertions: `
-      expect(result).toEqual([11, 12, 22, 25, 34, 64, 90]);
-      expect(steps.filter(s => s.type === 'swap').length).toBeGreaterThan(0);
-    `,
-    referenceSolution: `
-      // Example usage: Implement bubble sort algorithm
-
-      function bubbleSort(arr) {
-        const n = arr.length;
-        for (let i = 0; i < n - 1; i++) {
-          for (let j = 0; j < n - i - 1; j++) {
-            if (arr[j] > arr[j + 1]) {
-              [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-            }
-          }
-        }
-        return arr;
-      }
-    `,
-    skeletonCode: `
-      // Example usage: Implement bubble sort algorithm
-
-      function bubbleSort(arr) {
-        const n = arr.length;
-        // TODO: Implement nested loops
-        // Outer loop: iterate n-1 times
-        // Inner loop: compare adjacent elements and swap if needed
-
-        return arr;
-      }
-    `,
-    hints: [
-      "Bubble sort compares adjacent elements and swaps them if out of order",
-      "You need two nested loops",
-      "Use destructuring to swap: [arr[j], arr[j+1]] = [arr[j+1], arr[j]]",
-    ],
-  },
-  {
-    id: "array-sort-hard",
-    name: "Quick Sort Implementation",
-    difficulty: "hard",
-    description: "Implement quick sort with partition visualization",
-    initialData: [10, 80, 30, 90, 40, 50, 70],
-    expectedOutput: [10, 30, 40, 50, 70, 80, 90],
-    assertions: `
-      expect(result).toEqual([10, 30, 40, 50, 70, 80, 90]);
-      expect(steps.filter(s => s.type === 'partition').length).toBeGreaterThan(0);
-    `,
-    referenceSolution: `
-      // Example usage: Implement quick sort with partition
-
-      function quickSort(arr, low = 0, high = arr.length - 1) {
-        if (low < high) {
-          const pi = partition(arr, low, high);
-          quickSort(arr, low, pi - 1);
-          quickSort(arr, pi + 1, high);
-        }
-        return arr;
-      }
-
-      function partition(arr, low, high) {
-        const pivot = arr[high];
-        let i = low - 1;
-        for (let j = low; j < high; j++) {
-          if (arr[j] < pivot) {
-            i++;
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-          }
-        }
-        [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
-        return i + 1;
-      }
-    `,
-    skeletonCode: `
-      // Example usage: Implement quick sort with partition
-
-      function quickSort(arr, low = 0, high = arr.length - 1) {
-        // TODO: Implement recursive quick sort
-        // Base case: if low >= high, return
-        // 1. Call partition to get pivot index
-        // 2. Recursively sort left and right subarrays
-
-        return arr;
-      }
-
-      function partition(arr, low, high) {
-        // TODO: Implement partition
-        // 1. Choose pivot (last element)
-        // 2. Move smaller elements to left of pivot
-        // 3. Return final pivot position
-
-      }
-    `,
-    hints: [
-      "Quick sort uses divide-and-conquer with a pivot element",
-      "The partition function rearranges elements around the pivot",
-      "Elements smaller than pivot go left, larger go right",
-    ],
-  },
-];
-```
-
-### Skeleton Code Format
-
-**Important**: Skeleton code follows this format:
-
-```javascript
-// Example usage: [Brief description of what the code does]
-
-function myFunction() {
-  // TODO comments and implementation hints
-}
-```
-
-**Rules**:
-
-- "Example usage" comment always at the top
-- One empty line between comment and function
-- No "Your code here" comments
-- TODOs and hints within function body
+**Passes**: `false`
 
 ---
 
-## Client-Side Test Execution Architecture
+### US-003: Implement Stack Visualization
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  Main App (React)                                                   │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  ┌──────────────────┐         ┌────────────────────────────────────┐│
-│  │  Play Button     │         │  Sandboxed iframe (srcdoc)         ││
-│  │  (Above Editor)  │         │  sandbox="allow-scripts"           ││
-│  │                  │         │                                    ││
-│  │  [▶ Run Tests]   │ ──────▶ │  1. Load bundled Vitest expect     ││
-│  │                  │         │  2. Load instrumented user code    ││
-│  │                  │         │  3. Execute with test data         ││
-│  │                  │         │  4. Run expect assertions          ││
-│  │                  │         │  5. postMessage results back       ││
-│  └──────────────────┘         └────────────────────────────────────┘│
-│           │                                  │                      │
-│           │                                  │                      │
-│           ▼                                  ▼                      │
-│  ┌─────────────────────────────────────────────────────────────────┐│
-│  │  Test Results Panel (All 3 visible)                             ││
-│  │  ✓ Easy: Sort Small Array (passed)                              ││
-│  │  ✗ Medium: Bubble Sort (failed - expected [11,12...])           ││
-│  │  ○ Hard: Quick Sort (not run)                                   ││
-│  └─────────────────────────────────────────────────────────────────┘│
-└─────────────────────────────────────────────────────────────────────┘
-```
+**Category**: Feature - Visualization
 
-### Test Runner Implementation
+**Description**: Create proper visualization for Stack data structure showing LIFO (Last In First Out) behavior with vertical stacking of elements.
 
-```typescript
-// src/lib/testing/testRunner.ts
+**Expected Behavior**: Stack should visualize as a vertical column where elements are pushed onto the top and popped from the top.
 
-interface TestResult {
-  testId: string;
-  passed: boolean;
-  error?: string;
-  executionTime: number;
-  steps: VisualizationStep[]; // Captured for animation
-}
+**Research Requirements**:
 
-async function runTest(userCode: string, testCase: TestCase): Promise<TestResult> {
-  return new Promise((resolve) => {
-    const iframe = document.createElement("iframe");
-    iframe.sandbox = "allow-scripts";
+- Study standard stack visualization patterns
+- Show push operation adding to top
+- Show pop operation removing from top
+- Highlight top element
+- Show stack growth/shrinkage vertically
 
-    const sandboxCode = `
-      <script src="[bundled-vitest-expect]"></script>
-      <script>
-        const steps = [];
+**Steps to Verify**:
 
-        // Capture function for visualization
-        function __capture(operation, target, args, result) {
-          steps.push({ type: operation, target, args, result, timestamp: Date.now() });
-        }
+1. Run `npm run dev`
+2. Select "Stack" from dropdown
+3. Run test code for each difficulty level
+4. Verify visualization shows vertical stacking
+5. Verify push/pop operations are visually clear
+6. Run `npm run test:run` and `npm run validate`
 
-        try {
-          // User's instrumented code
-          ${instrumentCode(userCode)}
+**Acceptance Criteria**:
 
-          // Initialize with test data
-          const input = ${JSON.stringify(testCase.initialData)};
-          const result = ${getFunctionCall(userCode)}(input);
+- [ ] Elements displayed vertically as a stack
+- [ ] Push operation animates element added to top
+- [ ] Pop operation animates element removed from top
+- [ ] Top element clearly marked/highlighted
+- [ ] Stack grows upward or downward consistently
+- [ ] Empty stack state shows placeholder
+- [ ] Works with TrackedStack data structure
+- [ ] All stack tests trigger appropriate visualizations
+- [ ] D3Adapter pattern followed
+- [ ] 60fps animation performance
+- [ ] Tests pass with >80% coverage
 
-          // Run assertions
-          ${testCase.assertions}
+**Dependencies**: US-001
 
-          parent.postMessage({
-            type: 'test-result',
-            passed: true,
-            steps: steps
-          }, '*');
-        } catch (error) {
-          parent.postMessage({
-            type: 'test-result',
-            passed: false,
-            error: error.message,
-            steps: steps
-          }, '*');
-        }
-      </script>
-    `;
+**Priority**: P0 (Blocker)
 
-    iframe.srcdoc = sandboxCode;
+**Status**: `pending`
 
-    // Listen for results
-    window.addEventListener("message", (event) => {
-      if (event.data.type === "test-result") {
-        resolve({
-          testId: testCase.id,
-          passed: event.data.passed,
-          error: event.data.error,
-          executionTime: Date.now() - startTime,
-          steps: event.data.steps,
-        });
-        iframe.remove();
-      }
-    });
-
-    document.body.appendChild(iframe);
-  });
-}
-```
+**Passes**: `false`
 
 ---
 
-## Handling Incomplete Code
+### US-004: Implement Queue Visualization
 
-When user code is incomplete or hasn't been written yet, the visualization panel shows skeleton state.
+**Category**: Feature - Visualization
 
-### Visualization Modes
+**Description**: Create proper visualization for Queue data structure showing FIFO (First In First Out) behavior with horizontal flow.
 
-```typescript
-type VisualizationMode =
-  | "user-code" // Visualize user's actual code execution
-  | "expected-output" // Show what the result SHOULD look like
-  | "reference" // Animate the reference solution
-  | "skeleton"; // Show initial state, waiting for code
-```
+**Expected Behavior**: Queue should visualize as a horizontal line where elements are enqueued at the back and dequeued from the front.
 
-### Mode Behaviors
+**Research Requirements**:
 
-#### 1. **Skeleton Mode** (Default when code is incomplete)
+- Study standard queue visualization patterns
+- Show enqueue operation adding to back/rear
+- Show dequeue operation removing from front
+- Highlight front and rear pointers
+- Show queue growth/shrinkage horizontally
 
-- Display the initial data structure state
-- Show TODO markers in visualization
-- Grayed-out "expected" overlay showing target state
-- Prompt: "Complete the function to see the animation"
+**Steps to Verify**:
 
-#### 2. **Expected Output Mode** (Toggle: "Show Expected")
+1. Run `npm run dev`
+2. Select "Queue" from dropdown
+3. Run test code for each difficulty level
+4. Verify visualization shows horizontal FIFO flow
+5. Verify enqueue/dequeue operations are visually clear
+6. Run `npm run test:run` and `npm run validate`
 
-- Animates what SHOULD happen without revealing code
-- User can study the expected behavior
-- Steps are labeled but implementation hidden
-- Useful for understanding the problem
+**Acceptance Criteria**:
 
-#### 3. **Reference Solution Mode** (Toggle: "Show Solution")
+- [ ] Elements displayed horizontally as a queue
+- [ ] Enqueue operation animates element added to rear
+- [ ] Dequeue operation animates element removed from front
+- [ ] Front and rear pointers clearly marked
+- [ ] Queue flows left-to-right or right-to-left consistently
+- [ ] Empty queue state shows placeholder
+- [ ] Works with TrackedQueue data structure
+- [ ] All queue tests trigger appropriate visualizations
+- [ ] D3Adapter pattern followed
+- [ ] 60fps animation performance
+- [ ] Tests pass with >80% coverage
 
-- Reveals and animates the reference solution
-- Code appears in editor (read-only overlay or side panel)
-- Full step-by-step visualization
-- Warning: "This will show you the answer"
+**Dependencies**: US-001
 
-#### 4. **User Code Mode** (After code compiles)
+**Priority**: P0 (Blocker)
 
-- Normal execution of user's code
-- Red highlights for errors/unexpected behavior
-- Green highlights when matching expected output
-- Side-by-side comparison available
+**Status**: `pending`
 
-### Progressive Hints System
-
-Hints are accessed via an icon button (absolute positioned in top-right of editor). Clicking opens a modal:
-
-```typescript
-// src/components/EditorPanel/HintModal.tsx
-
-function HintModal({ testCase, hintsRevealed, onRevealHint, onClose }) {
-  return (
-    <dialog open className="hints-modal">
-      <header>
-        <h3>Hints ({hintsRevealed}/{testCase.hints.length})</h3>
-        <button onClick={onClose} aria-label="Close hints">
-          <IconX />
-        </button>
-      </header>
-
-      <div className="hints-list">
-        {testCase.hints.map((hint, index) => (
-          <div key={index} className="hint">
-            {index < hintsRevealed ? (
-              <p>{hint}</p>
-            ) : (
-              <button onClick={() => onRevealHint(index)}>
-                Reveal Hint {index + 1}
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-    </dialog>
-  );
-}
-```
+**Passes**: `false`
 
 ---
 
-## Supported Data Structures
+### US-005: Implement Binary Tree Visualization
 
-Each data structure includes 3 test cases (Easy, Medium, Hard) visible simultaneously.
+**Category**: Feature - Visualization
 
-### 1. **Arrays**
+**Description**: Create proper visualization for Binary Tree data structure showing hierarchical node relationships with parent-child connections.
 
-- Visual: Horizontal bar representation
-- Operations: push, pop, shift, unshift, splice, sort, reverse
-- Animations: Element movement, swaps, highlights during sorting
-- **Test Cases**:
-  - Easy: Basic sorting with built-in methods
-  - Medium: Implement bubble sort
-  - Hard: Implement quick sort with partition visualization
+**Expected Behavior**: Binary tree should visualize as a hierarchical tree with nodes connected by edges, showing parent-child relationships.
 
-### 2. **Linked Lists** (Singly & Doubly)
+**Research Requirements**:
 
-- Visual: Nodes connected by arrows
-- Operations: insert, delete, traverse, reverse
-- Animations: Pointer updates, node additions/removals
-- **Test Cases**:
-  - Easy: Traverse and find an element
-  - Medium: Reverse a linked list
-  - Hard: Detect and remove cycle
+- Study standard tree visualization algorithms (Reingold-Tilford, etc.)
+- Show nodes arranged in levels/depth
+- Show edges connecting parent to children
+- Handle tree traversals (inorder, preorder, postorder)
+- Handle tree operations (insert, delete, search)
 
-### 3. **Stacks & Queues**
+**Steps to Verify**:
 
-- Visual: Vertical stack / horizontal queue representation
-- Operations: push/pop (stack), enqueue/dequeue (queue)
-- Animations: Element sliding in/out
-- **Test Cases**:
-  - Easy: Balanced parentheses checker
-  - Medium: Implement queue using two stacks
-  - Hard: Min stack with O(1) getMin
+1. Run `npm run dev`
+2. Select "Binary Tree" from dropdown
+3. Run test code for each difficulty level
+4. Verify visualization shows hierarchical tree structure
+5. Verify tree operations are visually clear
+6. Run `npm run test:run` and `npm run validate`
 
-### 4. **Binary Trees / BST / Heaps**
+**Acceptance Criteria**:
 
-- Visual: D3 tree layout with nodes and edges
-- Operations: insert, delete, search, traverse (in/pre/post-order)
-- Animations: Tree rebalancing, traversal highlighting, rotations
-- **Test Cases**:
-  - Easy: In-order traversal
-  - Medium: Validate BST property
-  - Hard: Balance an unbalanced BST
+- [ ] Nodes arranged hierarchically by depth/level
+- [ ] Edges connect parent nodes to children
+- [ ] Root node clearly marked at top
+- [ ] Leaf nodes clearly identifiable
+- [ ] Left and right children positioned correctly
+- [ ] Tree balancing/rotations visualized if applicable
+- [ ] Traversal operations highlight nodes in correct order
+- [ ] Search operations show comparison path
+- [ ] Works with TrackedBinaryTree data structure
+- [ ] All tree tests trigger appropriate visualizations
+- [ ] D3Adapter pattern followed
+- [ ] 60fps animation performance
+- [ ] Handles trees of varying sizes gracefully
+- [ ] Tests pass with >80% coverage
 
-### 5. **Graphs**
+**Dependencies**: US-001
 
-- Visual: Force-directed or hierarchical layout
-- Operations: addVertex, addEdge, BFS, DFS, shortest path
-- Animations: Edge traversal, visited node highlighting
-- **Test Cases**:
-  - Easy: BFS traversal
-  - Medium: Detect cycle in directed graph
-  - Hard: Dijkstra's shortest path
+**Priority**: P1 (High)
 
-### 6. **Hash Maps**
+**Status**: `pending`
 
-- Visual: Bucket array with collision chains
-- Operations: set, get, delete, collision handling
-- Animations: Hashing visualization, collision resolution
-- **Test Cases**:
-  - Easy: Implement basic get/set
-  - Medium: Handle collisions with chaining
-  - Hard: Implement open addressing with linear probing
+**Passes**: `false`
 
 ---
 
-## Architecture
+### US-006: Implement Graph Visualization
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                              App Shell                                  │
-├─────────────────────────────┬───────────────────────────────────────────┤
-│                             │                                           │
-│      Code Editor Panel      │       Visualization Panel                 │
-│     ┌─────────────────┐     │     ┌───────────────────────────────┐     │
-│     │  [▶] Play Tests │     │     │                               │     │
-│     ├─────────────────┤     │     │   SVG/Canvas Renderer         │     │
-│     │ Data Structure  │     │     │                               │     │
-│     │   [Dropdown ▼]  │     │     │   - Data Structure View       │     │
-│     ├─────────────────┤     │     │   - Animation Layer           │     │
-│     │                 │     │     │                               │     │
-│     │ CodeMirror 6    │     │     │   ┌─────────────────────┐     │     │
-│     │                 │     │     │   │ [↻] [◀] [▶]       │     │     │
-│     │ - JS/TS         │     │     │   │ Floating controls   │     │     │
-│     │ - Autocomplete  │     │     │   └─────────────────────┘     │     │
-│     │ - Error hints   │     │     │                               │     │
-│     │                 │     │     │   ────────●──────────────     │     │
-│     │           [💡]  │     │     │   Step slider                 │     │
-│     │    (hints icon) │     │     │                               │     │
-│     └─────────────────┘     │     └───────────────────────────────┘     │
-│                             │                                           │
-│     ┌──────────────────┐    │     ┌───────────────────────────────┐     │
-│     │ Examples         │    │     │  Test Results (All 3)         │     │
-│     └──────────────────┘    │     │  ✓ Easy  ✗ Medium  ○ Hard     │     │
-│                             │     └───────────────────────────────┘     │
-│                             │                                           │
-│     ┌─────────────────┐     │     ┌───────────────────────────────┐     │
-│     │ Test Cases (×3) │     │     │  Console Output               │     │
-│     │ - Easy          │     │     │  - Logs                       │     │
-│     │ - Medium        │     │     │  - Return values              │     │
-│     │ - Hard          │     │     └───────────────────────────────┘     │
-│     └─────────────────┘     │                                           │
-└─────────────────────────────┴───────────────────────────────────────────┘
-```
+**Category**: Feature - Visualization
 
----
+**Description**: Create proper visualization for Graph data structure showing vertices and edges with support for directed/undirected graphs.
 
-## Core Components
+**Expected Behavior**: Graph should visualize as vertices (nodes) connected by edges (lines/arrows) with force-directed or fixed layout.
 
-### 1. `<App />`
+**Research Requirements**:
 
-- Main layout with resizable split panes (`react-resizable-panels`)
-- Global state management (Zustand)
-- Single theme (no dark mode toggle)
+- Study graph visualization algorithms (force-directed layout, etc.)
+- Show vertices as nodes with labels
+- Show edges as lines (undirected) or arrows (directed)
+- Handle graph operations (add vertex/edge, search, traversal)
+- Consider weighted edges display
 
-### 2. `<EditorPanel />`
+**Steps to Verify**:
 
-- CodeMirror 6 wrapper
-- Play button for running all tests (positioned above editor)
-- Data structure dropdown selector
-- Examples button (no emoji)
-- Hints icon button (absolute positioned, top right) opens modal
-- Skeleton code templates with TODOs
+1. Run `npm run dev`
+2. Select "Graph" from dropdown
+3. Run test code for each difficulty level
+4. Verify visualization shows graph structure
+5. Verify graph operations are visually clear
+6. Run `npm run test:run` and `npm run validate`
 
-### 3. `<VisualizationPanel />`
+**Acceptance Criteria**:
 
-- Dynamic renderer based on selected data structure
-- Auto-plays all steps immediately on code execution
-- Floating controls: Replay, Step Back, Step Forward
-- Horizontal slider for manual step navigation
-- No speed controls
+- [ ] Vertices rendered as labeled nodes
+- [ ] Edges rendered as lines or arrows
+- [ ] Directed graphs show arrow directions
+- [ ] Weighted edges show weights if applicable
+- [ ] Graph traversals (BFS, DFS) highlight nodes in order
+- [ ] Search operations show exploration path
+- [ ] Connected components visually distinguishable
+- [ ] Works with TrackedGraph data structure
+- [ ] All graph tests trigger appropriate visualizations
+- [ ] D3Adapter pattern followed
+- [ ] 60fps animation performance for reasonable graph sizes
+- [ ] Handles graphs of varying densities
+- [ ] Tests pass with >80% coverage
 
-### 4. `<TestPanel />`
+**Dependencies**: US-001
 
-- Displays all 3 test cases simultaneously (Easy, Medium, Hard)
-- No difficulty filter buttons
-- Shows pass/fail status with error messages
-- Displays expected vs actual output diff
+**Priority**: P1 (High)
 
-### 5. Data Structure Visualizers
+**Status**: `pending`
 
-- `<ArrayVisualizer />`
-- `<LinkedListVisualizer />`
-- `<StackQueueVisualizer />`
-- `<TreeVisualizer />`
-- `<GraphVisualizer />`
-- `<HashMapVisualizer />`
-
-### 6. `<ConsoleOutput />`
-
-- Displays console.log output from user code
-- Shows execution results and errors
-- Test assertion failures with details
-
-### 7. `<HintModal />`
-
-- Modal dialog for progressive hint reveal
-- Triggered by hints icon in editor panel
-- Shows total hints and reveals progressively
-- Close button with icon
-
-### 8. `<PresetSelector />`
-
-- Modal dialog for algorithm examples
-- Category filtering
-- Complexity badges
-- Loads preset code into editor
-- No emoji in trigger button
+**Passes**: `false`
 
 ---
 
-## Execution Model
+### US-007: Implement Hash Map Visualization
 
-### Instrumented Execution via SWC
+**Category**: Feature - Visualization
 
-User code is transformed at runtime using `@swc/wasm-web` to capture each operation:
+**Description**: Create proper visualization for Hash Map data structure showing buckets, keys, values, and collision handling.
 
-```javascript
-// User writes:
-arr.push(5);
-arr.sort((a, b) => a - b);
+**Expected Behavior**: Hash map should visualize as an array of buckets with key-value pairs, showing hash function distribution and collision resolution.
 
-// Transformed to:
-__capture("push", arr, [5]);
-arr.push(5);
-__capture("sort", arr, [(a, b) => a - b]);
-arr.sort((a, b) => a - b);
-```
+**Research Requirements**:
 
-Each captured operation becomes an animation step.
+- Study hash map visualization patterns
+- Show array of buckets/slots
+- Show key-value pairs within buckets
+- Visualize hash function mapping keys to buckets
+- Show collision handling (chaining or open addressing)
 
-### SWC Transformation Plugin
+**Steps to Verify**:
 
-```javascript
-// src/lib/execution/instrumenter.ts
+1. Run `npm run dev`
+2. Select "Hash Map" from dropdown
+3. Run test code for each difficulty level
+4. Verify visualization shows bucket array structure
+5. Verify operations (get, set, delete) are visually clear
+6. Run `npm run test:run` and `npm run validate`
 
-import { initializeSWC } from '@swc/wasm-web';
+**Acceptance Criteria**:
 
-// Initialize once on app mount
-await initializeSWC();
+- [ ] Buckets displayed as array slots
+- [ ] Key-value pairs visible within buckets
+- [ ] Hash function visualization shows key mapping to bucket
+- [ ] Collision handling visualized (chaining or open addressing)
+- [ ] Get operation highlights bucket access and key comparison
+- [ ] Set operation shows insertion and collision resolution
+- [ ] Delete operation shows removal
+- [ ] Load factor/capacity displayed
+- [ ] Works with TrackedHashMap data structure
+- [ ] All hash map tests trigger appropriate visualizations
+- [ ] D3Adapter pattern followed
+- [ ] 60fps animation performance
+- [ ] Tests pass with >80% coverage
 
-export function instrumentCode(code: string): string {
-  const result = transformSync(code, {
-    jsc: {
-      parser: {
-        syntax: 'ecmascript',
-      },
-      transform: {
-        // Inject loop counters for infinite loop detection
-        // Add __capture() calls for operation tracking
-      },
-    },
-    sourceMaps: 'inline',
-  });
-  return result.code;
-}
-```
+**Dependencies**: US-001
 
-### Execution Flow
+**Priority**: P1 (High)
 
-1. User clicks play button above editor
-2. Code is parsed and instrumented via SWC
-3. Instrumented code runs in sandboxed iframe
-4. Operations are captured as "steps" via `__capture()`
-5. Steps sent to main app via `postMessage`
-6. Visualization panel auto-plays all steps immediately
-7. User can replay or step through manually via slider/floating buttons
+**Status**: `pending`
 
-### Sandbox Security
-
-```html
-<iframe sandbox="allow-scripts" srcdoc="..."></iframe>
-```
-
-Security measures:
-
-- `sandbox="allow-scripts"` - allows JS but blocks:
-  - Same-origin access to parent
-  - Form submission
-  - Popups and navigation
-- Timeout mechanism (5 second default)
-- `postMessage` with type whitelist and schema validation
-- Message correlation with unique IDs
+**Passes**: `false`
 
 ---
 
-## Visualization Controls
+### US-008: Fix Difficulty Badge Text Alignment
 
-### Auto-Play Behavior
+**Category**: Bug Fix - UI/UX
 
-When user code executes successfully:
+**Description**: The "Easy" badge next to the data structure selector has incorrect text padding, with text padded to the top of its container instead of being vertically centered.
 
-1. **Immediate Auto-Play**: All steps play automatically (no speed control)
-2. **Completion**: Animation plays through all steps once
-3. **Controls Appear**: Replay button and step controls become available
+**Current Behavior**: Badge text appears top-aligned within the badge container.
 
-### Manual Controls
+**Expected Behavior**: Badge text should be vertically centered within the badge container, aligned with other header elements.
 
-**Floating Action Buttons** (positioned over visualization):
+**Location**: `src/styles/global.css` lines 171-178 (`.difficulty-badge`)
 
-- **Replay Button** (`IconPlayerPlay` or `IconReload`): Restarts animation from beginning
-- **Step Back** (`IconArrowLeft` or `IconChevronLeft`): Go to previous step
-- **Step Forward** (`IconArrowRight` or `IconChevronRight`): Go to next step
+**Steps to Verify**:
 
-**Horizontal Slider**:
+1. Run `npm run dev`
+2. Observe the difficulty badge next to the data structure selector
+3. Verify text is vertically centered in the badge
+4. Test on different difficulty levels (Easy, Medium, Hard)
+5. Test on different browsers (Chrome, Firefox, Safari)
+6. Run `npm run validate`
 
-- Positioned below visualization area
-- Allows precise navigation to any step
-- Thumb position indicates current step
-- Total steps visible
+**Acceptance Criteria**:
 
-**No Speed Controls**: Speed option removed for simplicity. All animations play at consistent, optimized speed.
+- [ ] Badge text vertically centered in all difficulty levels
+- [ ] Badge aligns properly with adjacent select dropdown
+- [ ] Badge height consistent across difficulty levels
+- [ ] No visual regression in light/dark themes
+- [ ] Works across Chrome, Firefox, and Safari
+
+**Dependencies**: None
+
+**Priority**: P2 (Medium)
+
+**Status**: `pending`
+
+**Passes**: `false`
 
 ---
 
-## Project Structure
+### US-009: Fix Button Icon Alignment
+
+**Category**: Bug Fix - UI/UX
+
+**Description**: The "Run all tests" and "Play" buttons have icons that are not horizontally aligned with their text labels.
+
+**Current Behavior**: Icons appear misaligned (vertically) relative to button text.
+
+**Expected Behavior**: Icons should be perfectly aligned with button text, creating a cohesive visual appearance.
+
+**Locations**:
+
+- `src/components/EditorPanel/RunButton.tsx` and `RunButton.css`
+- Play button in visualization controls
+
+**Steps to Verify**:
+
+1. Run `npm run dev`
+2. Observe "Run all tests" button above the editor
+3. Observe "Play" button in visualization controls
+4. Verify icons are vertically centered with text
+5. Test on different browsers and screen sizes
+6. Run `npm run validate`
+
+**Acceptance Criteria**:
+
+- [ ] "Run all tests" button icon aligned with text
+- [ ] "Play" button icon aligned with text
+- [ ] Icons maintain alignment on hover states
+- [ ] Icons maintain alignment when button is disabled
+- [ ] Consistent alignment across light/dark themes
+- [ ] Works across Chrome, Firefox, and Safari
+- [ ] No layout shift on button state changes
+
+**Dependencies**: None
+
+**Priority**: P2 (Medium)
+
+**Status**: `pending`
+
+**Passes**: `false`
+
+---
+
+### US-010: Fix Examples Button Alignment
+
+**Category**: Bug Fix - UI/UX
+
+**Description**: The "Examples" button (PresetSelector trigger) has the same alignment issue as other buttons - icon not properly aligned with text.
+
+**Current Behavior**: Button icon appears misaligned relative to button text.
+
+**Expected Behavior**: Button icon should be perfectly aligned with button text.
+
+**Location**: `src/components/EditorPanel/PresetSelector.tsx` and `PresetSelector.css`
+
+**Steps to Verify**:
+
+1. Run `npm run dev`
+2. Observe "Examples" button in the editor header
+3. Verify icon is vertically centered with text
+4. Click button to ensure alignment maintained in hover/active states
+5. Test on different browsers
+6. Run `npm run validate`
+
+**Acceptance Criteria**:
+
+- [ ] Examples button icon aligned with text
+- [ ] Icon maintains alignment on hover states
+- [ ] Icon maintains alignment when button is disabled
+- [ ] Consistent alignment across light/dark themes
+- [ ] Works across Chrome, Firefox, and Safari
+
+**Dependencies**: None
+
+**Priority**: P2 (Medium)
+
+**Status**: `pending`
+
+**Passes**: `false`
+
+---
+
+### US-011: Fix Examples Modal Background Transparency
+
+**Category**: Bug Fix - UI/UX
+
+**Description**: The Examples Modal (PresetSelector modal) has a transparent background instead of the expected semi-transparent dark overlay.
+
+**Current Behavior**: Modal backdrop is transparent or not rendering correctly.
+
+**Expected Behavior**: Modal should have a semi-transparent dark backdrop (rgba(0, 0, 0, 0.5)) with optional blur effect, making the modal content stand out and dimming the background.
+
+**Location**: `src/components/EditorPanel/PresetSelector.css` line 30-39 (`.preset-backdrop`)
+
+**Steps to Verify**:
+
+1. Run `npm run dev`
+2. Click "Examples" button to open modal
+3. Verify backdrop is semi-transparent dark overlay
+4. Verify modal content is clearly visible
+5. Click outside modal to close and verify backdrop disappears
+6. Test in light and dark themes
+7. Run `npm run validate`
+
+**Acceptance Criteria**:
+
+- [ ] Modal backdrop renders with rgba(0, 0, 0, 0.5) background
+- [ ] Backdrop covers entire viewport
+- [ ] Backdrop dims background content
+- [ ] Modal content clearly visible above backdrop
+- [ ] Backdrop closes modal when clicked
+- [ ] Works in both light and dark themes
+- [ ] No console errors or warnings
+
+**Dependencies**: None
+
+**Priority**: P2 (Medium)
+
+**Status**: `pending`
+
+**Passes**: `false`
+
+---
+
+### US-012: Fix Linked List Reference Solution Implementation
+
+**Category**: Bug Fix - Code Correctness
+
+**Description**: The "Show solution" feature for Linked List provides code that uses `list.find()` method, but the tests fail with "list.find is not a function" error. Despite TrackedLinkedList having a find() method, the test execution context doesn't recognize it.
+
+**Current Behavior**:
 
 ```
-vis/
-├── index.html
-├── package.json
-├── vite.config.ts
-├── tsconfig.json
-├── src/
-│   ├── main.tsx                    # Entry point
-│   ├── App.tsx                     # Main app component
-│   ├── components/
-│   │   ├── EditorPanel/
-│   │   │   ├── EditorPanel.tsx
-│   │   │   ├── CodeMirrorEditor.tsx
-│   │   │   ├── DataStructureDropdown.tsx
-│   │   │   ├── RunButton.tsx
-│   │   │   ├── HintButton.tsx
-│   │   │   └── HintModal.tsx
-│   │   ├── VisualizationPanel/
-│   │   │   ├── VisualizationPanel.tsx
-│   │   │   ├── AnimationController.tsx
-│   │   │   ├── StepSlider.tsx
-│   │   │   └── FloatingControls.tsx
-│   │   ├── TestPanel/
-│   │   │   ├── TestPanel.tsx
-│   │   │   └── TestResults.tsx
-│   │   ├── PresetSelector.tsx
-│   │   ├── ConsoleOutput.tsx
-│   │   └── visualizers/
-│   │       ├── ArrayVisualizer.tsx
-│   │       ├── LinkedListVisualizer.tsx
-│   │       ├── StackQueueVisualizer.tsx
-│   │       ├── TreeVisualizer.tsx
-│   │       ├── GraphVisualizer.tsx
-│   │       └── HashMapVisualizer.tsx
-│   ├── lib/
-│   │   ├── dataStructures/          # DS implementations with tracking
-│   │   │   ├── TrackedArray.ts
-│   │   │   ├── LinkedList.ts
-│   │   │   ├── Stack.ts
-│   │   │   ├── Queue.ts
-│   │   │   ├── BinaryTree.ts
-│   │   │   ├── Graph.ts
-│   │   │   └── HashMap.ts
-│   │   ├── execution/
-│   │   │   ├── sandbox.ts           # Sandboxed iframe execution
-│   │   │   ├── instrumenter.ts      # SWC AST transformation
-│   │   │   ├── messageValidation.ts # Defense-in-depth validation
-│   │   │   └── timeout.ts           # Infinite loop protection
-│   │   ├── testing/
-│   │   │   ├── testRunner.ts        # Client-side test execution
-│   │   │   ├── expectBundle.ts      # Bundled Vitest expect
-│   │   │   └── testCases/           # Test definitions per DS
-│   │   │       ├── arrayTests.ts
-│   │   │       ├── linkedListTests.ts
-│   │   │       ├── stackQueueTests.ts
-│   │   │       ├── treeTests.ts
-│   │   │       ├── graphTests.ts
-│   │   │       └── hashMapTests.ts
-│   │   ├── animation/
-│   │   │   ├── stepper.ts           # Animation step management
-│   │   │   └── transitions.ts       # Framer Motion presets
-│   │   └── presets/                 # Algorithm examples
-│   │       ├── array.ts
-│   │       ├── linkedList.ts
-│   │       └── ...
-│   ├── store/
-│   │   └── useAppStore.ts           # Zustand store for global state
-│   ├── templates/                   # Skeleton code per DS/test
-│   │   ├── array/
-│   │   │   ├── easy.ts
-│   │   │   ├── medium.ts
-│   │   │   └── hard.ts
-│   │   ├── linkedList/
-│   │   │   ├── easy.ts
-│   │   │   ├── medium.ts
-│   │   │   └── hard.ts
-│   │   ├── stack/
-│   │   ├── queue/
-│   │   ├── tree/
-│   │   ├── graph/
-│   │   ├── hashMap/
-│   │   └── ...
-│   └── styles/
-│       ├── global.css
-│       └── components.css
-└── public/
-    └── favicon.svg
+Traverse the list and find a specific element
+list.find is not a function
+Failed after 110ms
 ```
 
----
+**Expected Behavior**: Reference solution should work correctly with the test execution environment, properly finding elements in the linked list.
 
-## Implementation Status
+**Investigation Required**:
 
-### Phase 1: Project Setup ✓
+- Check how TrackedLinkedList is instantiated in test execution sandbox
+- Verify find() method exists and is accessible in sandbox context
+- Check if method binding or prototype chain is broken
+- Verify reference solution in `src/lib/testing/testCases/linkedListTests.ts` lines 19-23
 
-- [x] Initialize Vite + React 19 project
-- [x] Install dependencies (CodeMirror 6, D3, Framer Motion, Vitest, SWC)
-- [x] Set up basic layout with `react-resizable-panels`
-- [x] Configure CodeMirror 6 editor
-- [x] Set up Zustand store for app state
+**Steps to Verify**:
 
-### Phase 2: Core Infrastructure ✓
+1. Run `npm run dev`
+2. Select "Linked List" with any difficulty
+3. Click "Show Solution" in visualization mode selector
+4. Click "Run all tests" button
+5. Verify all tests pass (green checkmarks)
+6. Test all three difficulty levels (Easy, Medium, Hard)
+7. Run `npm run test:run` to verify test suite passes
+8. Run `npm run validate` for full validation
 
-- [x] Implement sandboxed iframe execution with `srcdoc`
-- [x] Create SWC-based code instrumentation (loop injection)
-- [x] Build step capture and `postMessage` communication
-- [x] Implement timeout/infinite loop protection
-- [x] Set up client-side test runner with bundled Vitest expect
+**Acceptance Criteria**:
 
-### Phase 3: Test Cases System ✓
+- [ ] Reference solution code executes without errors
+- [ ] All three linked list tests pass (Easy, Medium, Hard)
+- [ ] find() method correctly locates elements
+- [ ] reverse() method correctly reverses list
+- [ ] hasCycle() method correctly detects cycles
+- [ ] Tests show green "Passed" status
+- [ ] Visualization shows correct operation steps
+- [ ] No console errors during test execution
+- [ ] All test assertions pass
 
-- [x] Define TestCase interface and structure
-- [x] Create test cases for Arrays (Easy/Medium/Hard)
-- [x] Build TestPanel UI with pass/fail display
-- [x] Implement skeleton code system with TODOs
-- [x] Add progressive hints system
+**Dependencies**: None
 
-### Phase 4: First Visualizer - Arrays ✓
+**Priority**: P0 (Blocker)
 
-- [x] Create ArrayVisualizer component with SVG
-- [x] Implement TrackedArray with operation capture
-- [x] Add D3 transition animations for push, pop, swap, sort
-- [x] Connect editor → execution → visualization pipeline
-- [x] Implement all 3 array test cases
+**Status**: `pending`
 
-### Phase 5: Visualization Modes ✓
-
-- [x] Build ModeSelector component
-- [x] Implement "Expected Output" mode
-- [x] Implement "Reference Solution" mode
-- [x] Add side-by-side comparison view
-- [x] Handle incomplete code gracefully
-
-### Phase 6: Additional Data Structures ✓
-
-- [x] LinkedList (data structure, visualizer, test cases)
-- [x] Stack/Queue (visualizer, test cases)
-- [x] Binary Tree (data structure, visualizer, test cases)
-- [x] Graph (data structure, visualizer, test cases)
-- [x] HashMap (data structure, visualizer, test cases)
-
-### Phase 7: Polish & UX ✓
-
-- [x] Console output panel with formatting
-- [x] Animation controls
-- [x] Step-through debugging mode
-- [x] Mobile-responsive layout (limited)
-
-### Phase 8: Advanced Features ✓
-
-- [x] Local storage for progress persistence
-- [x] Preset algorithm examples (sorting, traversals)
-- [x] Performance metrics display (time/space complexity)
-
-### Phase 9: UI/UX Refinements (In Progress)
-
-**Removals**:
-
-- [x] Remove dark mode toggle and theme switching system
-- [x] Remove DataStructureSelector button container
-- [x] Remove test case difficulty filter
-- [x] Remove "Your code here" comments from skeleton templates
-- [x] Remove emoji before "Examples" button
-- [x] Remove share functionality
-- [x] Remove speed controls from visualization
-
-**Changes**:
-
-- [x] Convert data structure selector to dropdown in EditorPanel
-- [x] Convert hints section to icon button with modal
-- [x] Add Tabler icons throughout UI (strategically)
-- [x] Fix Examples dialog UI/UX
-- [x] Move "Example usage" comments to top of skeleton functions
-- [x] Show all 3 test cases simultaneously (no filter)
-- [x] Add play button above editor for running all tests
-- [x] Implement auto-play visualization on code execution
-- [x] Add replay button for visualization
-- [x] Add floating step back/forward controls
-- [ ] Add horizontal slider for step navigation
-
-**Bug Fixes**:
-
-- [ ] Fix skeleton template loading for linkedList and other data structures
-- [ ] Ensure all data structure templates exist for easy/medium/hard
+**Passes**: `false`
 
 ---
 
-## Dependencies
+## Verification Commands
 
-```json
-{
-  "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@uiw/react-codemirror": "^4.23.0",
-    "@codemirror/lang-javascript": "^6.2.0",
-    "d3": "^7.9.0",
-    "framer-motion": "^12.0.0",
-    "react-resizable-panels": "^2.1.0",
-    "@swc/wasm-web": "^1.4.0",
-    "vitest": "^4.0.0",
-    "zustand": "^5.0.0",
-    "@tabler/icons-react": "^3.0.0"
-  },
-  "devDependencies": {
-    "vite": "^6.0.0",
-    "@vitejs/plugin-react": "^4.3.0",
-    "typescript": "^5.7.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@types/d3": "^7.4.0",
-    "oxlint": "^0.14.0"
-  }
-}
+Run these commands to verify all acceptance criteria are met:
+
+```bash
+# Development server (manual testing)
+npm run dev
+
+# Run all tests
+npm run test:run
+
+# Type checking
+npm run typecheck
+
+# Linting
+npm run lint
+
+# Formatting check
+npm run format:check
+
+# Master validation (required before completion)
+npm run validate
 ```
 
----
+## Completion Criteria
 
-## Key Technical Decisions
+This Ralph iteration is considered **COMPLETE** when:
 
-| Decision       | Choice                  | Rationale                                                         |
-| -------------- | ----------------------- | ----------------------------------------------------------------- |
-| Framework      | React 19                | Massive ecosystem, battle-tested, excellent library support       |
-| Editor         | CodeMirror 6            | Lightweight (~300KB), excellent performance, modern API           |
-| Visualization  | D3.js + SVG             | Industry standard, excellent tree/graph layout algorithms         |
-| Animation      | Framer Motion           | Comprehensive API, variant system, excellent React integration    |
-| Code Transform | SWC WASM                | 20-70x faster than Babel, browser-based AST transformation        |
-| Testing        | Vitest expect (bundled) | BDD-style assertions, runs entirely client-side                   |
-| Execution      | Sandboxed iframe        | Secure isolation, `postMessage` communication, timeout control    |
-| State          | Zustand                 | Lightweight, no boilerplate, works well with React 19             |
-| Layout         | react-resizable-panels  | Well-maintained, accessible, smooth resizing                      |
-| Icons          | Tabler Icons            | Comprehensive, consistent design, tree-shakeable                  |
-| Theme          | Single theme only       | Simplifies UI, reduces maintenance, focuses on core functionality |
+1. ✅ All user stories have `passes: true`
+2. ✅ `npm run validate` exits with code 0
+3. ✅ All data structures (Array, Linked List, Stack, Queue, Tree, Graph, Hash Map) work without errors
+4. ✅ All visualizations properly represent their respective data structures
+5. ✅ All UI alignment issues are fixed
+6. ✅ Examples modal renders correctly
+7. ✅ All reference solutions execute without errors
+8. ✅ Test coverage remains ≥80%
+9. ✅ No TypeScript errors (`npm run typecheck` passes)
+10. ✅ No linting errors (`npm run lint` passes)
 
----
+## Notes for AI Agent
 
-## Security Considerations
+- Use `agent-browser` methodology for iteration (see: https://github.com/vercel-labs/agent-browser)
+- Focus on one user story at a time
+- Mark `passes: true` only when ALL acceptance criteria are met for that story
+- Do NOT proceed to next story if current one blocks progress
+- Run `npm run validate` frequently to catch regressions early
+- Maintain test coverage above 80% at all times
+- Follow D3Adapter pattern for all visualizations (no React/D3 conflicts)
+- Preserve SWC transformation, loop protection, and sandbox security
+- Reference `CLAUDE.md` for architecture patterns and constraints
 
-### Sandbox Configuration
+## Sources
 
-```html
-<iframe sandbox="allow-scripts" srcdoc="..." style="display: none;"></iframe>
-```
-
-The `sandbox` attribute with only `allow-scripts`:
-
-- Blocks same-origin access (can't read parent DOM)
-- Blocks form submission
-- Blocks popups and modal dialogs
-- Blocks top-level navigation
-- Blocks pointer lock and orientation lock
-
-### postMessage Security
-
-```javascript
-// Main app - defense-in-depth validation
-const ALLOWED_MESSAGE_TYPES = new Set(['test-result', 'execution-complete', ...]);
-
-window.addEventListener("message", (event) => {
-  // 1. Structure validation
-  if (!event.data || typeof event.data !== 'object') return;
-
-  // 2. Type whitelist
-  if (!ALLOWED_MESSAGE_TYPES.has(event.data.type)) return;
-
-  // 3. Schema validation
-  if (!validateMessageSchema(event.data)) return;
-
-  // 4. Source check
-  if (event.source !== expectedIframe.contentWindow) return;
-
-  // 5. Process validated message
-  handleSandboxMessage(event.data);
-});
-```
-
-### Timeout Protection
-
-```javascript
-// Injected via SWC transformation
-let __loopCount_1 = 0;
-while (condition) {
-  if (++__loopCount_1 > 100000) {
-    throw new Error("Infinite loop detected");
-  }
-  body;
-}
-```
-
----
-
-## UI/UX Best Practices Applied
-
-### Modal Design
-
-Based on [modal UX best practices](https://www.eleken.co/blog-posts/modal-ux), the hints modal:
-
-- Has clear title explaining purpose
-- Provides obvious close button
-- Shows progressive content reveal
-- Uses clear CTAs ("Reveal Hint N")
-
-### Timeline Controls
-
-Inspired by [video player timeline patterns](https://support.syncsketch.com/hc/en-us/articles/32393850754196-Timeline-Navigation-and-Playback-Controls):
-
-- Horizontal slider for precise step navigation
-- Floating controls for replay/step actions
-- Auto-play on first execution for immediate feedback
-- Frame-by-frame stepping with arrow buttons
-
-### Floating Action Buttons
-
-Following [FAB design guidelines](https://mobbin.com/glossary/floating-action-button):
-
-- Used for primary visualization controls (replay, step back/forward)
-- Positioned consistently
-- Icon-only for compact display
-- Higher z-index to float above content
-
-### Minimalist Design
-
-Adhering to [2026 UI/UX trends](https://uidesignz.com/blogs/ui-ux-design-best-practices):
-
-- Removes clutter (single theme, no dark mode toggle)
-- Focuses on essential elements
-- Strategic icon usage (not overwhelming)
-- Immediate visual feedback
-
-### Icon Usage
-
-Following [accessibility best practices](https://www.eleken.co/blog-posts/modal-ux):
-
-- Descriptive aria-labels for icon buttons
-- Icons used strategically, not everywhere
-- Consistent icon library (Tabler Icons)
-- Icon + label for important actions
-
----
-
-## Research Sources
-
-### Framework Decision
-
-- [React vs SolidJS 2026 - Squareboat](https://www.squareboat.com/blog/solidjs-vs-react)
-- [SolidJS Pain Points - Medium](https://vladislav-lipatov.medium.com/solidjs-pain-points-and-pitfalls-a693f62fcb4c)
-- [5 Places SolidJS is Not the Best - DEV](https://dev.to/this-is-learning/5-places-solidjs-is-not-the-best-5019)
-
-### Editor Decision
-
-- [Sourcegraph Monaco to CodeMirror Migration](https://sourcegraph.com/blog/migrating-monaco-codemirror)
-- [Code Editors Comparison - Replit](https://blog.replit.com/code-editors)
-
-### Client-Side Testing
-
-- [Vitest Browser Mode](https://vitest.dev/guide/browser.html)
-- [freeCodeCamp Testing Architecture](https://forum.freecodecamp.org/t/how-does-freecodecamp-run-test-our-code/591458)
-
-### Sandbox Security
-
-- [Sandboxed iFrames - web.dev](https://web.dev/articles/sandboxed-iframes)
-- [JavaScript Sandboxing Deep Dive - Leapcell](https://leapcell.io/blog/deep-dive-into-javascript-sandboxing)
-- [Building Secure Code Sandbox - Medium](https://medium.com/@muyiwamighty/building-a-secure-code-sandbox-what-i-learned-about-iframe-isolation-and-postmessage-a6e1c45966df)
-
-### Visualization
-
-- [D3.js Alternatives 2025 - Galaxy](https://www.getgalaxy.io/resources/top-d3js-alternatives-2025)
-- [Algorithm Visualizer](https://algorithm-visualizer.org/)
-- [VisuAlgo](https://visualgo.net/en)
-
-### Code Instrumentation
-
-- [SWC Documentation](https://swc.rs/)
-- [AST Manipulation Best Practices](https://www.trickster.dev/post/javascript-ast-manipulation-with-babel-transform-prototyping-and-plugin-development/)
-
-### UI/UX Research (2026)
-
-- [Modal UX Best Practices - Eleken](https://www.eleken.co/blog-posts/modal-ux)
-- [UI Design Best Practices 2026](https://uidesignz.com/blogs/ui-ux-design-best-practices)
-- [Timeline Navigation and Playback Controls - SyncSketch](https://support.syncsketch.com/hc/en-us/articles/32393850754196-Timeline-Navigation-and-Playback-Controls)
-- [Floating Action Buttons - Mobbin](https://mobbin.com/glossary/floating-action-button)
-- [Tooltips Best Practices - Appcues](https://www.appcues.com/blog/tooltips)
+- [Getting Started With Ralph - AI Hero](https://www.aihero.dev/getting-started-with-ralph)
+- [11 Tips For AI Coding With Ralph Wiggum - AI Hero](https://www.aihero.dev/tips-for-ai-coding-with-ralph-wiggum)
+- [GitHub - agent-browser README](https://github.com/vercel-labs/agent-browser)

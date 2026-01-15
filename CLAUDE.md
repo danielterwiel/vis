@@ -4,66 +4,48 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A CodePen-like application for visualizing data structures with a code editor on the left and real-time animated visualization on the right. Users write JavaScript algorithms that manipulate data structures, with test cases at 3 difficulty levels per structure. **100% client-side rendered with no backend.**
+CodePen-like application for visualizing data structures. Code editor (left) with real-time animated visualization (right). Users write JavaScript algorithms that manipulate data structures. Test cases at 3 difficulty levels per structure. **100% client-side, no backend.**
 
-## Build Commands
+## Essential Commands
 
 ```bash
 # Development
-npm run dev              # Start dev server (http://localhost:5173)
+npm run dev              # http://localhost:5173
 
-# Testing
-npm test                 # Run tests in watch mode
+# Validation (run before any commit or iteration completion)
+npm run validate         # Runs: lint + format:check + typecheck + test:run
+
+# Individual checks
 npm run test:run         # Run tests once (CI mode)
-npm run test:coverage    # Generate coverage report
-npm run test:ui          # Open Vitest UI
-
-# Code Quality
-npm run lint             # Check linting with oxlint
-npm run lint:fix         # Auto-fix linting issues
-npm run format           # Format code with oxfmt
-npm run format:check     # Check formatting without changes
-npm run typecheck        # TypeScript type checking
-
-# Validation (Run before commit)
-npm run validate         # Master validation: lint + format + typecheck + test
-
-# Build
-npm run build            # Production build (TypeScript + Vite)
-npm run preview          # Preview production build
+npm run test             # Watch mode
+npm run test:coverage    # Coverage report (80% threshold)
+npm run test:ui          # Vitest UI
+npm run typecheck        # TypeScript validation
+npm run lint             # oxlint check
+npm run lint:fix         # Auto-fix linting
+npm run format           # oxfmt format
+npm run format:check     # Check formatting only
 ```
 
-## Technology Stack
+## Tech Stack (Critical Constraints)
 
-- **React 19** + **Vite 6** - Framework and build tool
-- **TypeScript** in strict mode
-- **CodeMirror 6** (~300KB) - Code editor (NOT Monaco)
-- **D3.js + SVG** - Data structure visualization
+- **React 19** + **Vite 6** + **TypeScript** (strict mode)
+- **CodeMirror 6** (~300KB) - NOT Monaco (would be 2.4MB+)
+- **D3.js + SVG** - Visualizations (NOT canvas)
 - **Framer Motion 12** - Animations (React 19 compatible)
-- **SWC WASM** (`@swc/wasm-web`) - Code transformation (20-70x faster than Babel)
-- **Vitest 4** - Testing with browser mode + bundled expect for sandbox
-- **Oxlint + Oxfmt** - Rust-based linting/formatting (50-100x faster than ESLint/Prettier)
+- **SWC WASM** - Code transformation (NOT Babel)
+- **Vitest 4** - Testing (browser mode + bundled expect)
+- **Oxlint + Oxfmt** - Linting/formatting (NOT ESLint/Prettier)
 - **Zustand** - State management
-- **Lefthook** - Pre-commit validation hooks
+- **Lefthook** - Git hooks
 
-## Architecture Patterns
+## Architecture: Three Critical Patterns
 
-### 1. Sandboxed Code Execution
+### 1. D3 + React Integration (NEVER Violate This)
 
-User JavaScript runs in isolated iframe with `sandbox="allow-scripts"`:
+**Problem**: D3 and React both manipulate DOM → flickering, lost elements, crashes.
 
-- **Loop Protection**: Inject counters during SWC transformation (NOT setTimeout - won't fire if thread blocked)
-- **Operation Capture**: Instrument code with `__capture()` calls for visualization steps
-- **Security**: Defense-in-depth postMessage validation (type whitelist + schema + source check)
-- **Message Correlation**: Use unique IDs to match request/response pairs
-
-**Critical**: Cannot rely on origin checks (sandboxed iframes have null origin). See `src/lib/execution/messageValidation.ts`
-
-### 2. D3 + React 19 Integration
-
-**Problem**: D3 and React both want DOM ownership, causing flickering and lost elements.
-
-**Solution**: D3Adapter pattern with exclusive ref-based ownership:
+**Solution**: D3Adapter pattern with exclusive ref ownership:
 
 ```tsx
 function D3Visualization({ data }) {
@@ -71,98 +53,120 @@ function D3Visualization({ data }) {
 
   useEffect(() => {
     if (!svgRef.current) return;
-
-    // D3 owns this DOM node - React never touches it
-    const svg = d3.select(svgRef.current);
-    // All D3 manipulations here
-
+    const svg = d3.select(svgRef.current); // D3 owns this node
+    // All D3 code here
     return () => svg.selectAll("*").remove();
   }, [data]);
 
-  // React renders once, then hands off to D3
-  return <svg ref={svgRef} />;
+  return <svg ref={svgRef} />; // React renders once, never touches again
 }
 ```
 
-**Always** wrap D3 components in error boundaries. See `src/components/visualizers/D3Adapter.tsx` for the pattern.
+**Always** wrap D3 components in error boundaries. See `src/components/visualizers/D3Adapter.tsx`.
+
+### 2. Sandboxed Code Execution
+
+User code runs in iframe with `sandbox="allow-scripts"`:
+
+- **Loop Protection**: SWC injects counters (NOT setTimeout - won't fire if blocked)
+- **Operation Capture**: Instrument with `__capture()` calls
+- **Security**: Defense-in-depth postMessage (type whitelist + schema + source)
+- **Critical**: Sandboxed iframes have null origin - cannot rely on origin checks alone
+
+See `src/lib/execution/messageValidation.ts` for validation pattern.
 
 ### 3. Dual Testing Architecture
 
-**Development Testing** (Vitest + Browser Mode):
+**Development Tests**: Vitest + browser mode for app components
+**Runtime Tests**: Bundled Vitest `expect` for user code in sandbox
 
-- Tests application components, utilities, stores
-- Run via `npm test` during development
-- Coverage thresholds: 80% statements, 75% branches (enforced)
-
-**Runtime Sandbox Testing** (Bundled Vitest expect):
-
-- Tests user code in sandboxed iframe
-- Bundle Vitest's `expect` function for sandbox use
-- Configured in `vite.config.ts` with separate entry point
-
-### 4. Code Instrumentation with SWC
-
-Initialize SWC WASM once on app mount: `await initializeSWC()`
-
-Transform user code to:
-
-1. Inject loop counters (detect infinite loops at 100k iterations)
-2. Add `__capture()` calls for operation tracking
-3. Add error boundaries
-
-See `src/lib/execution/instrumenter.ts` for implementation.
+Coverage thresholds (enforced): 80% statements, 75% branches, 80% functions/lines
 
 ## Project Structure
 
 ```
 src/
 ├── components/
-│   ├── EditorPanel/           # CodeMirror wrapper, controls, hints
-│   ├── VisualizationPanel/    # D3Adapter, animation controller, mode selector
-│   ├── TestPanel/             # Test case selection and results
-│   └── visualizers/           # One per data structure (Array, LinkedList, etc.)
-├── lib/
-│   ├── dataStructures/        # Tracked implementations (TrackedArray, etc.)
-│   ├── execution/             # Sandbox, instrumenter, loop protection, validation
-│   ├── testing/               # Test runner, expect bundle, test case definitions
-│   └── animation/             # Animation step management, Framer Motion presets
+│   ├── EditorPanel/        # CodeMirror + controls
+│   ├── VisualizationPanel/ # D3Adapter + animation
+│   ├── TestPanel/          # Test selection
+│   └── visualizers/        # One per data structure
+├── lib/                    # Shared utilities (project stdlib)
+│   ├── dataStructures/     # TrackedArray, TrackedLinkedList, etc.
+│   ├── execution/          # Sandbox, instrumenter, validation
+│   ├── testing/            # Test runner, test case definitions
+│   └── animation/          # Animation step management
 ├── store/
-│   └── useAppStore.ts         # Zustand global state
-└── templates/                 # Skeleton code per data structure/difficulty
+│   └── useAppStore.ts      # Zustand global state
+└── templates/              # Skeleton code per structure/difficulty
 ```
 
-Place shared utilities in `src/lib/` - this is the project's standard library.
+## Ralph Wiggum Methodology (AI Agent Development)
+
+This project follows the **Ralph Wiggum** autonomous development pattern.
+
+### Core Files
+
+- **PRD.md**: Machine-readable user stories with acceptance criteria
+- **CLAUDE.md**: This file - architecture guidance
+- **progress.txt**: Iteration tracking (optional)
+
+### Iteration Loop
+
+1. **Read PRD.md** - Pick next user story with `passes: false`
+2. **Implement** - Make changes to satisfy acceptance criteria
+3. **Verify with agent-browser** - Use interactive browser validation
+4. **Validate** - Run `npm run validate` (must exit 0)
+5. **Mark complete** - Update user story to `passes: true` in PRD.md
+6. **Repeat** - Next story or done if all `passes: true`
+
+### Agent-Browser Verification (REQUIRED)
+
+After each implementation, verify using `agent-browser`:
+
+```bash
+# 1. Capture current state (interactive elements with refs)
+agent-browser snapshot -i
+
+# 2. Execute targeted interactions using refs
+agent-browser click @e2
+agent-browser fill @e3 "test input"
+
+# 3. Re-snapshot to confirm state transitions
+agent-browser snapshot -i
+
+# 4. Verify specific conditions
+agent-browser is visible @ref
+agent-browser get text @ref --json
+```
+
+**Key Points**:
+
+- Use refs (@e1, @e2) for deterministic element selection
+- Snapshot before and after interactions to confirm state changes
+- Filter snapshots (`-i -c -d 3`) to focus on relevant elements
+- Use `--json` for machine-readable verification
+
+See: https://raw.githubusercontent.com/vercel-labs/agent-browser/refs/heads/main/README.md
+
+### Completion Criteria (ALL Required)
+
+- ✅ All PRD user stories have `passes: true`
+- ✅ `npm run validate` exits 0
+- ✅ Coverage ≥80%
+- ✅ No TypeScript errors
+- ✅ No linting errors
+- ✅ Browser verification confirms expected behavior
+
+**NEVER commit if `npm run validate` fails.**
 
 ## Critical Implementation Details
 
-### Security: postMessage Validation
+### SWC Initialization
 
-**Never** check for null origin alone. Use defense-in-depth:
+Must call `await initializeSWC()` once on app mount. See `src/lib/execution/instrumenter.ts`.
 
-```typescript
-const ALLOWED_MESSAGE_TYPES = new Set(['test-result', 'execution-complete', ...]);
-
-window.addEventListener("message", (event) => {
-  // 1. Structure validation
-  if (!event.data || typeof event.data !== 'object') return;
-
-  // 2. Type whitelist
-  if (!ALLOWED_MESSAGE_TYPES.has(event.data.type)) return;
-
-  // 3. Schema validation
-  if (!validateMessageSchema(event.data)) return;
-
-  // 4. Source check
-  if (event.source !== expectedIframe.contentWindow) return;
-
-  // 5. Process validated message
-  handleMessage(event.data);
-});
-```
-
-### Loop Detection: Code Injection Pattern
-
-Transform loops to inject counters:
+### Loop Detection Pattern
 
 ```javascript
 // User writes:
@@ -173,106 +177,86 @@ while (condition) {
 // SWC transforms to:
 let __loopCount_1 = 0;
 while (condition) {
-  if (++__loopCount_1 > 100000) {
-    throw new Error("Infinite loop detected");
-  }
+  if (++__loopCount_1 > 100000) throw new Error("Infinite loop detected");
   body;
 }
 ```
 
-Apply to: `while`, `for`, `do-while`, and recursive functions (call stack depth).
+### postMessage Validation (Defense-in-Depth)
 
-### CSP Limitation
+```typescript
+const ALLOWED_MESSAGE_TYPES = new Set(["test-result", "execution-complete"]);
 
-**Known Issue**: srcdoc iframes inherit parent page CSP (W3C marked "wontfix" Dec 2024). Cannot rely solely on iframe CSP. Use sandbox attribute + postMessage validation instead.
+window.addEventListener("message", (event) => {
+  if (!event.data || typeof event.data !== "object") return; // 1. Structure
+  if (!ALLOWED_MESSAGE_TYPES.has(event.data.type)) return; // 2. Type whitelist
+  if (!validateMessageSchema(event.data)) return; // 3. Schema
+  if (event.source !== expectedIframe.contentWindow) return; // 4. Source
+  handleMessage(event.data); // 5. Process
+});
+```
 
-## Test Case System
+### Test Case System
 
-Each data structure has 3 difficulty levels (Easy/Medium/Hard):
+Each data structure has 3 difficulty levels in `src/lib/testing/testCases/[structure]Tests.ts`:
 
-- **skeletonCode**: Template with TODOs for user to fill
-- **assertions**: Vitest expect syntax run in sandbox
-- **referenceSolution**: Shown when user clicks "Show Solution"
-- **hints**: Progressively revealed
-- **acceptanceCriteria**: Objective pass/fail conditions
+- `skeletonCode` - Template with TODOs
+- `referenceSolution` - Shown on "Show Solution"
+- `assertions` - Vitest expect syntax
+- `hints` - Progressively revealed
+- `acceptanceCriteria` - Objective pass/fail
 
-Test files in `src/lib/testing/testCases/[dataStructure]Tests.ts`
+### Template Registration
 
-## Validation & Quality Gates
+Templates must be registered in `src/templates/index.ts`:
 
-**Pre-commit hooks** (via Lefthook) enforce:
+```typescript
+import { registerArrayTemplates } from "./array";
+import { registerLinkedListTemplates } from "./linkedList";
 
-1. Linting (oxlint)
-2. Formatting (oxfmt)
-3. Type checking (tsc)
-4. Tests passing (vitest)
+registerArrayTemplates();
+registerLinkedListTemplates();
+// etc.
+```
 
-Coverage thresholds create backpressure:
+Each template file exports registration function that calls:
 
-- 80% statements
-- 75% branches
-- 80% functions
-- 80% lines
-
-Exit code ≠ 0 blocks commits. CI stays green.
+```typescript
+skeletonCodeSystem.registerTemplate(dataStructure, difficulty, code);
+```
 
 ## Common Pitfalls
 
-1. **D3/React Conflicts**: Always use D3Adapter pattern with refs. Never mix React rendering with D3 DOM manipulation.
-
-2. **SWC Initialization**: Must call `await initializeSWC()` before first code transformation. Only initialize once.
-
-3. **Type Safety**: Strict mode enabled. No `any` types - use `unknown` and narrow with type guards.
-
-4. **Coverage Drops**: Add tests if coverage falls below 80%. Agents cannot proceed with failing coverage.
-
-5. **Bundle Size**: CodeMirror (~300KB) not Monaco (~2.4MB+). If Monaco needed, expect 8-10x bundle increase.
-
-## AI Agent Development Notes
-
-This project uses the **Ralph Wiggum methodology** for autonomous agent development:
-
-### Core Principles
-
-- **Iteration over perfection**: Clean slate iterations until completion
-- **Clear success criteria**: Tests pass, types resolve, builds succeed
-- **CI green guarantee**: Never commit broken code
-- **Backpressure via testing**: Automated validation prevents forward progress with broken code
-- **Machine-verifiable signals**: Objective criteria (test pass/fail, exit codes)
-
-### Support Files
-
-- `AGENTS.md`: Operational guide (≤1000 words) loaded each iteration
-- `IMPLEMENTATION_PLAN.md`: Persistent task tracking between loops
-- `prd.json`: Machine-readable user stories with acceptance criteria
-- `specs/`: One markdown file per topic of concern
-
-### Completion Criteria
-
-Tasks are complete when ALL conditions met:
-
-- Tests passing (`npm run test:run` exits 0)
-- Types valid (`npm run typecheck` exits 0)
-- Linting passes (`npm run lint` exits 0)
-- Formatting correct (`npm run format:check` exits 0)
-- Coverage ≥80%
-
-Use `npm run validate` to check all criteria.
+1. **D3/React Conflicts** - Always use D3Adapter pattern. Never mix React + D3 DOM manipulation.
+2. **SWC Init** - Must initialize once before transformations. Don't re-initialize.
+3. **Type Safety** - Strict mode. No `any` - use `unknown` + type guards.
+4. **Coverage** - Must maintain ≥80%. Add tests if it drops.
+5. **Bundle Size** - Keep <4MB. CodeMirror is already 300KB.
+6. **CSP Limitation** - Sandboxed iframes inherit parent CSP. Use sandbox + postMessage validation.
 
 ## Performance Targets
 
-- **Initial bundle**: ~3-4MB (vs 8-15MB with Monaco)
-- **SWC transformation**: <10ms for typical user code
-- **D3 rendering**: 16ms budget (60fps) for educational datasets
-- **Test execution**: <1s for typical test cases
+- Bundle: ~3-4MB
+- SWC transform: <10ms
+- D3 rendering: 16ms (60fps)
+- Test execution: <1s per case
 
-## Reference Documentation
+## Tool Usage Requirements
 
-See PRD.md for:
+When implementing features:
 
-- Comprehensive security architecture
-- Detailed visualization specifications
+1. **Use Task tool** for exploration (Explore agent) when researching patterns
+2. **Use Glob/Grep** for targeted file/code searches
+3. **Use Read** before Edit/Write (required)
+4. **Use agent-browser** for verification after implementation
+5. **Run `npm run validate`** before marking user story complete
+
+## Reference
+
+For detailed specifications, see PRD.md:
+
+- Security architecture
+- Visualization specifications
 - Complete test case examples
-- Bundle configuration for Vitest expect
-- SWC transformation implementation
-- Framer Motion animation patterns
+- SWC transformation details
+- Framer Motion patterns
