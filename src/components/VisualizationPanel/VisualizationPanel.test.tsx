@@ -39,11 +39,35 @@ describe("VisualizationPanel", () => {
 
   it("renders visualization controls", () => {
     render(<VisualizationPanel />);
-    // Check for button text content (icons are now included)
-    expect(screen.getByText("Previous")).toBeDefined();
-    expect(screen.getByText("Next")).toBeDefined();
+
+    // Check for Play button text (visible in header controls)
     expect(screen.getByText("Play")).toBeDefined();
-    expect(screen.getByText("Reset")).toBeDefined();
+
+    // Check for step counter
+    expect(screen.getByText(/Step \d+ \/ \d+/)).toBeDefined();
+  });
+
+  it("renders floating control buttons when steps are available", () => {
+    // Set up state with steps in non-skeleton mode so floating controls render
+    // codeStatus must be "complete" to prevent automatic switch to skeleton mode
+    useAppStore.setState({
+      userCodeSteps: [
+        {
+          type: "create",
+          target: { values: [1, 2, 3], length: 3 },
+          timestamp: Date.now(),
+        },
+      ],
+      visualizationMode: "user-code",
+      codeStatus: "complete",
+    });
+
+    render(<VisualizationPanel />);
+
+    // Check for floating control buttons by aria-label (they only show icons)
+    expect(screen.getByLabelText("Replay animation from beginning")).toBeDefined();
+    expect(screen.getByLabelText("Step back")).toBeDefined();
+    expect(screen.getByLabelText("Step forward")).toBeDefined();
   });
 
   // Animation speed control was removed as per PRD Phase 9

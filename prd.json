@@ -1,0 +1,760 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "project": {
+    "name": "Data Structure Visualizer",
+    "description": "CodePen-like application for visualizing data structures with real-time animated visualization",
+    "repository": "https://github.com/user/vis"
+  },
+  "metadata": {
+    "createdAt": "2026-01-15",
+    "lastUpdated": "2026-01-15",
+    "methodology": "Ralph Wiggum - Autonomous AI Agent Development",
+    "validationCommand": "npm run validate",
+    "devServer": "npm run dev"
+  },
+  "userStories": [
+    {
+      "id": "US-TEST-001",
+      "title": "Array Data Structure - Complete Functionality Test",
+      "description": "Verify that the Array data structure works correctly with all difficulty levels, showing proper visualization, running tests successfully, and displaying solutions.",
+      "priority": "high",
+      "dataStructure": "array",
+      "acceptanceCriteria": [
+        "Selecting 'Array' from the data structure dropdown loads the easy difficulty by default",
+        "Skeleton code for array operations is displayed in the editor",
+        "Clicking 'Show Solution' displays a confirmation dialog and loads the reference solution",
+        "Clicking 'Run All Tests' executes all three difficulty levels (easy, medium, hard)",
+        "All tests pass when reference solution is used",
+        "Visualization panel shows animated array operations",
+        "Test results show pass/fail status correctly"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser click @ref_to_data_structure_select",
+        "npx agent-browser select @ref_to_data_structure_select --value array",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser get text @ref_to_editor --json | jq '.text | contains(\"function\")'",
+        "npx agent-browser click @ref_to_show_solution_button",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser is visible @ref_to_confirm_dialog",
+        "npx agent-browser click @ref_to_confirm_button",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser get text @ref_to_editor --json | jq '.text | contains(\"referenceSolution\")'",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 5000",
+        "npx agent-browser is visible @ref_to_test_results",
+        "npx agent-browser is visible @ref_to_visualization",
+        "npx agent-browser get text @ref_to_test_status --json | jq '.text | contains(\"pass\")'",
+        "npx agent-browser snapshot -i -c"
+      ],
+      "passes": false,
+      "notes": "Initial test - needs verification with agent-browser once available"
+    },
+    {
+      "id": "US-TEST-002",
+      "title": "Linked List Data Structure - Complete Functionality Test",
+      "description": "Verify that the Linked List data structure works correctly with all difficulty levels, showing proper visualization of node traversal and pointer operations.",
+      "priority": "high",
+      "dataStructure": "linkedList",
+      "acceptanceCriteria": [
+        "Selecting 'Linked List' from the data structure dropdown loads the easy difficulty",
+        "Skeleton code for linked list operations is displayed",
+        "Clicking 'Show Solution' loads the reference solution after confirmation",
+        "Clicking 'Run All Tests' executes all test cases successfully",
+        "Visualization shows linked list nodes with arrows/pointers",
+        "Node traversal animations are visible during test execution",
+        "Test results correctly show pass/fail for each test case"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value linkedList",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser is visible @ref_to_editor",
+        "npx agent-browser get text @ref_to_editor --json | jq '.text | contains(\"TODO\")'",
+        "npx agent-browser click @ref_to_show_solution_button",
+        "npx agent-browser click @ref_to_confirm_button",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 5000",
+        "npx agent-browser is visible @ref_to_visualization_svg",
+        "npx agent-browser get text @ref_to_test_results --json"
+      ],
+      "passes": false,
+      "notes": "Need to verify linked list visualization renders correctly"
+    },
+    {
+      "id": "US-TEST-003",
+      "title": "Stack Data Structure - Complete Functionality Test",
+      "description": "Verify that the Stack data structure works correctly with LIFO operations visualized properly.",
+      "priority": "high",
+      "dataStructure": "stack",
+      "acceptanceCriteria": [
+        "Selecting 'Stack' from the data structure dropdown loads the easy difficulty",
+        "Skeleton code for stack push/pop operations is displayed",
+        "Clicking 'Show Solution' loads the reference solution",
+        "Clicking 'Run All Tests' executes all stack test cases",
+        "Visualization shows vertical stack with LIFO behavior",
+        "Push and pop animations are visible",
+        "All tests pass with reference solution"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value stack",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser click @ref_to_show_solution_button",
+        "npx agent-browser click @ref_to_confirm_button",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 5000",
+        "npx agent-browser is visible @ref_to_stack_visualization",
+        "npx agent-browser get text @ref_to_test_status --json | jq '.text | contains(\"pass\")'"
+      ],
+      "passes": false,
+      "notes": "Check if stack visualization shows vertical layout correctly"
+    },
+    {
+      "id": "US-TEST-004",
+      "title": "Queue Data Structure - Complete Functionality Test",
+      "description": "Verify that the Queue data structure works correctly with FIFO operations visualized properly.",
+      "priority": "high",
+      "dataStructure": "queue",
+      "acceptanceCriteria": [
+        "Selecting 'Queue' from the data structure dropdown loads the easy difficulty",
+        "Skeleton code for queue enqueue/dequeue operations is displayed",
+        "Clicking 'Show Solution' loads the reference solution",
+        "Clicking 'Run All Tests' executes all queue test cases",
+        "Visualization shows horizontal queue with FIFO behavior",
+        "Enqueue and dequeue animations show elements moving",
+        "All tests pass with reference solution"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value queue",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser click @ref_to_show_solution_button",
+        "npx agent-browser click @ref_to_confirm_button",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 5000",
+        "npx agent-browser is visible @ref_to_queue_visualization",
+        "npx agent-browser get text @ref_to_test_status --json"
+      ],
+      "passes": false,
+      "notes": "Verify queue shows FIFO order correctly"
+    },
+    {
+      "id": "US-TEST-005",
+      "title": "Binary Tree Data Structure - Complete Functionality Test",
+      "description": "Verify that the Binary Tree data structure works correctly with tree traversal and manipulation operations.",
+      "priority": "high",
+      "dataStructure": "tree",
+      "acceptanceCriteria": [
+        "Selecting 'Binary Tree' from the data structure dropdown loads the easy difficulty",
+        "Skeleton code for tree operations is displayed",
+        "Clicking 'Show Solution' loads the reference solution",
+        "Clicking 'Run All Tests' executes all tree test cases",
+        "Visualization shows hierarchical tree structure with nodes and edges",
+        "Tree traversal animations highlight visited nodes",
+        "All tests pass with reference solution"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value tree",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser click @ref_to_show_solution_button",
+        "npx agent-browser click @ref_to_confirm_button",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 5000",
+        "npx agent-browser is visible @ref_to_tree_visualization",
+        "npx agent-browser get text @ref_to_test_status --json"
+      ],
+      "passes": false,
+      "notes": "Check if tree layout algorithm positions nodes correctly"
+    },
+    {
+      "id": "US-TEST-006",
+      "title": "Graph Data Structure - Complete Functionality Test",
+      "description": "Verify that the Graph data structure works correctly with graph traversal algorithms and visualization.",
+      "priority": "high",
+      "dataStructure": "graph",
+      "acceptanceCriteria": [
+        "Selecting 'Graph' from the data structure dropdown loads the easy difficulty",
+        "Skeleton code for graph operations is displayed",
+        "Clicking 'Show Solution' loads the reference solution",
+        "Clicking 'Run All Tests' executes all graph test cases",
+        "Visualization shows graph vertices and edges",
+        "Graph traversal (BFS/DFS) animations are visible",
+        "All tests pass with reference solution"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value graph",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser click @ref_to_show_solution_button",
+        "npx agent-browser click @ref_to_confirm_button",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 5000",
+        "npx agent-browser is visible @ref_to_graph_visualization",
+        "npx agent-browser get text @ref_to_test_status --json"
+      ],
+      "passes": false,
+      "notes": "Verify graph visualization handles directed and undirected graphs"
+    },
+    {
+      "id": "US-TEST-007",
+      "title": "Hash Map Data Structure - Complete Functionality Test",
+      "description": "Verify that the Hash Map data structure works correctly with hash table operations and collision handling visualization.",
+      "priority": "high",
+      "dataStructure": "hashMap",
+      "acceptanceCriteria": [
+        "Selecting 'Hash Map' from the data structure dropdown loads the easy difficulty",
+        "Skeleton code for hash map get/set operations is displayed",
+        "Clicking 'Show Solution' loads the reference solution",
+        "Clicking 'Run All Tests' executes all hash map test cases",
+        "Visualization shows hash table buckets and entries",
+        "Collision chains are visible when multiple keys hash to same bucket",
+        "All tests pass with reference solution"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value hashMap",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser click @ref_to_show_solution_button",
+        "npx agent-browser click @ref_to_confirm_button",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 5000",
+        "npx agent-browser is visible @ref_to_hashmap_visualization",
+        "npx agent-browser get text @ref_to_test_status --json"
+      ],
+      "passes": false,
+      "notes": "Check if hash map visualization shows buckets and collision chains"
+    },
+    {
+      "id": "US-TEST-008",
+      "title": "Difficulty Level Switching",
+      "description": "Verify that switching between difficulty levels (easy, medium, hard) works correctly for each data structure.",
+      "priority": "medium",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Difficulty selector shows three options: Easy, Medium, Hard",
+        "Switching difficulty updates the skeleton code in the editor",
+        "Switching difficulty loads the appropriate test cases",
+        "Previous code is saved when switching difficulties",
+        "URL parameters update to reflect current difficulty",
+        "Test results are cleared when switching difficulty"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value array",
+        "npx agent-browser click @ref_to_difficulty_easy",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser get text @ref_to_editor --json",
+        "npx agent-browser click @ref_to_difficulty_medium",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser get text @ref_to_editor --json",
+        "npx agent-browser click @ref_to_difficulty_hard",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser get text @ref_to_editor --json"
+      ],
+      "passes": false,
+      "notes": "Verify code persistence when switching difficulties"
+    },
+    {
+      "id": "US-TEST-009",
+      "title": "Visualization Mode Switching",
+      "description": "Verify that all visualization modes (My Execution, Show Expected, Compare, Skeleton, Show Solution) work correctly.",
+      "priority": "high",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Mode selector shows all five visualization modes",
+        "'My Execution' mode shows user's code execution steps",
+        "'Show Expected' mode shows expected output visualization",
+        "'Compare' mode shows side-by-side comparison",
+        "'Skeleton' mode shows initial data structure state",
+        "'Show Solution' mode displays reference solution and loads it into editor",
+        "Modes are properly disabled when no steps are available"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser is visible @ref_to_mode_selector",
+        "npx agent-browser click @ref_to_mode_skeleton",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser click @ref_to_mode_expected",
+        "npx agent-browser snapshot -i -c --wait 2000",
+        "npx agent-browser click @ref_to_mode_my_execution",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser click @ref_to_mode_compare",
+        "npx agent-browser snapshot -i -c"
+      ],
+      "passes": false,
+      "notes": "Verify mode switching preserves steps for each mode"
+    },
+    {
+      "id": "US-TEST-010",
+      "title": "Animation Controls",
+      "description": "Verify that animation playback controls (play, pause, previous, next, reset) work correctly.",
+      "priority": "medium",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Play button starts animation from current step",
+        "Pause button stops animation",
+        "Previous button moves to previous step",
+        "Next button moves to next step",
+        "Step counter shows current step / total steps",
+        "Animation auto-plays after test execution",
+        "Animation controls are disabled when no steps available"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value array",
+        "npx agent-browser click @ref_to_show_solution_button",
+        "npx agent-browser click @ref_to_confirm_button",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 3000",
+        "npx agent-browser is visible @ref_to_play_button",
+        "npx agent-browser click @ref_to_pause_button",
+        "npx agent-browser click @ref_to_next_button",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser get text @ref_to_step_counter --json",
+        "npx agent-browser click @ref_to_previous_button",
+        "npx agent-browser snapshot -i -c"
+      ],
+      "passes": false,
+      "notes": "Check if animation speed is appropriate (16ms per frame)"
+    },
+    {
+      "id": "US-TEST-011",
+      "title": "Console Output Display",
+      "description": "Verify that console logs from user code are captured and displayed correctly.",
+      "priority": "medium",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Console panel is visible at bottom of visualization panel",
+        "console.log() statements in user code appear in console panel",
+        "Different log levels (log, warn, error, info) are styled differently",
+        "Clear button clears all console logs",
+        "Console logs include timestamps",
+        "Console logs from test execution are captured"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser is visible @ref_to_console_panel",
+        "npx agent-browser click @ref_to_clear_console_button",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value array",
+        "npx agent-browser fill @ref_to_editor 'function sort(arr) { console.log(\"test\"); return arr; }'",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 2000",
+        "npx agent-browser is visible @ref_to_console_logs",
+        "npx agent-browser get text @ref_to_console_logs --json | jq '.text | contains(\"test\")'"
+      ],
+      "passes": false,
+      "notes": "Verify console capture works in sandboxed iframe"
+    },
+    {
+      "id": "US-TEST-012",
+      "title": "Hints System",
+      "description": "Verify that the hints system reveals hints progressively and persists hint state.",
+      "priority": "low",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Hint button is visible in editor panel",
+        "Clicking hint button reveals first hint",
+        "Clicking again reveals next hint",
+        "Hints are revealed progressively (not all at once)",
+        "Hint count is persisted in localStorage",
+        "Switching tests resets hint count",
+        "Maximum hints shown matches test case hint count"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser is visible @ref_to_hint_button",
+        "npx agent-browser click @ref_to_hint_button",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser is visible @ref_to_hint_display",
+        "npx agent-browser get text @ref_to_hint_display --json",
+        "npx agent-browser click @ref_to_hint_button",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser get text @ref_to_hint_display --json"
+      ],
+      "passes": false,
+      "notes": "Check hint persistence across page reloads"
+    },
+    {
+      "id": "US-TEST-013",
+      "title": "Code Persistence and LocalStorage",
+      "description": "Verify that user code is saved to localStorage and restored correctly.",
+      "priority": "medium",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "User code is automatically saved as they type",
+        "Code persists when switching between data structures",
+        "Code persists when switching difficulties",
+        "Code is restored on page reload",
+        "Storage key includes both data structure and difficulty",
+        "Clearing browser storage resets to skeleton code"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value array",
+        "npx agent-browser fill @ref_to_editor 'function test() { return 42; }'",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value linkedList",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser select @ref_to_data_structure_select --value array",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser get text @ref_to_editor --json | jq '.text | contains(\"test\")'",
+        "npx agent-browser execute 'window.location.reload()'",
+        "npx agent-browser snapshot -i -c --wait 2000",
+        "npx agent-browser get text @ref_to_editor --json | jq '.text | contains(\"test\")'"
+      ],
+      "passes": false,
+      "notes": "Verify localStorage quota is not exceeded"
+    },
+    {
+      "id": "US-TEST-014",
+      "title": "URL Parameter Synchronization",
+      "description": "Verify that URL parameters reflect and control the current state (data structure and difficulty).",
+      "priority": "low",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "URL includes dataStructure and difficulty parameters",
+        "Changing data structure updates URL",
+        "Changing difficulty updates URL",
+        "Loading page with URL parameters sets correct state",
+        "Invalid URL parameters default to array/easy",
+        "Browser back/forward buttons work correctly"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser execute 'window.location.href'",
+        "npx agent-browser select @ref_to_data_structure_select --value linkedList",
+        "npx agent-browser execute 'window.location.href' | jq '.href | contains(\"linkedList\")'",
+        "npx agent-browser click @ref_to_difficulty_medium",
+        "npx agent-browser execute 'window.location.href' | jq '.href | contains(\"medium\")'",
+        "npx agent-browser execute 'window.location.href = \"http://localhost:5173/?dataStructure=graph&difficulty=hard\"'",
+        "npx agent-browser snapshot -i -c --wait 1000",
+        "npx agent-browser get value @ref_to_data_structure_select --json | jq '.value == \"graph\"'"
+      ],
+      "passes": false,
+      "notes": "Verify URL updates without page reload"
+    },
+    {
+      "id": "US-TEST-015",
+      "title": "Test Results Panel",
+      "description": "Verify that test results are displayed correctly with pass/fail status and error messages.",
+      "priority": "high",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Test panel shows all test cases for current data structure",
+        "Each test case shows name and difficulty badge",
+        "Running a test shows pass/fail status with visual indicator",
+        "Failed tests show error messages",
+        "Execution time is displayed for each test",
+        "Individual test run button works for each test",
+        "'Run All Tests' button executes all tests sequentially"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser is visible @ref_to_test_panel",
+        "npx agent-browser click @ref_to_show_solution_button",
+        "npx agent-browser click @ref_to_confirm_button",
+        "npx agent-browser click @ref_to_individual_test_button",
+        "npx agent-browser snapshot -i -c --wait 2000",
+        "npx agent-browser is visible @ref_to_test_pass_indicator",
+        "npx agent-browser get text @ref_to_test_execution_time --json",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 5000",
+        "npx agent-browser get text @ref_to_test_results --json"
+      ],
+      "passes": false,
+      "notes": "Check if test execution doesn't block UI"
+    },
+    {
+      "id": "US-TEST-016",
+      "title": "Error Handling - Infinite Loops",
+      "description": "Verify that infinite loops are detected and handled gracefully without freezing the application.",
+      "priority": "high",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "SWC transformation injects loop counters into while/for loops",
+        "Loop counter limit is 100,000 iterations",
+        "Infinite loops throw error with message 'Infinite loop detected'",
+        "Error is caught and displayed in test results",
+        "Application remains responsive after infinite loop",
+        "Error message is shown in console panel"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser fill @ref_to_editor 'function test(arr) { while(true) {} return arr; }'",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 2000",
+        "npx agent-browser is visible @ref_to_test_error",
+        "npx agent-browser get text @ref_to_test_error --json | jq '.text | contains(\"Infinite loop\")'",
+        "npx agent-browser is visible @ref_to_console_error",
+        "npx agent-browser click @ref_to_editor",
+        "npx agent-browser snapshot -i -c"
+      ],
+      "passes": false,
+      "notes": "Critical security feature - must not allow DoS"
+    },
+    {
+      "id": "US-TEST-017",
+      "title": "Error Handling - Syntax Errors",
+      "description": "Verify that syntax errors in user code are caught and displayed with helpful messages.",
+      "priority": "high",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "SWC transformation errors are caught",
+        "Syntax errors show clear error messages",
+        "Error messages indicate line and column numbers",
+        "Test execution stops gracefully on syntax error",
+        "Editor can still be edited after syntax error",
+        "Error is cleared when code is fixed"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser fill @ref_to_editor 'function test(arr) { return arr;'",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 1000",
+        "npx agent-browser is visible @ref_to_test_error",
+        "npx agent-browser get text @ref_to_test_error --json",
+        "npx agent-browser fill @ref_to_editor 'function test(arr) { return arr; }'",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 1000"
+      ],
+      "passes": false,
+      "notes": "Error messages should be beginner-friendly"
+    },
+    {
+      "id": "US-TEST-018",
+      "title": "Error Handling - Runtime Errors",
+      "description": "Verify that runtime errors (null pointer, undefined, etc.) are caught and displayed correctly.",
+      "priority": "high",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Runtime errors in sandboxed code are caught",
+        "Error messages show stack traces",
+        "Partial visualization steps are still shown before error",
+        "Test result shows failed status with error message",
+        "Console panel shows error with stack trace",
+        "Other tests can still run after one test errors"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser fill @ref_to_editor 'function test(arr) { arr.nonexistent(); return arr; }'",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 2000",
+        "npx agent-browser is visible @ref_to_test_failed",
+        "npx agent-browser get text @ref_to_test_error --json",
+        "npx agent-browser is visible @ref_to_console_error"
+      ],
+      "passes": false,
+      "notes": "Verify sandbox isolation prevents errors from crashing app"
+    },
+    {
+      "id": "US-TEST-019",
+      "title": "Performance - Bundle Size",
+      "description": "Verify that the application bundle size meets the performance target of under 4MB.",
+      "priority": "medium",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Total bundle size is under 4MB",
+        "CodeMirror bundle is approximately 300KB",
+        "D3.js is included but not bloated",
+        "SWC WASM file size is reasonable",
+        "Build process generates optimized bundles",
+        "Lazy loading is used where appropriate"
+      ],
+      "verificationSteps": [
+        "npm run build",
+        "ls -lh dist/assets/*.js | awk '{print $5, $9}'",
+        "du -sh dist",
+        "find dist -name '*.wasm' -exec ls -lh {} \\;",
+        "stat -f%z dist/assets/*.js | awk '{sum+=$1} END {print sum/1024/1024 \" MB\"}'"
+      ],
+      "passes": false,
+      "notes": "Bundle size impacts initial load time significantly"
+    },
+    {
+      "id": "US-TEST-020",
+      "title": "Performance - SWC Transformation Speed",
+      "description": "Verify that SWC code transformation completes in under 10ms for typical code.",
+      "priority": "medium",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "SWC initialization completes successfully",
+        "Code transformation takes less than 10ms",
+        "Multiple transformations don't cause memory leaks",
+        "Transformation is synchronous (no async overhead)",
+        "Loop injection doesn't significantly impact performance",
+        "Error messages from transformation are fast"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser execute 'console.time(\"swc\"); /* transform code */; console.timeEnd(\"swc\")'",
+        "npx agent-browser get text @ref_to_console --json | jq '.text | contains(\"swc\")'",
+        "npx agent-browser fill @ref_to_editor 'function test(arr) { for(let i=0; i<100; i++) { arr.push(i); } return arr; }'",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 100"
+      ],
+      "passes": false,
+      "notes": "SWC should be much faster than Babel"
+    },
+    {
+      "id": "US-TEST-021",
+      "title": "Performance - D3 Rendering",
+      "description": "Verify that D3 visualization rendering maintains 60fps (16ms per frame).",
+      "priority": "medium",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Initial render completes in under 16ms",
+        "Animation frame updates maintain 60fps",
+        "Large data structures (100+ elements) render smoothly",
+        "No jank or frame drops during animation",
+        "Memory usage stays constant during animation",
+        "SVG elements are efficiently updated"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser execute 'performance.mark(\"render-start\")'",
+        "npx agent-browser click @ref_to_run_all_tests_button",
+        "npx agent-browser snapshot -i -c --wait 1000",
+        "npx agent-browser execute 'performance.mark(\"render-end\"); performance.measure(\"render\", \"render-start\", \"render-end\")'",
+        "npx agent-browser execute 'performance.getEntriesByName(\"render\")[0].duration'",
+        "npx agent-browser snapshot -i -c"
+      ],
+      "passes": false,
+      "notes": "Frame rate impacts user experience significantly"
+    },
+    {
+      "id": "US-TEST-022",
+      "title": "Accessibility - Keyboard Navigation",
+      "description": "Verify that all interactive elements are keyboard accessible.",
+      "priority": "low",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "All buttons are focusable with Tab key",
+        "Enter/Space activates focused buttons",
+        "Dropdowns are navigable with arrow keys",
+        "Focus indicators are visible",
+        "Tab order is logical",
+        "No keyboard traps"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser press Tab",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser press Tab",
+        "npx agent-browser press Tab",
+        "npx agent-browser press Enter",
+        "npx agent-browser snapshot -i -c"
+      ],
+      "passes": false,
+      "notes": "WCAG 2.1 Level AA compliance target"
+    },
+    {
+      "id": "US-TEST-023",
+      "title": "Mobile Responsiveness",
+      "description": "Verify that the application works on mobile devices with appropriate layout adjustments.",
+      "priority": "medium",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Layout switches to vertical panels on mobile (width <= 768px)",
+        "Editor is still usable on mobile",
+        "Buttons are large enough for touch targets (44x44px minimum)",
+        "Visualization is visible and usable on small screens",
+        "No horizontal scrolling required",
+        "Touch gestures work for controls"
+      ],
+      "verificationSteps": [
+        "npx agent-browser viewport 375 667",
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser is visible @ref_to_editor",
+        "npx agent-browser is visible @ref_to_visualization",
+        "npx agent-browser get attribute @ref_to_run_button --attribute style | jq 'contains(\"44px\")'",
+        "npx agent-browser viewport 1920 1080",
+        "npx agent-browser snapshot -i -c"
+      ],
+      "passes": false,
+      "notes": "Test on actual mobile devices if possible"
+    },
+    {
+      "id": "US-TEST-024",
+      "title": "Dark Theme",
+      "description": "Verify that dark theme is applied correctly to all components.",
+      "priority": "low",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Dark theme is applied by default",
+        "All panels have dark backgrounds",
+        "Text has sufficient contrast for readability",
+        "CodeMirror editor uses dark theme",
+        "Visualization uses dark-friendly colors",
+        "No white/light flashes during loading"
+      ],
+      "verificationSteps": [
+        "npx agent-browser snapshot -i -c",
+        "npx agent-browser get attribute html --attribute data-theme",
+        "npx agent-browser get css @ref_to_body --property background-color",
+        "npx agent-browser get css @ref_to_editor --property background-color",
+        "npx agent-browser get css @ref_to_visualization --property background-color"
+      ],
+      "passes": false,
+      "notes": "Dark theme improves focus and reduces eye strain"
+    },
+    {
+      "id": "US-TEST-025",
+      "title": "Test Coverage Validation",
+      "description": "Verify that test coverage meets the 80% threshold requirement.",
+      "priority": "high",
+      "dataStructure": "all",
+      "acceptanceCriteria": [
+        "Statement coverage >= 80%",
+        "Branch coverage >= 75%",
+        "Function coverage >= 80%",
+        "Line coverage >= 80%",
+        "Coverage report is generated successfully",
+        "All critical paths have test coverage"
+      ],
+      "verificationSteps": [
+        "npm run test:coverage",
+        "cat coverage/coverage-summary.json | jq '.total.statements.pct'",
+        "cat coverage/coverage-summary.json | jq '.total.branches.pct'",
+        "cat coverage/coverage-summary.json | jq '.total.functions.pct'",
+        "cat coverage/coverage-summary.json | jq '.total.lines.pct'"
+      ],
+      "passes": false,
+      "notes": "Coverage threshold enforced in vitest.config.ts"
+    }
+  ],
+  "completionCriteria": {
+    "required": [
+      "All user stories with priority='high' must have passes=true",
+      "npm run validate must exit with code 0",
+      "Test coverage must be >= 80%",
+      "No TypeScript errors",
+      "No linting errors",
+      "Application loads successfully at localhost:5173"
+    ],
+    "recommended": [
+      "All user stories (including medium and low priority) have passes=true",
+      "Bundle size is under 4MB",
+      "All animations maintain 60fps",
+      "Accessibility audit passes WCAG 2.1 Level AA",
+      "Mobile experience is smooth on actual devices"
+    ]
+  },
+  "technicalNotes": {
+    "testingApproach": "Use agent-browser for automated UI verification. Each user story includes specific agent-browser commands for validation.",
+    "devServer": "npm run dev starts development server at http://localhost:5173",
+    "validation": "npm run validate runs all checks: lint + format + typecheck + test",
+    "browserRequirements": "Chrome/Chromium required for agent-browser testing",
+    "sandboxSecurity": "User code runs in sandboxed iframe with allow-scripts only",
+    "performanceTargets": {
+      "bundleSize": "< 4MB",
+      "swcTransform": "< 10ms",
+      "d3Rendering": "16ms (60fps)",
+      "testExecution": "< 1s per test case"
+    }
+  }
+}
