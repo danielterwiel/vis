@@ -56,60 +56,193 @@ export const stackQueueTests: TestCase[] = [
     ],
   },
   {
-    id: "queue-using-stacks-medium",
-    name: "Implement Queue Using Two Stacks",
-    difficulty: "medium",
-    description: "Implement a queue using two stacks with enqueue and dequeue operations",
+    id: "queue-basic-operations-easy",
+    name: "Basic Queue Operations",
+    difficulty: "easy",
+    description: "Process a series of enqueue and dequeue operations on a queue",
     initialData: [1, 2, 3, 4, 5],
     expectedOutput: [1, 2, 3, 4, 5],
     assertions: `
       expect(result).toEqual([1, 2, 3, 4, 5]);
-      expect(steps.filter(s => s.type === 'push').length).toBeGreaterThan(0);
-      expect(steps.filter(s => s.type === 'pop').length).toBeGreaterThan(0);
+      expect(steps.filter(s => s.type === 'enqueue').length).toBe(5);
+      expect(steps.filter(s => s.type === 'dequeue').length).toBe(5);
     `,
-    referenceSolution: `function queueUsingStacks(arr) {
-  const stack1 = createTrackedStack();
-  const stack2 = createTrackedStack();
+    referenceSolution: `function processQueue(arr) {
+  const queue = createTrackedQueue();
   const result = [];
 
-  // Enqueue: push to stack1
+  // Enqueue all elements
   for (let i = 0; i < arr.length; i++) {
-    stack1.push(arr[i]);
+    queue.enqueue(arr[i]);
   }
 
-  // Dequeue: transfer to stack2 if needed, then pop
-  for (let i = 0; i < arr.length; i++) {
-    if (stack2.isEmpty()) {
-      while (!stack1.isEmpty()) {
-        stack2.push(stack1.pop());
-      }
-    }
-    result.push(stack2.pop());
+  // Dequeue all elements (FIFO order)
+  while (!queue.isEmpty()) {
+    result.push(queue.dequeue());
   }
 
   return result;
 }`,
-    skeletonCode: `function queueUsingStacks(arr) {
-  const stack1 = createTrackedStack();
-  const stack2 = createTrackedStack();
+    skeletonCode: `function processQueue(arr) {
+  // TODO: Create a queue using createTrackedQueue()
+  const queue = createTrackedQueue();
   const result = [];
 
-  // TODO: Enqueue - push all elements to stack1
+  // TODO: Enqueue all elements from the array
+  // Use queue.enqueue(value)
 
-  // TODO: Dequeue - transfer from stack1 to stack2 (reverses order)
-  // Then pop from stack2 to get FIFO order
-  // Use stack.push(), stack.pop(), stack.isEmpty()
+  // TODO: Dequeue all elements and add to result
+  // Use queue.dequeue() and queue.isEmpty()
 
   return result;
 }`,
     hints: [
-      "Use stack1 for enqueue (push), stack2 for dequeue (pop)",
-      "Transfer elements from stack1 to stack2 to reverse the order",
-      "When stack2 is empty, move all elements from stack1 to stack2",
+      "Create a queue using createTrackedQueue()",
+      "Use enqueue() to add elements to the rear",
+      "Use dequeue() to remove elements from the front (FIFO)",
     ],
     acceptanceCriteria: [
       "Function returns elements in FIFO order (same as input)",
-      "Both push and pop operations are captured",
+      "All enqueue and dequeue operations are captured",
+      "Result array matches expected output",
+    ],
+  },
+  {
+    id: "queue-reverse-first-k-medium",
+    name: "Reverse First K Elements",
+    difficulty: "medium",
+    description:
+      "Reverse the first K elements of a queue while maintaining the order of remaining elements",
+    initialData: [1, 2, 3, 4, 5],
+    expectedOutput: [3, 2, 1, 4, 5],
+    assertions: `
+      expect(result).toEqual([3, 2, 1, 4, 5]);
+      expect(steps.filter(s => s.type === 'enqueue').length).toBeGreaterThan(0);
+      expect(steps.filter(s => s.type === 'dequeue').length).toBeGreaterThan(0);
+    `,
+    referenceSolution: `function reverseFirstK(arr) {
+  const queue = createTrackedQueue();
+  const stack = createTrackedStack();
+  const k = 3;
+
+  // Enqueue all elements
+  for (let i = 0; i < arr.length; i++) {
+    queue.enqueue(arr[i]);
+  }
+
+  // Dequeue first k elements and push to stack
+  for (let i = 0; i < k; i++) {
+    stack.push(queue.dequeue());
+  }
+
+  // Pop from stack and enqueue back (reverses first k)
+  while (!stack.isEmpty()) {
+    queue.enqueue(stack.pop());
+  }
+
+  // Move remaining elements to the end
+  for (let i = 0; i < arr.length - k; i++) {
+    queue.enqueue(queue.dequeue());
+  }
+
+  // Collect result
+  const result = [];
+  while (!queue.isEmpty()) {
+    result.push(queue.dequeue());
+  }
+
+  return result;
+}`,
+    skeletonCode: `function reverseFirstK(arr) {
+  const queue = createTrackedQueue();
+  const stack = createTrackedStack();
+  const k = 3;
+
+  // TODO: Enqueue all elements to the queue
+
+  // TODO: Dequeue first k elements and push to stack
+  // This reverses their order
+
+  // TODO: Pop from stack and enqueue back to queue
+
+  // TODO: Move remaining elements to the back of queue
+
+  // TODO: Collect all elements from queue into result array
+
+  return result;
+}`,
+    hints: [
+      "Use a stack to reverse the first K elements",
+      "Dequeue K elements, push to stack, then pop back to queue",
+      "Move the remaining (n-k) elements to maintain their order",
+    ],
+    acceptanceCriteria: [
+      "Function returns [3, 2, 1, 4, 5] for input [1, 2, 3, 4, 5] with k=3",
+      "Both enqueue and dequeue operations are captured",
+      "Result array matches expected output",
+    ],
+  },
+  {
+    id: "queue-interleave-halves-hard",
+    name: "Interleave Two Halves of Queue",
+    difficulty: "hard",
+    description:
+      "Interleave the first and second halves of a queue (e.g., [1,2,3,4,5,6] becomes [1,4,2,5,3,6])",
+    initialData: [1, 2, 3, 4, 5, 6],
+    expectedOutput: [1, 4, 2, 5, 3, 6],
+    assertions: `
+      expect(result).toEqual([1, 4, 2, 5, 3, 6]);
+      expect(steps.filter(s => s.type === 'enqueue').length).toBeGreaterThan(0);
+      expect(steps.filter(s => s.type === 'dequeue').length).toBeGreaterThan(0);
+    `,
+    referenceSolution: `function interleaveQueue(arr) {
+  const queue = createTrackedQueue();
+  const tempQueue = createTrackedQueue();
+  const n = arr.length;
+  const half = n / 2;
+
+  // Enqueue all elements
+  for (let i = 0; i < n; i++) {
+    queue.enqueue(arr[i]);
+  }
+
+  // Move first half to temp queue
+  for (let i = 0; i < half; i++) {
+    tempQueue.enqueue(queue.dequeue());
+  }
+
+  // Interleave: dequeue from temp and main queue alternately
+  const result = [];
+  for (let i = 0; i < half; i++) {
+    result.push(tempQueue.dequeue());
+    result.push(queue.dequeue());
+  }
+
+  return result;
+}`,
+    skeletonCode: `function interleaveQueue(arr) {
+  const queue = createTrackedQueue();
+  const tempQueue = createTrackedQueue();
+  const n = arr.length;
+  const half = n / 2;
+
+  // TODO: Enqueue all elements to main queue
+
+  // TODO: Move first half of elements to temp queue
+
+  // TODO: Interleave elements from temp and main queue
+  // Alternate between dequeuing from temp and main
+
+  return result;
+}`,
+    hints: [
+      "Use a temporary queue to hold the first half of elements",
+      "Move first n/2 elements to the temp queue",
+      "Alternately dequeue from temp and main queue to interleave",
+    ],
+    acceptanceCriteria: [
+      "Function returns [1, 4, 2, 5, 3, 6] for input [1, 2, 3, 4, 5, 6]",
+      "Both enqueue and dequeue operations are captured",
       "Result array matches expected output",
     ],
   },

@@ -3,8 +3,8 @@ import { stackQueueTests } from "./stackQueueTests";
 
 describe("stackQueueTests", () => {
   describe("structure", () => {
-    it("should export 3 test cases", () => {
-      expect(stackQueueTests).toHaveLength(3);
+    it("should export 5 test cases", () => {
+      expect(stackQueueTests).toHaveLength(5);
     });
 
     it("should have unique IDs", () => {
@@ -13,18 +13,23 @@ describe("stackQueueTests", () => {
       expect(uniqueIds.size).toBe(ids.length);
     });
 
-    it("should have one test per difficulty level", () => {
+    it("should have tests for each difficulty level", () => {
       const difficulties = stackQueueTests.map((test) => test.difficulty);
-      expect(difficulties).toContain("easy");
-      expect(difficulties).toContain("medium");
-      expect(difficulties).toContain("hard");
+      expect(difficulties.filter((d) => d === "easy").length).toBeGreaterThan(0);
+      expect(difficulties.filter((d) => d === "medium").length).toBeGreaterThan(0);
+      expect(difficulties.filter((d) => d === "hard").length).toBeGreaterThan(0);
     });
 
-    it("should follow naming convention: stack-*-easy, queue-*-medium, *-hard", () => {
+    it("should follow naming convention: stack-* or queue-* or min-stack-*", () => {
       const ids = stackQueueTests.map((test) => test.id);
       ids.forEach((id) => {
         expect(id).toMatch(/^(stack|queue|min-stack)-[a-z-]+$/);
       });
+    });
+
+    it("should have queue tests with queue- prefix", () => {
+      const queueTests = stackQueueTests.filter((test) => test.id.startsWith("queue-"));
+      expect(queueTests.length).toBeGreaterThanOrEqual(3);
     });
   });
 
@@ -176,69 +181,117 @@ describe("stackQueueTests", () => {
   });
 
   describe("specific test cases", () => {
-    describe("Easy: Balanced Parentheses", () => {
-      const easyTest = stackQueueTests.find((test) => test.difficulty === "easy");
+    describe("Stack: Balanced Parentheses (Easy)", () => {
+      const test = stackQueueTests.find((t) => t.id === "stack-balanced-parentheses-easy");
 
       it("should have balanced parentheses as input", () => {
-        expect(easyTest?.initialData).toBe("(()())");
+        expect(test?.initialData).toBe("(()())");
       });
 
       it("should expect true as output", () => {
-        expect(easyTest?.expectedOutput).toBe(true);
+        expect(test?.expectedOutput).toBe(true);
       });
 
       it("should use stack data structure", () => {
-        expect(easyTest?.referenceSolution).toContain("createTrackedStack");
-        expect(easyTest?.referenceSolution).toContain("push");
-        expect(easyTest?.referenceSolution).toContain("pop");
-        expect(easyTest?.referenceSolution).toContain("isEmpty");
+        expect(test?.referenceSolution).toContain("createTrackedStack");
+        expect(test?.referenceSolution).toContain("push");
+        expect(test?.referenceSolution).toContain("pop");
+        expect(test?.referenceSolution).toContain("isEmpty");
       });
     });
 
-    describe("Medium: Queue Using Two Stacks", () => {
-      const mediumTest = stackQueueTests.find((test) => test.difficulty === "medium");
+    describe("Queue: Basic Operations (Easy)", () => {
+      const test = stackQueueTests.find((t) => t.id === "queue-basic-operations-easy");
 
       it("should have array as input", () => {
-        expect(Array.isArray(mediumTest?.initialData)).toBe(true);
-        expect(mediumTest?.initialData).toEqual([1, 2, 3, 4, 5]);
+        expect(Array.isArray(test?.initialData)).toBe(true);
+        expect(test?.initialData).toEqual([1, 2, 3, 4, 5]);
       });
 
       it("should expect FIFO order as output", () => {
-        expect(mediumTest?.expectedOutput).toEqual([1, 2, 3, 4, 5]);
+        expect(test?.expectedOutput).toEqual([1, 2, 3, 4, 5]);
       });
 
-      it("should use two stacks", () => {
-        expect(mediumTest?.referenceSolution).toContain("createTrackedStack");
-        const stackMatches = mediumTest?.referenceSolution.match(/createTrackedStack/g);
-        expect(stackMatches?.length).toBe(2);
+      it("should use queue data structure", () => {
+        expect(test?.referenceSolution).toContain("createTrackedQueue");
+        expect(test?.referenceSolution).toContain("enqueue");
+        expect(test?.referenceSolution).toContain("dequeue");
+        expect(test?.referenceSolution).toContain("isEmpty");
       });
 
-      it("should verify push and pop operations", () => {
-        expect(mediumTest?.assertions).toContain("push");
-        expect(mediumTest?.assertions).toContain("pop");
+      it("should verify enqueue and dequeue operations", () => {
+        expect(test?.assertions).toContain("enqueue");
+        expect(test?.assertions).toContain("dequeue");
       });
     });
 
-    describe("Hard: Min Stack", () => {
-      const hardTest = stackQueueTests.find((test) => test.difficulty === "hard");
+    describe("Queue: Reverse First K (Medium)", () => {
+      const test = stackQueueTests.find((t) => t.id === "queue-reverse-first-k-medium");
 
       it("should have array as input", () => {
-        expect(Array.isArray(hardTest?.initialData)).toBe(true);
-        expect(hardTest?.initialData).toEqual([5, 2, 8, 1, 9]);
+        expect(Array.isArray(test?.initialData)).toBe(true);
+        expect(test?.initialData).toEqual([1, 2, 3, 4, 5]);
+      });
+
+      it("should expect reversed first k elements as output", () => {
+        expect(test?.expectedOutput).toEqual([3, 2, 1, 4, 5]);
+      });
+
+      it("should use queue and stack", () => {
+        expect(test?.referenceSolution).toContain("createTrackedQueue");
+        expect(test?.referenceSolution).toContain("createTrackedStack");
+      });
+
+      it("should verify enqueue and dequeue operations", () => {
+        expect(test?.assertions).toContain("enqueue");
+        expect(test?.assertions).toContain("dequeue");
+      });
+    });
+
+    describe("Queue: Interleave Halves (Hard)", () => {
+      const test = stackQueueTests.find((t) => t.id === "queue-interleave-halves-hard");
+
+      it("should have array as input", () => {
+        expect(Array.isArray(test?.initialData)).toBe(true);
+        expect(test?.initialData).toEqual([1, 2, 3, 4, 5, 6]);
+      });
+
+      it("should expect interleaved halves as output", () => {
+        expect(test?.expectedOutput).toEqual([1, 4, 2, 5, 3, 6]);
+      });
+
+      it("should use two queues", () => {
+        expect(test?.referenceSolution).toContain("createTrackedQueue");
+        const queueMatches = test?.referenceSolution.match(/createTrackedQueue/g);
+        expect(queueMatches?.length).toBe(2);
+      });
+
+      it("should verify enqueue and dequeue operations", () => {
+        expect(test?.assertions).toContain("enqueue");
+        expect(test?.assertions).toContain("dequeue");
+      });
+    });
+
+    describe("Min Stack (Hard)", () => {
+      const test = stackQueueTests.find((t) => t.id === "min-stack-hard");
+
+      it("should have array as input", () => {
+        expect(Array.isArray(test?.initialData)).toBe(true);
+        expect(test?.initialData).toEqual([5, 2, 8, 1, 9]);
       });
 
       it("should expect minimum value as output", () => {
-        expect(hardTest?.expectedOutput).toBe(1);
+        expect(test?.expectedOutput).toBe(1);
       });
 
       it("should use two stacks (main + min)", () => {
-        expect(hardTest?.referenceSolution).toContain("createTrackedStack");
-        const stackMatches = hardTest?.referenceSolution.match(/createTrackedStack/g);
+        expect(test?.referenceSolution).toContain("createTrackedStack");
+        const stackMatches = test?.referenceSolution.match(/createTrackedStack/g);
         expect(stackMatches?.length).toBe(2);
       });
 
       it("should verify push operations", () => {
-        expect(hardTest?.assertions).toContain("push");
+        expect(test?.assertions).toContain("push");
       });
     });
   });
