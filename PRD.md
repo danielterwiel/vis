@@ -956,7 +956,7 @@ vis/
 - [x] Add Tabler icons throughout UI (strategically)
 - [x] Fix Examples dialog UI/UX
 - [x] Move "Example usage" comments to top of skeleton functions
-- [ ] Show all 3 test cases simultaneously (no filter)
+- [x] Show all 3 test cases simultaneously (no filter)
 - [ ] Add play button above editor for running all tests
 - [ ] Implement auto-play visualization on code execution
 - [ ] Add replay button for visualization
