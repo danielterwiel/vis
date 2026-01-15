@@ -338,27 +338,27 @@ Uncaught Error: No skeleton template found for stack (easy)
 
 **Acceptance Criteria**:
 
-- [ ] Buckets displayed as array slots
-- [ ] Key-value pairs visible within buckets
-- [ ] Hash function visualization shows key mapping to bucket
-- [ ] Collision handling visualized (chaining or open addressing)
-- [ ] Get operation highlights bucket access and key comparison
-- [ ] Set operation shows insertion and collision resolution
-- [ ] Delete operation shows removal
-- [ ] Load factor/capacity displayed
-- [ ] Works with TrackedHashMap data structure
-- [ ] All hash map tests trigger appropriate visualizations
-- [ ] D3Adapter pattern followed
-- [ ] 60fps animation performance
-- [ ] Tests pass with >80% coverage
+- [x] Buckets displayed as array slots
+- [x] Key-value pairs visible within buckets
+- [x] Hash function visualization shows key mapping to bucket
+- [x] Collision handling visualized (chaining or open addressing)
+- [x] Get operation highlights bucket access and key comparison
+- [x] Set operation shows insertion and collision resolution
+- [x] Delete operation shows removal
+- [x] Load factor/capacity displayed
+- [x] Works with TrackedHashMap data structure
+- [x] All hash map tests trigger appropriate visualizations
+- [x] D3Adapter pattern followed
+- [x] 60fps animation performance
+- [x] Tests pass with >80% coverage
 
 **Dependencies**: US-001
 
 **Priority**: P1 (High)
 
-**Status**: `pending`
+**Status**: `complete`
 
-**Passes**: `false`
+**Passes**: `true`
 
 ---
 

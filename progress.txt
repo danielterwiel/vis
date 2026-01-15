@@ -151,3 +151,37 @@ US-006: Implement Graph Visualization - COMPLETE
 - 1246 tests passed (same as US-005, no regressions)
 - Same pre-existing test failure unrelated to graph visualization
 - All linting and formatting checks passed
+US-007: Implement Hash Map Visualization - COMPLETE
+- HashMapVisualizer component already existed with D3 force-directed layout
+- TrackedHashMap data structure already had all necessary methods (set, get, delete, has, clear, resize)
+- hashMapTests.ts already had 3 test cases for all difficulty levels
+- Integrated HashMapVisualizer into VisualizationPanel:
+  - Added import for HashMapVisualizer and hashMapTests (line 15, 21)
+  - Added import for HashMapBucket type from TrackedHashMap (line 24)
+  - Added "hashMap" case to getCurrentTestCase() to load hashMapTests (line 97-98)
+  - Added "hashMap" case to renderVisualizer() switch statement (line 381-391)
+- Integrated HashMapVisualizer into ComparisonView:
+  - Added import for HashMapVisualizer and HashMapBucket type (line 7, 11)
+  - Added "hashMap" case to renderVisualizer() for side-by-side comparison (line 107-115)
+- HashMapVisualizer features:
+  - Displays buckets as array slots in 8x2 grid layout (up to 16 buckets)
+  - Key-value pairs visible within buckets with collision chains shown below
+  - Color coding: blue (non-empty), dark (empty), green (active), orange (collision), purple (found), red (deleted)
+  - Hash function visualization shows key mapping to bucket index
+  - Collision handling visualized with chaining (separate chaining resolution)
+  - Get operation highlights bucket access and key comparison in collision chain
+  - Set operation shows insertion and collision resolution
+  - Delete operation shows removal from bucket
+  - Step indicator shows operation descriptions with load factor/capacity info
+  - Smooth animations with proper state transitions
+- Works with TrackedHashMap data structure and all 3 difficulty levels:
+  - hashmap-basic-easy: Basic get/set operations
+  - hashmap-collision-medium: Collision handling with forced collisions
+  - hashmap-frequency-hard: Character frequency counter
+- D3Adapter pattern maintained (React renders once, D3 owns SVG node)
+- HashMapVisualizer.css provides proper styling with hover effects
+- TypeScript type checking passed
+- 1246 tests passed (same as US-006, no regressions)
+- Same pre-existing test failure unrelated to hash map visualization
+- All linting and formatting checks passed
+

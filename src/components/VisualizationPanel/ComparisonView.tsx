@@ -4,9 +4,11 @@ import { LinkedListVisualizer } from "../visualizers/LinkedListVisualizer";
 import { StackQueueVisualizer } from "../visualizers/StackQueueVisualizer";
 import { BinaryTreeVisualizer } from "../visualizers/BinaryTreeVisualizer";
 import GraphVisualizer from "../visualizers/GraphVisualizer";
+import { HashMapVisualizer } from "../visualizers/HashMapVisualizer";
 import type { DataStructureType, VisualizationStep } from "../../store/useAppStore";
 import type { LinkedListNode } from "../../lib/dataStructures/TrackedLinkedList";
 import type { BinaryTreeNode } from "../../lib/dataStructures/TrackedBinaryTree";
+import type { HashMapBucket } from "../../lib/dataStructures/TrackedHashMap";
 import "./ComparisonView.css";
 
 interface ComparisonViewProps {
@@ -102,7 +104,15 @@ export function ComparisonView({
             isAnimating={isAnimating}
           />
         );
-      // TODO: Add other data structure visualizers (HashMap)
+      case "hashMap":
+        return (
+          <HashMapVisualizer
+            data={data as HashMapBucket<unknown, unknown>[] | null}
+            steps={steps}
+            currentStepIndex={stepIndex}
+            isAnimating={isAnimating}
+          />
+        );
       default:
         return (
           <ArrayVisualizer

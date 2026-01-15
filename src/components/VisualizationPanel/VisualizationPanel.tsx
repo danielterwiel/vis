@@ -12,13 +12,16 @@ import { LinkedListVisualizer } from "../visualizers/LinkedListVisualizer";
 import { StackQueueVisualizer } from "../visualizers/StackQueueVisualizer";
 import { BinaryTreeVisualizer } from "../visualizers/BinaryTreeVisualizer";
 import GraphVisualizer from "../visualizers/GraphVisualizer";
+import { HashMapVisualizer } from "../visualizers/HashMapVisualizer";
 import {
   arrayTests,
   stackQueueTests,
   binaryTreeTests,
   graphTests,
+  hashMapTests,
 } from "../../lib/testing/testCases";
 import type { BinaryTreeNode } from "../../lib/dataStructures/TrackedBinaryTree";
+import type { HashMapBucket } from "../../lib/dataStructures/TrackedHashMap";
 import { ModeSelector } from "./ModeSelector";
 import { ComparisonView } from "./ComparisonView";
 import { PerformanceMetrics } from "./PerformanceMetrics";
@@ -91,6 +94,8 @@ function VisualizationPanel() {
         return binaryTreeTests.find((t) => t.difficulty === selectedDifficulty);
       case "graph":
         return graphTests.find((t) => t.difficulty === selectedDifficulty);
+      case "hashMap":
+        return hashMapTests.find((t) => t.difficulty === selectedDifficulty);
       default:
         return arrayTests.find((t) => t.difficulty === selectedDifficulty);
     }
@@ -373,7 +378,15 @@ function VisualizationPanel() {
             isAnimating={isAnimating}
           />
         );
-      // TODO: Add other data structure visualizers (HashMap)
+      case "hashMap":
+        return (
+          <HashMapVisualizer
+            data={currentData as HashMapBucket<unknown, unknown>[] | null}
+            steps={currentSteps}
+            currentStepIndex={currentStepIndex}
+            isAnimating={isAnimating}
+          />
+        );
       default:
         return (
           <ArrayVisualizer
