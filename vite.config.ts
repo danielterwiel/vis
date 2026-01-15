@@ -5,6 +5,7 @@ import topLevelAwait from "vite-plugin-top-level-await";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: process.env.GITHUB_ACTIONS ? "/vis/" : "/",
   plugins: [react(), wasm(), topLevelAwait()],
   optimizeDeps: {
     // Exclude @swc/wasm-web from pre-bundling - it handles WASM loading internally

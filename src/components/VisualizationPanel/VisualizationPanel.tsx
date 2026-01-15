@@ -25,7 +25,6 @@ import type { BinaryTreeNode } from "../../lib/dataStructures/TrackedBinaryTree"
 import type { HashMapBucket } from "../../lib/dataStructures/TrackedHashMap";
 import { ModeSelector } from "./ModeSelector";
 import { ComparisonView } from "./ComparisonView";
-import { PerformanceMetrics } from "./PerformanceMetrics";
 import { runReferenceSolution } from "../../lib/execution/referenceSolutionRunner";
 
 function VisualizationPanel() {
@@ -39,7 +38,6 @@ function VisualizationPanel() {
     isAnimating,
     visualizationMode,
     codeStatus,
-    testResults,
     nextStep,
     previousStep,
     setCurrentStepIndex,
@@ -504,15 +502,6 @@ function VisualizationPanel() {
               </button>
             </div>
           </div>
-        )}
-
-        {/* Performance Metrics - show when we have execution data */}
-        {currentSteps.length > 0 && visualizationMode !== "skeleton" && (
-          <PerformanceMetrics
-            executionTime={currentTestCase && testResults.get(currentTestCase.id)?.executionTime}
-            steps={currentSteps}
-            dataSize={Array.isArray(initialData) ? initialData.length : 0}
-          />
         )}
       </div>
     </div>
