@@ -7,10 +7,9 @@ import "./TestPanel.css";
 interface TestPanelProps {
   testCases: TestCase[];
   onRunTest: (testCase: TestCase) => Promise<void>;
-  onRunAllTests: () => Promise<void>;
 }
 
-export function TestPanel({ testCases, onRunTest, onRunAllTests }: TestPanelProps) {
+export function TestPanel({ testCases, onRunTest }: TestPanelProps) {
   const [isRunning, setIsRunning] = useState(false);
   const testResults = useAppStore((state) => state.testResults);
 
@@ -18,15 +17,6 @@ export function TestPanel({ testCases, onRunTest, onRunAllTests }: TestPanelProp
     setIsRunning(true);
     try {
       await onRunTest(testCase);
-    } finally {
-      setIsRunning(false);
-    }
-  };
-
-  const handleRunAll = async () => {
-    setIsRunning(true);
-    try {
-      await onRunAllTests();
     } finally {
       setIsRunning(false);
     }
@@ -62,17 +52,6 @@ export function TestPanel({ testCases, onRunTest, onRunAllTests }: TestPanelProp
             </span>
           )}
         </div>
-      </div>
-
-      <div className="test-actions">
-        <button
-          onClick={handleRunAll}
-          disabled={isRunning || testCases.length === 0}
-          aria-label="Run all tests"
-        >
-          <IconPlayerPlay size={18} />
-          {isRunning ? "Running..." : "Run All Tests"}
-        </button>
       </div>
 
       <div className="test-list">

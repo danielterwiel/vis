@@ -171,11 +171,7 @@ function App() {
             </Panel>
             <PanelResizeHandle className="resize-handle" />
             <Panel defaultSize={40} minSize={20}>
-              <TestPanel
-                testCases={testCases}
-                onRunTest={handleRunTest}
-                onRunAllTests={handleRunAllTests}
-              />
+              <TestPanel testCases={testCases} onRunTest={handleRunTest} />
             </Panel>
           </PanelGroup>
         </Panel>

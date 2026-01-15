@@ -162,3 +162,19 @@ All acceptance criteria verified with agent-browser:
 - All 3 HashMap tests show as passed (3/3 passed)
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1293 tests passing). Updated prd.json to mark BUG-HASHMAP-001 as passes=true.
+
+2026-01-15: Completed UI-001 (Remove duplicate Run All Tests button) - Removed the duplicate "Run All Tests" button from TestPanel component. The application had two such buttons: one in EditorPanel (via RunButton component) at the top, and one in TestPanel below the "Test Cases" heading.
+
+Changes made:
+1. **TestPanel.tsx**: Removed the `onRunAllTests` prop from the interface, removed the `handleRunAll` function, and removed the `test-actions` div containing the duplicate button
+2. **App.tsx**: Removed the `onRunAllTests` prop from the TestPanel component usage
+3. **TestPanel.test.tsx**: Updated all 14 tests to remove the `onRunAllTests` prop, removed 2 tests that specifically tested the "Run All Tests" button in TestPanel (since it no longer exists), and modified the "disable buttons while running" test to use `mockOnRunTest` instead
+
+Result: Now only one "Run All Tests" button exists - the one at the top of the editor panel (in EditorPanel's RunButton component). Users can still run individual tests via the "Run" button on each test item in the TestPanel.
+
+All acceptance criteria verified:
+- Only one 'Run All Tests' button exists in the UI (in EditorPanel)
+- The remaining button is at the top of the editor panel
+- Button still runs all tests correctly (via onRunAllTests in EditorPanel)
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1291 tests passing, decreased from 1293 due to removal of 2 now-irrelevant tests). Updated prd.json to mark UI-001 as passes=true.

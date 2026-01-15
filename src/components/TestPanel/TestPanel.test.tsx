@@ -52,7 +52,6 @@ describe("TestPanel", () => {
   ];
 
   const mockOnRunTest = vi.fn();
-  const mockOnRunAllTests = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -63,13 +62,7 @@ describe("TestPanel", () => {
 
   describe("Rendering", () => {
     it("should render with all test cases visible simultaneously", () => {
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       expect(screen.getByText("Test Cases")).toBeInTheDocument();
       expect(screen.getByText("Easy Test")).toBeInTheDocument();
@@ -78,21 +71,13 @@ describe("TestPanel", () => {
     });
 
     it("should show no tests message when testCases is empty", () => {
-      render(
-        <TestPanel testCases={[]} onRunTest={mockOnRunTest} onRunAllTests={mockOnRunAllTests} />,
-      );
+      render(<TestPanel testCases={[]} onRunTest={mockOnRunTest} />);
 
       expect(screen.getByText("No tests available")).toBeInTheDocument();
     });
 
     it("should display test descriptions", () => {
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       expect(screen.getByText("An easy test case")).toBeInTheDocument();
       expect(screen.getByText("A medium test case")).toBeInTheDocument();
@@ -100,13 +85,7 @@ describe("TestPanel", () => {
     });
 
     it("should display difficulty badges", () => {
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       const easyBadges = screen.getAllByText("easy");
       const mediumBadges = screen.getAllByText("medium");
@@ -119,31 +98,9 @@ describe("TestPanel", () => {
   });
 
   describe("Test Execution", () => {
-    it("should call onRunAllTests when clicking Run All Tests", async () => {
-      const user = userEvent.setup();
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
-
-      const runAllButton = screen.getByText("Run All Tests");
-      await user.click(runAllButton);
-
-      expect(mockOnRunAllTests).toHaveBeenCalledTimes(1);
-    });
-
     it("should call onRunTest when clicking Run on individual test", async () => {
       const user = userEvent.setup();
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       const runButtons = screen.getAllByText("Run");
       if (runButtons[0]) {
@@ -155,45 +112,24 @@ describe("TestPanel", () => {
 
     it("should disable buttons while running", async () => {
       const user = userEvent.setup();
-      mockOnRunAllTests.mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 100)),
-      );
+      mockOnRunTest.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));
 
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
-      const runAllButton = screen.getByText("Run All Tests");
-      await user.click(runAllButton);
+      const runButtons = screen.getAllByText("Run");
+      if (runButtons[0]) {
+        await user.click(runButtons[0]);
+      }
 
-      // Should show "Running..." text in multiple places (button and individual test buttons)
+      // Should show "Running..." text in individual test buttons
       const runningTexts = screen.getAllByText("Running...");
       expect(runningTexts.length).toBeGreaterThan(0);
-    });
-
-    it("should disable Run All Tests when no tests are available", () => {
-      render(
-        <TestPanel testCases={[]} onRunTest={mockOnRunTest} onRunAllTests={mockOnRunAllTests} />,
-      );
-
-      const runAllButton = screen.getByText("Run All Tests");
-      expect(runAllButton).toBeDisabled();
     });
   });
 
   describe("Test Results Display", () => {
     it("should show not-run status (○) for tests without results", () => {
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       // Check for not-run CSS class instead of icon text
       const testItems = screen
@@ -226,13 +162,7 @@ describe("TestPanel", () => {
 
       vi.mocked(useAppStore).mockReturnValue(mockResults);
 
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       // Check for passed CSS class instead of icon text
       const testItems = screen
@@ -260,13 +190,7 @@ describe("TestPanel", () => {
 
       vi.mocked(useAppStore).mockReturnValue(mockResults);
 
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       // Check for failed CSS class instead of icon text
       const testItems = screen
@@ -302,25 +226,13 @@ describe("TestPanel", () => {
 
       vi.mocked(useAppStore).mockReturnValue(mockResults);
 
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       expect(screen.getByText("2/3 passed")).toBeInTheDocument();
     });
 
     it("should not show summary when no tests have run", () => {
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       expect(screen.queryByText(/passed/)).not.toBeInTheDocument();
     });
@@ -342,13 +254,7 @@ describe("TestPanel", () => {
 
       vi.mocked(useAppStore).mockReturnValue(mockResults);
 
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       expect(screen.getByText("Syntax error")).toBeInTheDocument();
       expect(screen.queryByText(/Failed after/)).not.toBeInTheDocument();
@@ -358,11 +264,7 @@ describe("TestPanel", () => {
   describe("Integration", () => {
     it("should update display when test results change", () => {
       const { rerender } = render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
+        <TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />,
       );
 
       // Check for not-run CSS class instead of icon text
@@ -380,13 +282,7 @@ describe("TestPanel", () => {
       ]);
       vi.mocked(useAppStore).mockReturnValue(mockResults2);
 
-      rerender(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      rerender(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       // Check for passed CSS class after re-render
       testItems = screen
@@ -397,13 +293,7 @@ describe("TestPanel", () => {
     });
 
     it("should preserve test case order", () => {
-      render(
-        <TestPanel
-          testCases={mockTestCases}
-          onRunTest={mockOnRunTest}
-          onRunAllTests={mockOnRunAllTests}
-        />,
-      );
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       const testNames = screen.getAllByText(/Test$/).map((el) => el.textContent);
       expect(testNames).toEqual(["Easy Test", "Medium Test", "Hard Test"]);
