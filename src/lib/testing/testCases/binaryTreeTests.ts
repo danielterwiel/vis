@@ -17,21 +17,50 @@ export const binaryTreeTests: TestCase[] = [
       expect(result.length).toBe(7);
     `,
     referenceSolution: `function inorderTraversal(tree) {
-  // In-order traversal returns sorted order for BST
-  return tree.inorderTraversal();
+  // In-order traversal: left subtree -> root -> right subtree
+  const result = [];
+
+  function traverse(node) {
+    if (node === null) return;
+    traverse(node.left);     // Visit left subtree first
+    result.push(node.value); // Then visit root
+    traverse(node.right);    // Finally visit right subtree
+  }
+
+  traverse(tree.getRoot());
+  return result;
 }`,
     skeletonCode: `function inorderTraversal(tree) {
-  // TODO: Implement in-order traversal
-  // Hint: The tree parameter is a TrackedBinaryTree
-  // Hint: Use tree.inorderTraversal() method
-  // In-order means: visit left subtree, visit root, visit right subtree
+  // TODO: Implement in-order traversal recursively
+  // The tree parameter is a TrackedBinaryTree
+  // In-order means: visit left subtree -> visit root -> visit right subtree
+  // For a BST, this returns values in sorted (ascending) order
+  //
+  // Steps:
+  // 1. Create a result array to collect values
+  // 2. Create a recursive helper function that takes a node
+  // 3. In the helper: if node is null, return (base case)
+  // 4. Recursively traverse left subtree
+  // 5. Push current node's value to result
+  // 6. Recursively traverse right subtree
+  // 7. Start traversal from tree.getRoot()
+  //
+  // Hint: Access root with tree.getRoot()
+  // Hint: Each node has .value, .left, .right properties
 
-  return tree.inorderTraversal();
+  const result = [];
+
+  function traverse(node) {
+    // TODO: Implement recursive traversal
+  }
+
+  traverse(tree.getRoot());
+  return result;
 }`,
     hints: [
       "In-order traversal visits nodes in order: left subtree → root → right subtree",
-      "For a Binary Search Tree, in-order traversal returns values in sorted order",
-      "The TrackedBinaryTree has an inorderTraversal() method that does this for you",
+      "Use tree.getRoot() to get the root node, then traverse recursively",
+      "Each node has .value (the data), .left (left child), .right (right child)",
     ],
     acceptanceCriteria: [
       "Function returns array in ascending sorted order",

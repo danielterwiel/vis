@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { select } from "d3-selection";
 import { transition } from "d3-transition";
 import type { VisualizationStep } from "../../store/useAppStore";
@@ -31,6 +31,18 @@ export function ArrayVisualizer({
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
 
+  // Get current step for the text display (outside D3)
+  const currentStep = useMemo(() => {
+    return currentStepIndex >= 0 && currentStepIndex < steps.length
+      ? steps[currentStepIndex]
+      : null;
+  }, [currentStepIndex, steps]);
+
+  const stepText = useMemo(() => {
+    if (!currentStep) return null;
+    return `Step ${currentStepIndex + 1}/${steps.length}: ${formatStep(currentStep)}`;
+  }, [currentStep, currentStepIndex, steps.length]);
+
   // Track container size changes
   useEffect(() => {
     if (!svgRef.current) return;
@@ -57,8 +69,8 @@ export function ArrayVisualizer({
     // Set viewBox dynamically to match container - enables proper scaling
     svg.attr("viewBox", `0 0 ${width} ${height}`);
 
-    // Calculate dimensions
-    const margin = { top: 40, right: 40, bottom: 60, left: 40 };
+    // Calculate dimensions (reduced top margin since step text is outside SVG)
+    const margin = { top: 20, right: 40, bottom: 60, left: 40 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
     const barWidth = Math.min(80, innerWidth / data.length - 10);
@@ -158,21 +170,6 @@ export function ArrayVisualizer({
     // Update index labels
     barsMerge.select<SVGTextElement>("text.bar-index").text((_, i) => i);
 
-    // Update or create step indicator
-    let stepIndicator = svg.select<SVGTextElement>("text.step-indicator");
-    if (currentStep) {
-      if (stepIndicator.empty()) {
-        stepIndicator = svg.append("text").attr("class", "step-indicator");
-      }
-      stepIndicator
-        .attr("x", width / 2)
-        .attr("y", 25)
-        .attr("text-anchor", "middle")
-        .text(`Step ${currentStepIndex + 1}/${steps.length}: ${formatStep(currentStep)}`);
-    } else {
-      stepIndicator.remove();
-    }
-
     // Cleanup function
     return () => {
       try {
@@ -180,14 +177,18 @@ export function ArrayVisualizer({
         svg.selectAll("*").interrupt();
         // Remove all elements to prevent stale references
         svg.selectAll(".bar-group").remove();
-        svg.select(".step-indicator").remove();
       } catch {
         // Ignore cleanup errors (e.g., if SVG was already removed)
       }
     };
   }, [data, steps, currentStepIndex, isAnimating, dimensions]);
 
-  return <svg ref={svgRef} className="array-visualizer" />;
+  return (
+    <div className="array-visualizer-container">
+      {stepText && <div className="step-indicator">{stepText}</div>}
+      <svg ref={svgRef} className="array-visualizer" />
+    </div>
+  );
 }
 
 /**

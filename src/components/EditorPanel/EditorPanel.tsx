@@ -190,7 +190,7 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
         </div>
       </div>
       <div className="run-button-container">
-        <RunButton onRunTests={handleRunTests} disabled={isReadOnly} isRunning={isRunning} />
+        <RunButton onRunTests={handleRunTests} disabled={false} isRunning={isRunning} />
       </div>
       <div className="editor-content">
         <CodeMirrorEditor value={userCode} onChange={handleCodeChange} readOnly={isReadOnly} />

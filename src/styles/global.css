@@ -387,6 +387,7 @@ body {
   border-radius: 8px;
   padding: 2rem;
   max-width: 500px;
+  margin: 0 1rem;
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
