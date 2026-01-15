@@ -5,7 +5,7 @@ import type { LinkedListNode } from "../../lib/dataStructures/TrackedLinkedList"
 import "./LinkedListVisualizer.css";
 
 interface LinkedListVisualizerProps {
-  data: LinkedListNode<unknown> | null;
+  data: LinkedListNode<unknown> | unknown[] | null;
   steps?: VisualizationStep[];
   currentStepIndex?: number;
   isAnimating?: boolean;
@@ -31,21 +31,38 @@ export function LinkedListVisualizer({
   useEffect(() => {
     if (!svgRef.current) return;
 
-    // Convert linked list to array for visualization
+    // Convert data to array of nodes for visualization
+    // Data can be either a LinkedListNode structure or a plain array
     const nodes: NodeData[] = [];
-    let current = data;
-    let index = 0;
-    while (current) {
-      nodes.push({
-        value: current.value,
-        index,
-        x: 0, // Will be calculated
-        y: 0,
-        isHead: index === 0,
-        isTail: current.next === null || current.next === undefined,
+
+    if (Array.isArray(data)) {
+      // Handle plain array input - convert to node format
+      data.forEach((value, index) => {
+        nodes.push({
+          value,
+          index,
+          x: 0, // Will be calculated
+          y: 0,
+          isHead: index === 0,
+          isTail: index === data.length - 1,
+        });
       });
-      current = current.next || null;
-      index++;
+    } else {
+      // Handle LinkedListNode structure
+      let current = data;
+      let index = 0;
+      while (current) {
+        nodes.push({
+          value: current.value,
+          index,
+          x: 0, // Will be calculated
+          y: 0,
+          isHead: index === 0,
+          isTail: current.next === null || current.next === undefined,
+        });
+        current = current.next || null;
+        index++;
+      }
     }
 
     // Calculate node positions (horizontal layout)

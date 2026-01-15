@@ -146,8 +146,8 @@
         "agent-browser snapshot -c -d 6",
         "Verify visualization does not contain 'null undefined' text"
       ],
-      "affectedFiles": ["src/components/visualizers/LinkedListVisualization.tsx"],
-      "passes": false
+      "affectedFiles": ["src/components/visualizers/LinkedListVisualizer.tsx", "src/components/VisualizationPanel/VisualizationPanel.tsx"],
+      "passes": true
     },
     {
       "id": "BUG-STACK-001",

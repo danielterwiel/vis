@@ -15,6 +15,7 @@ import GraphVisualizer from "../visualizers/GraphVisualizer";
 import { HashMapVisualizer } from "../visualizers/HashMapVisualizer";
 import {
   arrayTests,
+  linkedListTests,
   stackQueueTests,
   binaryTreeTests,
   graphTests,
@@ -82,6 +83,8 @@ function VisualizationPanel() {
     switch (selectedDataStructure) {
       case "array":
         return arrayTests.find((t) => t.difficulty === selectedDifficulty);
+      case "linkedList":
+        return linkedListTests.find((t) => t.difficulty === selectedDifficulty);
       case "stack":
         return stackQueueTests.find(
           (t) => t.difficulty === selectedDifficulty && t.id.startsWith("stack-"),

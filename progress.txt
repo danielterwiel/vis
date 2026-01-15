@@ -197,3 +197,23 @@ All acceptance criteria verified:
 - Other visualization mode buttons (My Execution, Show Expected, Compare) still work
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1290 tests passing, decreased from 1291 due to removal of 1 test for the Skeleton button). Updated prd.json to mark UI-002 as passes=true.
+
+2026-01-15: Completed BUG-LINKEDLIST-002 (Linked List visualization shows 'null undefined' rendering bug) - Fixed the visualization rendering bug that caused 'null undefined' text to appear in the LinkedList visualization.
+
+Root causes identified and fixed:
+
+1. **LinkedListVisualizer didn't handle array input**: The visualizer component expected `LinkedListNode` structure (with `.value` and `.next` properties) but received a plain array `[10, 20, 30, 40, 50]` from the test case's `initialData`. When iterating with `current.value`, arrays don't have a `.value` property, resulting in `undefined`. Fixed by adding type guard to detect array input and handle it separately.
+
+2. **VisualizationPanel missing linkedList case**: The `getCurrentTestCase()` function in VisualizationPanel.tsx didn't have a case for `linkedList`, causing it to fall through to the default case which returned array tests instead of linkedList tests. Added `case "linkedList":` to return `linkedListTests.find(...)`.
+
+Files modified:
+- src/components/visualizers/LinkedListVisualizer.tsx: Updated prop type to accept `LinkedListNode<unknown> | unknown[] | null`, added conditional logic to convert array input to node format
+- src/components/VisualizationPanel/VisualizationPanel.tsx: Added `linkedListTests` import and `case "linkedList":` in getCurrentTestCase switch statement
+
+All acceptance criteria verified with agent-browser:
+- LinkedList visualization shows meaningful node data (10, 20, 30, 40, 50), not 'null undefined'
+- HEAD and TAIL pointers are positioned correctly on first and last nodes
+- Initial state shows the actual linked list data [10, 20, 30, 40, 50] from the test case
+- No 'null undefined' text found in visualization snapshot
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1290 tests passing). Updated prd.json to mark BUG-LINKEDLIST-002 as passes=true.
