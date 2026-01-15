@@ -304,3 +304,27 @@ All acceptance criteria met:
 - 'My Execution' button still works correctly
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1287 tests passing, decreased from 1289 due to removal of 2 tests for the removed button). Updated prd.json to mark UI-004 as passes=true.
+
+2026-01-15: Completed BUG-001 (Fix Array Compare mode showing unsorted expected output) - Fixed critical bug where Compare mode was showing unsorted expected output instead of the properly sorted array.
+
+Root cause: The `runReferenceSolution` function in `referenceSolutionRunner.ts` was calling `captureSteps` with just the reference solution code (function definition only). This code was never executed because:
+1. No data structure bundle (TrackedArray) was included
+2. The initialData from the test case was not passed
+3. The function was defined but never called with any input
+
+Solution: Updated `runReferenceSolution` to build complete sandbox code similar to `testRunner.ts`:
+1. Import data structure bundles (TrackedArray, TrackedLinkedList, TrackedStack, TrackedQueue, TrackedBinaryTree, TrackedGraph, TrackedHashMap) based on test case ID prefix
+2. Initialize input from test case's `initialData` wrapped in the appropriate TrackedClass
+3. Execute the reference solution function with the initialized input
+4. Pass additional arguments (`additionalArgs`) when needed
+
+Files modified:
+- src/lib/execution/referenceSolutionRunner.ts: Complete rewrite of `runReferenceSolution` to properly build and execute sandbox code with data structure bundles, input initialization, and function invocation
+- src/lib/execution/referenceSolutionRunner.test.ts: Updated tests to verify new behavior (check that sandbox code contains reference solution and TrackedArray rather than exact code match)
+
+All acceptance criteria verified with agent-browser:
+- Compare mode shows "Expected Output" with sorted array [1, 2, 5, 8, 9]
+- User's execution output (Your Code) is shown correctly on the left side
+- Comparison clearly shows differences between user output and expected output side-by-side
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1287 tests passing). Updated prd.json to mark BUG-001 as passes=true.

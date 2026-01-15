@@ -106,10 +106,15 @@ describe("referenceSolutionRunner", () => {
         timeout: 3000,
       });
 
-      expect(captureSteps).toHaveBeenCalledWith({
-        code: testCase.referenceSolution,
-        timeout: 3000,
-      });
+      // Check that captureSteps was called with custom timeout
+      expect(captureSteps).toHaveBeenCalledWith(
+        expect.objectContaining({
+          timeout: 3000,
+        }),
+      );
+      // Check that the code includes the reference solution
+      const calledCode = vi.mocked(captureSteps).mock.calls[0]?.[0]?.code;
+      expect(calledCode).toContain("function sort(arr) { return arr; }");
     });
 
     it("should use default options when not provided", async () => {
@@ -124,10 +129,17 @@ describe("referenceSolutionRunner", () => {
 
       await runReferenceSolution(testCase);
 
-      expect(captureSteps).toHaveBeenCalledWith({
-        code: testCase.referenceSolution,
-        timeout: 5000,
-      });
+      // Check that captureSteps was called with default timeout
+      expect(captureSteps).toHaveBeenCalledWith(
+        expect.objectContaining({
+          timeout: 5000,
+        }),
+      );
+      // Check that the code includes the reference solution and initialData
+      const calledCode = vi.mocked(captureSteps).mock.calls[0]?.[0]?.code;
+      expect(calledCode).toContain("function sort(arr) { return arr; }");
+      expect(calledCode).toContain("initialData");
+      expect(calledCode).toContain("TrackedArray");
     });
 
     it("should capture console logs", async () => {

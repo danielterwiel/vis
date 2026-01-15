@@ -8,6 +8,14 @@
 import type { TestCase } from "../testing/types";
 import type { VisualizationStep } from "../../store/useAppStore";
 import { captureSteps } from "./stepCapture";
+import { bundleExpect } from "../testing/expectBundle";
+import { bundleTrackedArray } from "../testing/trackedArrayBundle";
+import { bundleTrackedLinkedList } from "../testing/trackedLinkedListBundle";
+import { bundleTrackedStack } from "../testing/trackedStackBundle";
+import { bundleTrackedQueue } from "../testing/trackedQueueBundle";
+import { bundleTrackedBinaryTree } from "../testing/trackedBinaryTreeBundle";
+import { bundleTrackedGraph } from "../testing/trackedGraphBundle";
+import { bundleTrackedHashMap } from "../testing/trackedHashMapBundle";
 
 export interface ReferenceSolutionResult {
   success: boolean;
@@ -15,6 +23,72 @@ export interface ReferenceSolutionResult {
   error?: string;
   executionTime: number;
   consoleLogs: Array<{ level: string; args: unknown[] }>;
+}
+
+/**
+ * Extracts the main function name from code
+ */
+function extractMainFunction(code: string): string | null {
+  const funcMatch = code.match(/function\s+(\w+)\s*\(/);
+  if (funcMatch && funcMatch[1]) return funcMatch[1];
+
+  const arrowMatch = code.match(/const\s+(\w+)\s*=\s*\([^)]*\)\s*=>/);
+  if (arrowMatch && arrowMatch[1]) return arrowMatch[1];
+
+  const exprMatch = code.match(/const\s+(\w+)\s*=\s*function/);
+  if (exprMatch && exprMatch[1]) return exprMatch[1];
+
+  return null;
+}
+
+/**
+ * Gets the appropriate data structure bundle code based on test case ID
+ */
+function getDataStructureBundle(testId: string): {
+  bundleCode: string;
+  className: string;
+} {
+  if (testId.startsWith("array-")) {
+    return {
+      bundleCode: bundleTrackedArray(),
+      className: "TrackedArray",
+    };
+  } else if (testId.startsWith("linkedlist-")) {
+    return {
+      bundleCode: bundleTrackedLinkedList(),
+      className: "TrackedLinkedList",
+    };
+  } else if (testId.startsWith("stack-")) {
+    return {
+      bundleCode: bundleTrackedStack() + "\n" + bundleTrackedQueue(),
+      className: "TrackedStack",
+    };
+  } else if (testId.startsWith("queue-")) {
+    return {
+      bundleCode: bundleTrackedQueue() + "\n" + bundleTrackedStack(),
+      className: "TrackedQueue",
+    };
+  } else if (testId.startsWith("tree-") || testId.startsWith("binarytree-")) {
+    return {
+      bundleCode: bundleTrackedBinaryTree(),
+      className: "TrackedBinaryTree",
+    };
+  } else if (testId.startsWith("graph-")) {
+    return {
+      bundleCode: bundleTrackedGraph(),
+      className: "TrackedGraph",
+    };
+  } else if (testId.startsWith("hashmap-")) {
+    return {
+      bundleCode: bundleTrackedHashMap(),
+      className: "TrackedHashMap",
+    };
+  }
+
+  return {
+    bundleCode: bundleTrackedArray(),
+    className: "TrackedArray",
+  };
 }
 
 /**
@@ -35,9 +109,65 @@ export async function runReferenceSolution(
   const startTime = Date.now();
 
   try {
+    // Extract function name from reference solution
+    const functionName = extractMainFunction(testCase.referenceSolution);
+    if (!functionName) {
+      return {
+        success: false,
+        steps: [],
+        error: "Could not find function in reference solution",
+        executionTime: Date.now() - startTime,
+        consoleLogs: [],
+      };
+    }
+
+    // Get appropriate data structure bundle
+    const expectCode = bundleExpect();
+    const dsBundle = getDataStructureBundle(testCase.id);
+
+    // Determine input initialization based on data structure type
+    const isStackOrQueue = testCase.id.startsWith("stack-") || testCase.id.startsWith("queue-");
+    const isGraph = testCase.id.startsWith("graph-");
+    const isHashMap = testCase.id.startsWith("hashmap-");
+
+    let inputInitCode: string;
+    if (isStackOrQueue || isHashMap) {
+      inputInitCode = `const input = initialData;`;
+    } else if (isGraph) {
+      inputInitCode = `const input = TrackedGraph.from(
+        initialData.vertices || [],
+        initialData.edges || [],
+        initialData.directed || false,
+        typeof __capture === 'function' ? __capture : undefined
+      );`;
+    } else {
+      inputInitCode = `const input = Array.isArray(initialData)
+        ? new ${dsBundle.className}(initialData, typeof __capture === 'function' ? __capture : undefined)
+        : initialData;`;
+    }
+
+    // Build complete sandbox code
+    const sandboxCode = `
+      ${expectCode}
+      ${dsBundle.bundleCode}
+
+      // Reference solution code
+      ${testCase.referenceSolution}
+
+      // Initialize with test data
+      const initialData = ${JSON.stringify(testCase.initialData)};
+      const additionalArgs = ${JSON.stringify(testCase.additionalArgs || [])};
+
+      // Prepare input based on data structure type
+      ${inputInitCode}
+
+      // Execute reference solution with input and any additional arguments
+      const result = ${functionName}(input, ...additionalArgs);
+    `;
+
     // Execute reference solution with step capture
     const result = await captureSteps({
-      code: testCase.referenceSolution,
+      code: sandboxCode,
       timeout: options.timeout || 5000,
     });
 
