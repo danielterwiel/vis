@@ -24,9 +24,9 @@ describe("arrayTests", () => {
       expect(easyTest?.description).toBeTruthy();
     });
 
-    it("should have valid data", () => {
-      expect(easyTest?.initialData).toEqual([5, 2, 8, 1, 9]);
-      expect(easyTest?.expectedOutput).toEqual([1, 2, 5, 8, 9]);
+    it("should have valid data (same as all difficulty levels)", () => {
+      expect(easyTest?.initialData).toEqual([64, 34, 25, 12, 22, 11, 90]);
+      expect(easyTest?.expectedOutput).toEqual([11, 12, 22, 25, 34, 64, 90]);
     });
 
     it("should have assertions", () => {
@@ -103,9 +103,9 @@ describe("arrayTests", () => {
       expect(hardTest?.description).toBeTruthy();
     });
 
-    it("should have valid data", () => {
-      expect(hardTest?.initialData).toEqual([10, 80, 30, 90, 40, 50, 70]);
-      expect(hardTest?.expectedOutput).toEqual([10, 30, 40, 50, 70, 80, 90]);
+    it("should have valid data (same as all difficulty levels)", () => {
+      expect(hardTest?.initialData).toEqual([64, 34, 25, 12, 22, 11, 90]);
+      expect(hardTest?.expectedOutput).toEqual([11, 12, 22, 25, 34, 64, 90]);
     });
 
     it("should have assertions", () => {
@@ -146,18 +146,16 @@ describe("arrayTests", () => {
   });
 
   describe("Difficulty progression", () => {
-    it("should have increasing complexity in initial data size", () => {
+    it("should use the same dataset across all difficulty levels", () => {
       const easy = arrayTests.find((t) => t.difficulty === "easy");
       const medium = arrayTests.find((t) => t.difficulty === "medium");
       const hard = arrayTests.find((t) => t.difficulty === "hard");
 
-      const easyLength = Array.isArray(easy?.initialData) ? easy.initialData.length : 0;
-      const mediumLength = Array.isArray(medium?.initialData) ? medium.initialData.length : 0;
-      const hardLength = Array.isArray(hard?.initialData) ? hard.initialData.length : 0;
-
-      expect(easyLength).toBeLessThanOrEqual(mediumLength);
-      // Hard may not be longer, but should be more complex algorithmically
-      expect(hardLength).toBeGreaterThan(0);
+      // All difficulty levels use the same input dataset
+      expect(easy?.initialData).toEqual(medium?.initialData);
+      expect(medium?.initialData).toEqual(hard?.initialData);
+      expect(easy?.expectedOutput).toEqual(medium?.expectedOutput);
+      expect(medium?.expectedOutput).toEqual(hard?.expectedOutput);
     });
 
     it("should have increasing complexity in acceptance criteria", () => {
