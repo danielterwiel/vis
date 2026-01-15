@@ -1,11 +1,9 @@
 import { useMemo, useEffect, useCallback, useRef } from "react";
-import {
-  IconPlayerPlay,
-  IconPlayerPause,
-  IconChevronLeft,
-  IconChevronRight,
-  IconReload,
-} from "@tabler/icons-react";
+import IconPlayerPlay from "@tabler/icons-react/dist/esm/icons/IconPlayerPlay.mjs";
+import IconPlayerPause from "@tabler/icons-react/dist/esm/icons/IconPlayerPause.mjs";
+import IconChevronLeft from "@tabler/icons-react/dist/esm/icons/IconChevronLeft.mjs";
+import IconChevronRight from "@tabler/icons-react/dist/esm/icons/IconChevronRight.mjs";
+import IconReload from "@tabler/icons-react/dist/esm/icons/IconReload.mjs";
 import useAppStore from "../../store/useAppStore";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { LinkedListVisualizer } from "../visualizers/LinkedListVisualizer";

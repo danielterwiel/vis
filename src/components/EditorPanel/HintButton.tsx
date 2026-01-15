@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IconBulb } from "@tabler/icons-react";
+import IconBulb from "@tabler/icons-react/dist/esm/icons/IconBulb.mjs";
 import { type TestCase } from "../../lib/testing/types";
 import { HintModal } from "./HintModal";
 import useAppStore from "../../store/useAppStore";

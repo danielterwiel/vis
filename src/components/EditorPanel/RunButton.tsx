@@ -1,4 +1,4 @@
-import { IconPlayerPlay } from "@tabler/icons-react";
+import IconPlayerPlay from "@tabler/icons-react/dist/esm/icons/IconPlayerPlay.mjs";
 import "./RunButton.css";
 
 interface RunButtonProps {

@@ -1,5 +1,8 @@
 import { useState, type ReactElement } from "react";
-import { IconCheck, IconX, IconCircle, IconPlayerPlay } from "@tabler/icons-react";
+import IconCheck from "@tabler/icons-react/dist/esm/icons/IconCheck.mjs";
+import IconX from "@tabler/icons-react/dist/esm/icons/IconX.mjs";
+import IconCircle from "@tabler/icons-react/dist/esm/icons/IconCircle.mjs";
+import IconPlayerPlay from "@tabler/icons-react/dist/esm/icons/IconPlayerPlay.mjs";
 import type { TestCase, TestResult } from "../../lib/testing/types";
 import useAppStore from "../../store/useAppStore";
 import "./TestPanel.css";

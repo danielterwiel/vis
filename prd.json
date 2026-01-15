@@ -311,6 +311,121 @@
         "src/lib/execution/stepCapture.ts"
       ],
       "passes": true
+    },
+    {
+      "id": "PERF-001",
+      "category": "Performance",
+      "priority": "high",
+      "title": "Replace barrel imports with direct icon imports",
+      "description": "The codebase imports icons from @tabler/icons-react barrel file, which loads the entire icon library. Direct imports should be used to reduce bundle size significantly.",
+      "acceptanceCriteria": [
+        "All @tabler/icons-react imports use direct paths (e.g., @tabler/icons-react/dist/esm/icons/IconPlayerPlay)",
+        "No barrel imports from icon libraries remain",
+        "Bundle size decreases measurably",
+        "All icons still render correctly"
+      ],
+      "stepsToVerify": [
+        "Run grep for 'from \"@tabler/icons-react\"' - should return 0 results",
+        "npm run build and check bundle size",
+        "agent-browser navigate http://localhost:5175",
+        "Verify all icons render correctly"
+      ],
+      "affectedFiles": [
+        "src/components/EditorPanel/HintModal.tsx",
+        "src/components/EditorPanel/HintButton.tsx",
+        "src/components/EditorPanel/RunButton.tsx",
+        "src/components/EditorPanel/PresetSelector.tsx",
+        "src/components/VisualizationPanel/VisualizationPanel.tsx",
+        "src/components/TestPanel/TestPanel.tsx"
+      ],
+      "technicalNotes": "Check @tabler/icons-react package structure for correct direct import paths. Alternative: configure Vite to tree-shake barrel imports, or replace with inline SVG components.",
+      "passes": true
+    },
+    {
+      "id": "PERF-002",
+      "category": "Performance",
+      "priority": "medium",
+      "title": "Use Set for O(1) lookups instead of Array.includes()",
+      "description": "Multiple files use Array.includes() in loops or render functions where Set.has() would provide O(1) instead of O(n) lookup performance. This is especially important in visualization rendering loops.",
+      "acceptanceCriteria": [
+        "ArrayVisualizer highlight indices use Set instead of Array",
+        "BinaryTreeVisualizer path lookup uses Set",
+        "urlParams validation uses Set for data structure types",
+        "No performance regression in visualizations"
+      ],
+      "stepsToVerify": [
+        "Review affected files for Array.includes() patterns",
+        "Verify Set.has() is used for repeated lookups",
+        "agent-browser navigate http://localhost:5175/?ds=array",
+        "Run visualization and verify smooth 60fps animation"
+      ],
+      "affectedFiles": [
+        "src/components/visualizers/ArrayVisualizer.tsx",
+        "src/components/visualizers/BinaryTreeVisualizer.tsx",
+        "src/lib/urlParams.ts"
+      ],
+      "technicalNotes": "Convert arrays to Sets at the point of use: `const activeSet = new Set(highlightIndices.active)`. For static validation arrays, define Set at module level.",
+      "passes": false
+    },
+    {
+      "id": "PERF-003",
+      "category": "Performance",
+      "priority": "low",
+      "title": "Memoize derived state calculations in TestPanel",
+      "description": "TestPanel calculates passedCount and totalRun on every render by iterating testResults. These should be memoized with useMemo to prevent unnecessary recalculations.",
+      "acceptanceCriteria": [
+        "passedCount and totalRun are wrapped in useMemo",
+        "Dependencies correctly specify testResults",
+        "No unnecessary re-renders when test results don't change"
+      ],
+      "stepsToVerify": [
+        "Review src/components/TestPanel/TestPanel.tsx",
+        "Verify useMemo is used for derived calculations",
+        "Run tests and verify correct behavior"
+      ],
+      "affectedFiles": ["src/components/TestPanel/TestPanel.tsx"],
+      "technicalNotes": "Use `useMemo(() => { const arr = Array.from(testResults.values()); return { passedCount: arr.filter(r => r.passed).length, totalRun: testResults.size }; }, [testResults])`",
+      "passes": false
+    },
+    {
+      "id": "PERF-004",
+      "category": "Performance",
+      "priority": "low",
+      "title": "Hoist static helper functions outside components",
+      "description": "The formatStep function in ArrayVisualizer is defined inside the component but doesn't use any props or state. It should be hoisted to module level to prevent recreation on every render.",
+      "acceptanceCriteria": [
+        "formatStep function is defined at module level, not inside component",
+        "Function behavior remains identical",
+        "No performance regression"
+      ],
+      "stepsToVerify": [
+        "Review src/components/visualizers/ArrayVisualizer.tsx",
+        "Verify formatStep is at module level",
+        "Test visualization still works correctly"
+      ],
+      "affectedFiles": ["src/components/visualizers/ArrayVisualizer.tsx"],
+      "technicalNotes": "Move `function formatStep(step: CapturedStep): string` outside the component function. If it needs props, consider using useCallback instead.",
+      "passes": false
+    },
+    {
+      "id": "PERF-005",
+      "category": "Performance",
+      "priority": "low",
+      "title": "Remove unnecessary function dependencies from useEffect",
+      "description": "CodeMirrorEditor includes highlightLine function in useEffect dependencies, causing unnecessary effect re-runs. Since highlightLine is defined in the same component, it doesn't need to be a dependency.",
+      "acceptanceCriteria": [
+        "highlightLine removed from useEffect dependency array",
+        "Effect only re-runs when highlightedLine changes",
+        "Highlighting still works correctly"
+      ],
+      "stepsToVerify": [
+        "Review src/components/EditorPanel/CodeMirrorEditor.tsx",
+        "Verify useEffect dependencies are minimal",
+        "Test code highlighting during visualization playback"
+      ],
+      "affectedFiles": ["src/components/EditorPanel/CodeMirrorEditor.tsx"],
+      "technicalNotes": "Change `useEffect(() => { highlightLine(highlightedLine ?? null); }, [highlightedLine, highlightLine])` to `useEffect(() => { highlightLine(highlightedLine ?? null); }, [highlightedLine])`",
+      "passes": false
     }
   ],
   "knownIssues": {
@@ -332,16 +447,26 @@
       "BUG-002: Array tests require multiple function names"
     ],
     "features": ["FEAT-001: Code line highlighting during playback"],
+    "performance": [
+      "PERF-001: Barrel imports loading entire icon library (CRITICAL)",
+      "PERF-002: Array.includes() in render loops should use Set (MEDIUM)",
+      "PERF-003: Derived state should use useMemo (LOW)",
+      "PERF-004: Static functions should be hoisted outside components (LOW)",
+      "PERF-005: Unnecessary function dependencies in useEffect (LOW)"
+    ],
     "fixPriority": [
       "1. UI-001, UI-002 - Remove unnecessary text/titles (quick wins)",
-      "2. UI-003 - Reorganize playback controls (improves UX)",
-      "3. UI-004 - Remove Show Expected button",
-      "4. BUG-001 - Fix Compare mode expected output",
-      "5. BUG-002 - Simplify Array function names",
-      "6. DATA-001 - Unify Array datasets",
-      "7. FEAT-001 - Code line highlighting (complex feature)",
-      "8. UI-005, UI-006, UI-007 - Polish UI details",
-      "9. DATA-002 - Unify other data structure datasets"
+      "2. PERF-001 - Replace barrel imports (high impact on bundle size)",
+      "3. UI-003 - Reorganize playback controls (improves UX)",
+      "4. UI-004 - Remove Show Expected button",
+      "5. BUG-001 - Fix Compare mode expected output",
+      "6. BUG-002 - Simplify Array function names",
+      "7. DATA-001 - Unify Array datasets",
+      "8. PERF-002 - Use Set for O(1) lookups in visualizers",
+      "9. FEAT-001 - Code line highlighting (complex feature)",
+      "10. UI-005, UI-006, UI-007 - Polish UI details",
+      "11. DATA-002 - Unify other data structure datasets",
+      "12. PERF-003, PERF-004, PERF-005 - Minor performance optimizations"
     ]
   },
   "completionCriteria": {

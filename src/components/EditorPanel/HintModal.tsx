@@ -1,4 +1,4 @@
-import { IconX } from "@tabler/icons-react";
+import IconX from "@tabler/icons-react/dist/esm/icons/IconX.mjs";
 import { type TestCase } from "../../lib/testing/types";
 import useAppStore from "../../store/useAppStore";
 import "./HintModal.css";

@@ -4,7 +4,8 @@
  */
 
 import { useState, useEffect, useRef } from "react";
-import { IconCode, IconX } from "@tabler/icons-react";
+import IconCode from "@tabler/icons-react/dist/esm/icons/IconCode.mjs";
+import IconX from "@tabler/icons-react/dist/esm/icons/IconX.mjs";
 import {
   getPresetsForDataStructure,
   getCategoriesForDataStructure,
