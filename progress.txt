@@ -78,3 +78,25 @@ All acceptance criteria verified with agent-browser:
 - All 3 Array tests show as passed (3/3 passed)
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1294 tests passing). Updated prd.json to mark BUG-ARRAY-001 as passes=true.
+
+2026-01-15: Completed BUG-LINKEDLIST-001 (Linked List reference solutions return null) - Fixed critical bug where Linked List tests failed because the test runner wasn't passing additional arguments (like target value for find operations) to the user functions.
+
+Root cause: The `findElement(list, target)` function required a target parameter, but the test runner only passed the linked list data structure. The reference solution signature expected two arguments but only one was being provided.
+
+Solution implemented:
+1. Added `additionalArgs?: unknown[]` field to TestCase interface in types.ts - allows test cases to specify extra arguments to pass to the function
+2. Modified testRunner.ts to spread additional arguments when calling the user function: `${functionName}(input, ...additionalArgs)`
+3. Updated linkedlist-find-easy test case in linkedListTests.ts to include `additionalArgs: [30]` (the target value to search for)
+
+Files modified:
+- src/lib/testing/types.ts: Added additionalArgs field to TestCase interface
+- src/lib/testing/testRunner.ts: Updated sandbox code to pass additional arguments to user function
+- src/lib/testing/testCases/linkedListTests.ts: Added additionalArgs for findElement test case
+
+All acceptance criteria verified with agent-browser:
+- Find Element in List test passes (returns 30) - "Passed in 26ms, 8 operations captured"
+- Reverse Linked List test passes (returns [5,4,3,2,1]) - "Passed in 16ms, 11 operations captured"
+- Detect and Handle Cycle test passes (returns false) - "Passed in 12ms, 8 operations captured"
+- All 3 Linked List tests show as passed (3/3 passed)
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1294 tests passing). Updated prd.json to mark BUG-LINKEDLIST-001 as passes=true.

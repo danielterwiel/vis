@@ -125,9 +125,10 @@
       ],
       "affectedFiles": [
         "src/lib/testing/testCases/linkedListTests.ts",
-        "src/lib/execution/sandboxExecutor.ts"
+        "src/lib/testing/types.ts",
+        "src/lib/testing/testRunner.ts"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUG-LINKEDLIST-002",

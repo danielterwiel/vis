@@ -179,6 +179,7 @@ export async function runTest(
 
       // Initialize with test data
       const initialData = ${JSON.stringify(testCase.initialData)};
+      const additionalArgs = ${JSON.stringify(testCase.additionalArgs || [])};
       ${
         shouldWrapInput
           ? `// Wrap in tracked data structure for visualization
@@ -189,8 +190,8 @@ export async function runTest(
       const input = initialData;`
       }
 
-      // Execute user's function
-      const result = ${functionName}(input);
+      // Execute user's function with input and any additional arguments
+      const result = ${functionName}(input, ...additionalArgs);
 
       // Extract final data if tracked data structure
       const finalResult = result instanceof ${dsBundle.className} ? result.getData?.() || result.toArray?.() || result :

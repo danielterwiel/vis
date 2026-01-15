@@ -11,6 +11,7 @@ export const linkedListTests: TestCase[] = [
     difficulty: "easy",
     description: "Traverse the list and find a specific element",
     initialData: [10, 20, 30, 40, 50],
+    additionalArgs: [30], // target value to search for
     expectedOutput: 30,
     assertions: `
       expect(result).toBe(30);

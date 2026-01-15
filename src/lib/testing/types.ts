@@ -31,6 +31,9 @@ export interface TestCase {
   /** Initial data structure state (JSON-serializable) */
   initialData: unknown;
 
+  /** Additional arguments to pass to the function after the initial data */
+  additionalArgs?: unknown[];
+
   /** Expected final state after user code runs (JSON-serializable) */
   expectedOutput: unknown;
 
