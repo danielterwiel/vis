@@ -222,10 +222,10 @@ export const hashMapTests: TestCase[] = [
       }
     `,
     hints: [
-      "Use map.get(char) || 0 to get the current count (defaults to 0 if not found)",
-      "Increment the count and use map.set(char, newCount) to update",
-      "Use map.entries() to get all [char, count] pairs for finding the maximum",
-      "In 'hello world', 'l' appears 3 times (more than any other character)",
+      "Use map.get(char) || 0 to get the current frequency count (defaults to 0 if not found)",
+      "Increment the count and use map.set(char, newCount) to update the frequency",
+      "Use map.entries() to get all [char, count] pairs for finding the maximum frequency",
+      "In 'hello world', 'l' appears 3 times with the highest frequency",
     ],
     acceptanceCriteria: [
       "Creates a TrackedHashMap for counting characters",

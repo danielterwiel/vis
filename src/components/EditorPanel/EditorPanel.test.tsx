@@ -4,6 +4,15 @@ import EditorPanel from "./EditorPanel";
 import useAppStore from "../../store/useAppStore";
 import { arrayTests } from "../../lib/testing/testCases";
 
+// Mock getClientRects for CodeMirror layout calculations
+if (typeof Range.prototype.getClientRects === "undefined") {
+  Range.prototype.getClientRects = vi.fn(() => ({
+    length: 0,
+    item: () => null,
+    [Symbol.iterator]: function* () {},
+  })) as unknown as () => DOMRectList;
+}
+
 // Mock onRunAllTests handler
 const mockOnRunAllTests = vi.fn(async () => {});
 
@@ -58,6 +67,8 @@ describe("EditorPanel", () => {
       // Change mode to reference
       await act(async () => {
         useAppStore.setState({ visualizationMode: "reference" });
+        // Wait for effects to complete
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
       // Verify the store now has the reference solution code
@@ -72,6 +83,7 @@ describe("EditorPanel", () => {
       // First, switch to reference mode to load reference solution
       await act(async () => {
         useAppStore.setState({ visualizationMode: "reference" });
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
       const easyTest = arrayTests.find((t) => t.difficulty === "easy");
@@ -80,11 +92,13 @@ describe("EditorPanel", () => {
       // User modifies the code while in reference mode
       await act(async () => {
         useAppStore.setState({ userCode: "modified code" });
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
       // Re-setting the same mode should NOT reload reference solution
       await act(async () => {
         useAppStore.setState({ visualizationMode: "reference" });
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
       // Code should remain as user modified it
@@ -100,6 +114,7 @@ describe("EditorPanel", () => {
       // Switch to reference mode
       await act(async () => {
         useAppStore.setState({ visualizationMode: "reference" });
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
       // Reference mode badge should appear
@@ -112,6 +127,7 @@ describe("EditorPanel", () => {
       // Switch to reference mode
       await act(async () => {
         useAppStore.setState({ visualizationMode: "reference" });
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
       expect(screen.getByText("Reference Solution (Read-Only)")).toBeDefined();
@@ -119,6 +135,7 @@ describe("EditorPanel", () => {
       // Switch back to user-code mode
       await act(async () => {
         useAppStore.setState({ visualizationMode: "user-code" });
+        await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
       // Reference mode badge should disappear
