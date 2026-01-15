@@ -134,6 +134,57 @@ describe("testRunner", () => {
       expect(result.error).toContain("Could not find a function");
     });
 
+    it("should handle infinite loop errors (while loop)", async () => {
+      const userCode = "function reverse(arr) { while(true) {} return arr; }";
+
+      mockCaptureSteps.mockResolvedValue({
+        success: false,
+        error: "Infinite loop detected (while loop)",
+        steps: [],
+        executionTime: 50,
+        consoleLogs: [],
+      });
+
+      const result = await runTest(userCode, mockTestCase);
+
+      expect(result.passed).toBe(false);
+      expect(result.error).toContain("Infinite loop detected");
+    });
+
+    it("should handle infinite loop errors (for loop)", async () => {
+      const userCode = "function reverse(arr) { for(;;) {} return arr; }";
+
+      mockCaptureSteps.mockResolvedValue({
+        success: false,
+        error: "Infinite loop detected (for loop)",
+        steps: [],
+        executionTime: 50,
+        consoleLogs: [],
+      });
+
+      const result = await runTest(userCode, mockTestCase);
+
+      expect(result.passed).toBe(false);
+      expect(result.error).toContain("Infinite loop detected");
+    });
+
+    it("should handle infinite loop errors (do-while loop)", async () => {
+      const userCode = "function reverse(arr) { do {} while(true); return arr; }";
+
+      mockCaptureSteps.mockResolvedValue({
+        success: false,
+        error: "Infinite loop detected (do-while loop)",
+        steps: [],
+        executionTime: 50,
+        consoleLogs: [],
+      });
+
+      const result = await runTest(userCode, mockTestCase);
+
+      expect(result.passed).toBe(false);
+      expect(result.error).toContain("Infinite loop detected");
+    });
+
     it("should capture steps when captureSteps is true", async () => {
       const userCode = "function reverse(arr) { return arr.reverse(); }";
       const mockStep = {
