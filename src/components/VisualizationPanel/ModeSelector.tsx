@@ -55,14 +55,6 @@ export function ModeSelector({ currentMode, onModeChange, hasSteps }: ModeSelect
         </button>
 
         <button
-          className={`mode-button ${currentMode === "skeleton" ? "active" : ""}`}
-          onClick={() => onModeChange("skeleton")}
-          title="Show initial state"
-        >
-          Skeleton
-        </button>
-
-        <button
           className={`mode-button mode-button-warning ${currentMode === "reference" ? "active" : ""}`}
           onClick={handleReferenceModeClick}
           title="Reveal the reference solution (warning: spoilers!)"

@@ -33,7 +33,7 @@ describe("VisualizationPanel", () => {
     expect(screen.getByText("Visualization Mode")).toBeInTheDocument();
     expect(screen.getByText("My Execution")).toBeInTheDocument();
     expect(screen.getByText("Show Expected")).toBeInTheDocument();
-    expect(screen.getByText("Skeleton")).toBeInTheDocument();
+    expect(screen.getByText("Compare")).toBeInTheDocument();
     expect(screen.getByText("Show Solution")).toBeInTheDocument();
   });
 

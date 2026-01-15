@@ -178,3 +178,22 @@ All acceptance criteria verified:
 - Button still runs all tests correctly (via onRunAllTests in EditorPanel)
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1291 tests passing, decreased from 1293 due to removal of 2 now-irrelevant tests). Updated prd.json to mark UI-001 as passes=true.
+
+2026-01-15: Completed UI-002 (Remove Skeleton button) - Removed the "Skeleton" button from the visualization mode buttons in ModeSelector component. The button was deemed unnecessary as it didn't provide significant value to users.
+
+Changes made:
+1. **ModeSelector.tsx**: Removed the Skeleton button (lines 57-63) from the mode selector buttons
+2. **ModeSelector.test.tsx**: Updated tests to remove references to the Skeleton button:
+   - Removed "Skeleton" from "renders all mode buttons" test
+   - Updated "displays mode description for current mode" to use "expected-output" mode
+   - Updated "highlights active mode button" to use "Show Expected" button
+   - Removed the entire test for "calls onModeChange when clicking 'Skeleton'"
+3. **VisualizationPanel.test.tsx**: Updated "renders ModeSelector component" test to check for "Compare" button instead of "Skeleton"
+
+Note: The skeleton mode functionality itself is preserved - it's still used as the default/fallback mode when code is incomplete or no user steps exist. Only the UI button to manually select skeleton mode was removed.
+
+All acceptance criteria verified:
+- No 'Skeleton' button appears in the visualization mode buttons
+- Other visualization mode buttons (My Execution, Show Expected, Compare) still work
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1290 tests passing, decreased from 1291 due to removal of 1 test for the Skeleton button). Updated prd.json to mark UI-002 as passes=true.

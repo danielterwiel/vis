@@ -54,7 +54,7 @@
         "Verify no 'Skeleton' button in snapshot"
       ],
       "affectedFiles": ["src/components/VisualizationPanel/VisualizationPanel.tsx"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "UI-003",

@@ -18,21 +18,20 @@ describe("ModeSelector", () => {
     expect(screen.getByText("My Execution")).toBeInTheDocument();
     expect(screen.getByText("Show Expected")).toBeInTheDocument();
     expect(screen.getByText("Compare")).toBeInTheDocument();
-    expect(screen.getByText("Skeleton")).toBeInTheDocument();
     expect(screen.getByText("Show Solution")).toBeInTheDocument();
   });
 
   it("displays mode description for current mode", () => {
-    render(<ModeSelector {...defaultProps} currentMode="skeleton" />);
+    render(<ModeSelector {...defaultProps} currentMode="expected-output" />);
 
-    expect(screen.getByText(/Showing initial array state/i)).toBeInTheDocument();
+    expect(screen.getByText(/Showing the expected output/i)).toBeInTheDocument();
   });
 
   it("highlights active mode button", () => {
-    render(<ModeSelector {...defaultProps} currentMode="skeleton" />);
+    render(<ModeSelector {...defaultProps} currentMode="expected-output" />);
 
-    const skeletonButton = screen.getByText("Skeleton");
-    expect(skeletonButton).toHaveClass("active");
+    const expectedButton = screen.getByText("Show Expected");
+    expect(expectedButton).toHaveClass("active");
   });
 
   it("disables 'My Execution' when there are no steps (regardless of code status)", () => {
@@ -65,17 +64,6 @@ describe("ModeSelector", () => {
     await user.click(screen.getByText("Show Expected"));
 
     expect(onModeChange).toHaveBeenCalledWith("expected-output");
-  });
-
-  it("calls onModeChange when clicking 'Skeleton'", async () => {
-    const onModeChange = vi.fn();
-    const user = userEvent.setup();
-
-    render(<ModeSelector {...defaultProps} currentMode="user-code" onModeChange={onModeChange} />);
-
-    await user.click(screen.getByText("Skeleton"));
-
-    expect(onModeChange).toHaveBeenCalledWith("skeleton");
   });
 
   it("shows confirmation dialog before switching to reference mode", async () => {
