@@ -8,6 +8,12 @@
 import { captureSteps } from "../execution/stepCapture";
 import { bundleExpect } from "./expectBundle";
 import { bundleTrackedArray } from "./trackedArrayBundle";
+import { bundleTrackedLinkedList } from "./trackedLinkedListBundle";
+import { bundleTrackedStack } from "./trackedStackBundle";
+import { bundleTrackedQueue } from "./trackedQueueBundle";
+import { bundleTrackedBinaryTree } from "./trackedBinaryTreeBundle";
+import { bundleTrackedGraph } from "./trackedGraphBundle";
+import { bundleTrackedHashMap } from "./trackedHashMapBundle";
 import type { TestCase, TestResult, TestRunOptions } from "./types";
 import type { VisualizationStep } from "../../store/useAppStore";
 
@@ -46,6 +52,71 @@ function extractMainFunction(code: string): string | null {
 }
 
 /**
+ * Gets the appropriate data structure bundle code based on test case ID
+ * Test IDs follow pattern: {dataStructure}-{operation}-{difficulty}
+ *
+ * @param testId - Test case identifier
+ * @returns Object with bundle code and data structure info
+ */
+function getDataStructureBundle(testId: string): {
+  bundleCode: string;
+  className: string;
+  createFunction: string;
+} {
+  // Extract data structure type from test ID
+  if (testId.startsWith("array-")) {
+    return {
+      bundleCode: bundleTrackedArray(),
+      className: "TrackedArray",
+      createFunction: "createTrackedArray",
+    };
+  } else if (testId.startsWith("linkedlist-")) {
+    return {
+      bundleCode: bundleTrackedLinkedList(),
+      className: "TrackedLinkedList",
+      createFunction: "createTrackedLinkedList",
+    };
+  } else if (testId.startsWith("stack-")) {
+    return {
+      bundleCode: bundleTrackedStack(),
+      className: "TrackedStack",
+      createFunction: "createTrackedStack",
+    };
+  } else if (testId.startsWith("queue-")) {
+    return {
+      bundleCode: bundleTrackedQueue(),
+      className: "TrackedQueue",
+      createFunction: "createTrackedQueue",
+    };
+  } else if (testId.startsWith("tree-") || testId.startsWith("binarytree-")) {
+    return {
+      bundleCode: bundleTrackedBinaryTree(),
+      className: "TrackedBinaryTree",
+      createFunction: "createTrackedBinaryTree",
+    };
+  } else if (testId.startsWith("graph-")) {
+    return {
+      bundleCode: bundleTrackedGraph(),
+      className: "TrackedGraph",
+      createFunction: "createTrackedGraph",
+    };
+  } else if (testId.startsWith("hashmap-")) {
+    return {
+      bundleCode: bundleTrackedHashMap(),
+      className: "TrackedHashMap",
+      createFunction: "createTrackedHashMap",
+    };
+  }
+
+  // Default to TrackedArray for backward compatibility
+  return {
+    bundleCode: bundleTrackedArray(),
+    className: "TrackedArray",
+    createFunction: "createTrackedArray",
+  };
+}
+
+/**
  * Runs a single test case against user code
  *
  * @param userCode - User's implementation code
@@ -75,30 +146,30 @@ export async function runTest(
       };
     }
 
-    // Step 2: Build the complete sandbox code
+    // Step 2: Build the complete sandbox code with appropriate data structure bundle
     const expectCode = bundleExpect();
-    const trackedArrayCode = bundleTrackedArray();
+    const dsBundle = getDataStructureBundle(testCase.id);
     const sandboxCode = `
       ${expectCode}
-      ${trackedArrayCode}
+      ${dsBundle.bundleCode}
 
       // User's code
       ${userCode}
 
-      // Initialize with test data - wrap in TrackedArray if array type
+      // Initialize with test data - wrap in appropriate data structure
       const initialData = ${JSON.stringify(testCase.initialData)};
       const input = Array.isArray(initialData)
-        ? new TrackedArray(initialData, typeof __capture === 'function' ? __capture : undefined)
+        ? new ${dsBundle.className}(initialData, typeof __capture === 'function' ? __capture : undefined)
         : initialData;
 
       // Execute user's function
       const result = ${functionName}(input);
 
-      // Extract final array data if TrackedArray
-      const finalResult = result instanceof TrackedArray ? result.getData() :
+      // Extract final data if tracked data structure
+      const finalResult = result instanceof ${dsBundle.className} ? result.getData?.() || result.toArray?.() || result :
                           (Array.isArray(result) ? result : result);
 
-      // Run test assertions (use finalResult for array comparisons)
+      // Run test assertions (use finalResult for comparisons)
       ${testCase.assertions.replace(/\bresult\b/g, "finalResult")}
     `;
 
