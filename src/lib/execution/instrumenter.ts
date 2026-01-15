@@ -78,32 +78,42 @@ export function instrumentCode(
 
 /**
  * Injects loop counters into while, for, and do-while loops
- * Uses regex-based transformation as SWC WASM doesn't support custom plugins
+ * Properly scopes counter declarations at function level
  */
 function injectLoopCounters(code: string, maxIterations: number): string {
-  let instrumented = code;
   let loopCounter = 0;
 
-  // Inject counters for while loops
+  // Inject loop check inline with counter increment
+  let instrumented = code;
+
   instrumented = instrumented.replace(/while\s*\((.*?)\)\s*\{/gs, (_match, condition) => {
-    const counterVar = `__loopCount_${loopCounter++}`;
-    return `let ${counterVar} = 0;\nwhile (${condition}) {\nif (++${counterVar} > ${maxIterations}) throw new Error("Infinite loop detected (while loop)");\n`;
+    const id = loopCounter++;
+    return `while (${condition}) {\nif (++__loopCount_${id} > ${maxIterations}) throw new Error("Infinite loop detected (while loop)");\n`;
   });
 
-  // Inject counters for for loops
   instrumented = instrumented.replace(
     /for\s*\((.*?);(.*?);(.*?)\)\s*\{/gs,
     (_match, init, condition, increment) => {
-      const counterVar = `__loopCount_${loopCounter++}`;
-      return `let ${counterVar} = 0;\nfor (${init};${condition};${increment}) {\nif (++${counterVar} > ${maxIterations}) throw new Error("Infinite loop detected (for loop)");\n`;
+      const id = loopCounter++;
+      return `for (${init};${condition};${increment}) {\nif (++__loopCount_${id} > ${maxIterations}) throw new Error("Infinite loop detected (for loop)");\n`;
     },
   );
 
-  // Inject counters for do-while loops
   instrumented = instrumented.replace(/do\s*\{/gs, () => {
-    const counterVar = `__loopCount_${loopCounter++}`;
-    return `let ${counterVar} = 0;\ndo {\nif (++${counterVar} > ${maxIterations}) throw new Error("Infinite loop detected (do-while loop)");\n`;
+    const id = loopCounter++;
+    return `do {\nif (++__loopCount_${id} > ${maxIterations}) throw new Error("Infinite loop detected (do-while loop)");\n`;
   });
+
+  // Now inject counter declarations at appropriate scope
+  // Strategy: declare all counters at the top of the code (global scope)
+  // This ensures they're accessible regardless of function boundaries
+  if (loopCounter > 0) {
+    const declarations = Array.from(
+      { length: loopCounter },
+      (_, i) => `let __loopCount_${i} = 0;`,
+    ).join("\n");
+    instrumented = declarations + "\n" + instrumented;
+  }
 
   return instrumented;
 }

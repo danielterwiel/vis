@@ -87,7 +87,7 @@
       "category": "critical",
       "priority": "critical",
       "status": "verified",
-      "passes": false,
+      "passes": true,
       "actualBehavior": "Running tests with reference solutions containing loops throws errors: '__loopCount_0 is not defined' or '__loopCount_9 is not defined'. Tests fail immediately with this error.",
       "expectedBehavior": "Loop counter variables are properly declared and scoped. All reference solutions with loops execute successfully without variable scoping errors.",
       "acceptanceCriteria": [
@@ -415,7 +415,7 @@
       "category": "critical",
       "priority": "high",
       "status": "verified",
-      "passes": false,
+      "passes": true,
       "actualBehavior": "HashMap tests fail immediately with '__loopCount_9 is not defined'. All three difficulty levels affected: 'Basic Get/Set Operations', 'Collision Handling with Chaining', 'Character Frequency Counter'.",
       "expectedBehavior": "HashMap tests execute successfully without loop counter errors. Reference solutions with loops work correctly.",
       "acceptanceCriteria": [
