@@ -235,3 +235,27 @@ US-010: Fix Examples Button Alignment - COMPLETE
 - Same pre-existing test failure unrelated to CSS changes (EditorPanel.test.tsx CodemMirror DOM issue)
 - All linting and formatting checks passed
 
+US-011: Fix Examples Modal Background Transparency - COMPLETE
+- Root cause: PresetSelector.css used undefined CSS variables (--panel-bg, --border-color, etc.)
+- Replaced all CSS variables with hardcoded colors matching HintModal pattern:
+  - --button-bg → #2a2a2a
+  - --border-color → #444 or #333
+  - --text-primary → #d4d4d4
+  - --text-secondary → #888
+  - --text-tertiary → #666
+  - --button-hover-bg → #333
+  - --primary-color → #4a9eff
+  - --panel-bg → #1e1e1e
+- Modal backdrop already had correct rgba(0, 0, 0, 0.5) background
+- Modal background was transparent due to var(--panel-bg) being undefined
+- Added comprehensive light theme overrides for all modal elements
+- Modal now renders with solid background (#1e1e1e dark, #ffffff light)
+- Backdrop properly dims background content
+- Modal content clearly visible above backdrop
+- Works correctly in both light and dark themes
+- No console errors or warnings
+- TypeScript type checking passed
+- 1246 tests passed (same as US-010, no regressions)
+- Same pre-existing test failure unrelated to CSS changes (EditorPanel.test.tsx CodemMirror DOM issue)
+- All linting and formatting checks passed
+

@@ -508,21 +508,21 @@ Uncaught Error: No skeleton template found for stack (easy)
 
 **Acceptance Criteria**:
 
-- [ ] Modal backdrop renders with rgba(0, 0, 0, 0.5) background
-- [ ] Backdrop covers entire viewport
-- [ ] Backdrop dims background content
-- [ ] Modal content clearly visible above backdrop
-- [ ] Backdrop closes modal when clicked
-- [ ] Works in both light and dark themes
-- [ ] No console errors or warnings
+- [x] Modal backdrop renders with rgba(0, 0, 0, 0.5) background
+- [x] Backdrop covers entire viewport
+- [x] Backdrop dims background content
+- [x] Modal content clearly visible above backdrop
+- [x] Backdrop closes modal when clicked
+- [x] Works in both light and dark themes
+- [x] No console errors or warnings
 
 **Dependencies**: None
 
 **Priority**: P2 (Medium)
 
-**Status**: `pending`
+**Status**: `complete`
 
-**Passes**: `false`
+**Passes**: `true`
 
 ---
 
