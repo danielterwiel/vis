@@ -5,6 +5,9 @@
 }
 
 .preset-selector-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.5rem 1rem;
   background: var(--button-bg);
   border: 1px solid var(--border-color);
@@ -14,6 +17,10 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.preset-selector-trigger svg {
+  flex-shrink: 0;
 }
 
 .preset-selector-trigger:hover:not(:disabled) {

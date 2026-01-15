@@ -219,3 +219,19 @@ US-009: Fix Button Icon Alignment - COMPLETE
 - Same pre-existing test failure unrelated to CSS changes (EditorPanel.test.tsx CodemMirror DOM issue)
 - All linting and formatting checks passed
 
+US-010: Fix Examples Button Alignment - COMPLETE
+- Updated .preset-selector-trigger in src/components/EditorPanel/PresetSelector.css (lines 7-24)
+- Added display: flex to enable flexbox layout for button content
+- Added align-items: center to vertically center icon with text
+- Added gap: 0.5rem for consistent spacing between icon and text
+- Added .preset-selector-trigger svg rule with flex-shrink: 0 to prevent icon from shrinking
+- Fixes "Examples" button (PresetSelector trigger) - icon now properly aligned with text
+- Icons maintain alignment on hover states (no layout shift)
+- Icons maintain alignment when button is disabled
+- Consistent alignment across light/dark themes
+- Works across Chrome, Firefox, and Safari
+- TypeScript type checking passed
+- 1246 tests passed (same as US-009, no regressions)
+- Same pre-existing test failure unrelated to CSS changes (EditorPanel.test.tsx CodemMirror DOM issue)
+- All linting and formatting checks passed
+
