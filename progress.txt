@@ -100,3 +100,22 @@ All acceptance criteria verified with agent-browser:
 - All 3 Linked List tests show as passed (3/3 passed)
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1294 tests passing). Updated prd.json to mark BUG-LINKEDLIST-001 as passes=true.
+
+2026-01-15: Verified BUG-BINARYTREE-001 (Binary Tree solutions return arrays with null values) - Investigation revealed that this bug does not currently exist. All Binary Tree reference solutions work correctly:
+
+1. **In-Order Traversal (Easy)**: `tree.inorderTraversal()` returns sorted values [20,30,40,50,60,70,80] without nulls
+2. **Validate BST Property (Medium)**: `tree.isValidBST()` returns boolean `true` correctly
+3. **Balance an Unbalanced BST (Hard)**: Creates balanced tree and returns sorted values [1,2,3,4,5,6,7]
+
+Verification performed using agent-browser:
+- Navigated to http://localhost:5175/?ds=tree
+- Clicked "Show Solution" button (overrode confirm dialog)
+- Clicked "Run All Tests"
+- Result: "3/3 passed" with all tests showing as Passed:
+  - In-Order Traversal: Passed in 61ms, 8 operations captured
+  - Validate BST Property: Passed in 75ms, 8 operations captured
+  - Balance an Unbalanced BST: Passed in 38ms, 16 operations captured
+
+Root cause analysis: The original bug report stated arrays would contain null values (e.g., [null,20,null,30,...]), but the TrackedBinaryTree implementation and bundle correctly use `inorderTraversal()` which only pushes actual node values via `result.push(node.value)`, never null. The bug may have been fixed by previous changes to the test runner or may have been incorrectly diagnosed initially.
+
+No code changes required. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1294 tests passing). Updated prd.json to mark BUG-BINARYTREE-001 as passes=true.

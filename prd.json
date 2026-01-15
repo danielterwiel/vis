@@ -246,7 +246,7 @@
         "src/lib/testing/testCases/binaryTreeTests.ts",
         "src/lib/dataStructures/TrackedBinaryTree.ts"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUG-GRAPH-001",
