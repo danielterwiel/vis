@@ -140,21 +140,40 @@ function buildSandboxHTML(code: string, correlationId: string): string {
   const steps = [];
 
   // Capture function for operation tracking
-  window.__capture = function(operation, target, args, result) {
-    steps.push({
-      type: operation,  // Use 'type' field to match test assertions (e.g., s.type === 'push')
-      operation,        // Keep 'operation' for backward compatibility
-      target: String(target),
-      args: Array.from(args || []),
-      result,
-      timestamp: Date.now()
-    });
+  // Can receive either individual args (operation, target, args, result, metadata)
+  // or a single step object {type, target, args, result, metadata}
+  window.__capture = function(operationOrStep, target, args, result, metadata) {
+    let step;
+    if (typeof operationOrStep === 'object' && operationOrStep !== null && 'type' in operationOrStep) {
+      // Single object format (used by graph, hashmap bundles)
+      step = {
+        type: operationOrStep.type,
+        operation: operationOrStep.type,
+        target: String(operationOrStep.target),
+        args: Array.from(operationOrStep.args || []),
+        result: operationOrStep.result,
+        timestamp: operationOrStep.timestamp || Date.now(),
+        metadata: operationOrStep.metadata || {}
+      };
+    } else {
+      // Individual args format (used by array, linkedlist, stack, queue, tree bundles)
+      step = {
+        type: operationOrStep,
+        operation: operationOrStep,
+        target: String(target),
+        args: Array.from(args || []),
+        result,
+        timestamp: Date.now(),
+        metadata: metadata || {}
+      };
+    }
+    steps.push(step);
 
     // Send capture step message
     parent.postMessage({
       type: 'capture-step',
       correlationId,
-      step: steps[steps.length - 1]
+      step
     }, '*');
   };
 

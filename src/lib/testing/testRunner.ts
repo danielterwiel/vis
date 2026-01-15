@@ -191,9 +191,17 @@ export async function runTest(
         : initialData;`;
     }
 
+    // Calculate line offset for user code (for line highlighting)
+    // Count lines before user code in the sandbox
+    const preUserCodeLines =
+      expectCode.split("\n").length + dsBundle.bundleCode.split("\n").length + 3; // +3 for template spacing
+
     const sandboxCode = `
       ${expectCode}
       ${dsBundle.bundleCode}
+
+      // Line offset for user code highlighting
+      window.__userCodeLineOffset = ${preUserCodeLines};
 
       // User's code
       ${userCode}

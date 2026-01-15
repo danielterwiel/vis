@@ -374,3 +374,41 @@ All acceptance criteria met:
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1287 tests passing). Updated prd.json to mark DATA-001 as passes=true.
 
+2026-01-15: Completed FEAT-001 (Highlight code lines during visualization playback) - Implemented code line highlighting that shows which lines of user code triggered each visualization step during playback.
+
+Implementation details:
+
+1. **State Management (useAppStore.ts)**: Added `highlightedLine: number | null` state and `setHighlightedLine` action to track the currently highlighted line number.
+
+2. **CodeMirror Integration (CodeMirrorEditor.tsx)**: Complete rewrite to support line highlighting using CodeMirror 6's Decoration API:
+   - Created `setHighlightedLineEffect` StateEffect to trigger highlight changes
+   - Created `highlightField` StateField to manage decoration state
+   - Created `lineHighlightMark` Decoration.line with `.cm-highlighted-line` class
+   - Added 400ms fade timeout to clear highlights after they appear
+   - Applied yellow background highlight (#ffc107 at 30% opacity) with smooth transition
+
+3. **Line Number Capture (All TrackedDataStructure Bundles)**: Updated all 7 bundle files to capture line numbers from Error.stack in their emitStep functions:
+   - trackedArrayBundle.ts, trackedLinkedListBundle.ts, trackedStackBundle.ts, trackedQueueBundle.ts, trackedBinaryTreeBundle.ts use individual args format
+   - trackedGraphBundle.ts, trackedHashMapBundle.ts use object format for onOperation
+   - Parse Error().stack to extract line number, subtract `window.__userCodeLineOffset` to get user code line
+
+4. **Line Offset Calculation (testRunner.ts)**: Added calculation of `__userCodeLineOffset` which represents the number of lines before the user code starts in the sandbox (expect code + data structure bundle + boilerplate).
+
+5. **Sandbox Updates (sandbox.ts)**: Updated `__capture` function to handle both individual arguments format (array, linkedlist, stack, queue, tree) and single object format (graph, hashmap) for flexibility.
+
+6. **Message Validation (messageValidation.ts)**: Added `metadata?: Record<string, any>` field to CaptureStepMessage interface to support line number and other metadata.
+
+7. **Step Capture (stepCapture.ts)**: Added metadata field to captured steps.
+
+8. **Visualization Panel Integration (VisualizationPanel.tsx)**: Added useEffect that updates highlightedLine when currentStepIndex changes, but only when in "user-code" visualization mode.
+
+All acceptance criteria met:
+- When stepping through visualization, corresponding code line(s) highlight ✓
+- Highlights fade away smoothly after a brief period (400ms) ✓
+- During continuous play, highlights do not overlap awkwardly ✓
+- Highlights are visible long enough to be noticed ✓
+- Previous/next step buttons trigger appropriate line highlights ✓
+- Play button triggers sequential highlights as animation progresses ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1287 tests passing). Updated prd.json to mark FEAT-001 as passes=true.
+

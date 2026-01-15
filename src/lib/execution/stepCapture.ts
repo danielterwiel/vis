@@ -64,6 +64,7 @@ export async function captureSteps(options: StepCaptureOptions): Promise<StepCap
         args: message.step.args,
         result: message.step.result,
         timestamp: message.step.timestamp,
+        metadata: message.step.metadata,
       };
       capturedSteps.push(step);
 

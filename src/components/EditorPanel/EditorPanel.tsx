@@ -35,6 +35,7 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
     selectedDifficulty,
     userCode,
     visualizationMode,
+    highlightedLine,
     setUserCode,
     setCodeStatus,
     setSelectedDataStructure,
@@ -220,7 +221,12 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
         <RunButton onRunTests={handleRunTests} disabled={false} isRunning={isRunning} />
       </div>
       <div className="editor-content">
-        <CodeMirrorEditor value={userCode} onChange={handleCodeChange} readOnly={isReadOnly} />
+        <CodeMirrorEditor
+          value={userCode}
+          onChange={handleCodeChange}
+          readOnly={isReadOnly}
+          highlightedLine={highlightedLine}
+        />
         <HintButton testCase={currentTestCase || null} />
       </div>
     </div>

@@ -51,6 +51,7 @@ export interface CaptureStepMessage extends BaseSandboxMessage {
     args: any[];
     result: any;
     timestamp: number;
+    metadata?: Record<string, any>;
   };
 }
 

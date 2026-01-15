@@ -208,8 +208,33 @@ class TrackedArray {
 
   emitStep(step) {
     if (this.onOperation) {
-      // __capture expects (operation, target, args, result) as separate arguments
-      this.onOperation(step.type, step.target, step.args, step.result);
+      // Capture line number from call stack for code highlighting
+      let lineNumber = null;
+      try {
+        const stack = new Error().stack;
+        if (stack) {
+          // Parse stack to find caller line number
+          // Stack format: "at method (file:line:col)" or "method@file:line:col"
+          const lines = stack.split('\\n');
+          // Skip first 2 lines (Error + emitStep), look for user code line
+          for (let i = 2; i < lines.length; i++) {
+            const match = lines[i].match(/:(\\d+):\\d+/);
+            if (match && match[1]) {
+              const rawLine = parseInt(match[1], 10);
+              // Adjust for user code offset if available
+              const offset = typeof window !== 'undefined' && window.__userCodeLineOffset ? window.__userCodeLineOffset : 0;
+              lineNumber = rawLine - offset;
+              // Only use positive line numbers
+              if (lineNumber < 1) lineNumber = null;
+              break;
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore errors in line number capture
+      }
+      // __capture expects (operation, target, args, result, metadata) as separate arguments
+      this.onOperation(step.type, step.target, step.args, step.result, { ...step.metadata, lineNumber });
     }
   }
 

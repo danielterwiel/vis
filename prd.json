@@ -294,11 +294,23 @@
       ],
       "technicalNotes": "Consider using CodeMirror decorations for highlighting. Timeout should be around 300-500ms for visibility. Clear previous highlight before applying new one during rapid stepping. May need to track line numbers in captured operations.",
       "affectedFiles": [
+        "src/components/EditorPanel/CodeMirrorEditor.tsx",
         "src/components/EditorPanel/EditorPanel.tsx",
-        "src/lib/execution/instrumenter.ts",
-        "src/store/useAppStore.ts"
+        "src/components/VisualizationPanel/VisualizationPanel.tsx",
+        "src/store/useAppStore.ts",
+        "src/lib/testing/trackedArrayBundle.ts",
+        "src/lib/testing/trackedLinkedListBundle.ts",
+        "src/lib/testing/trackedStackBundle.ts",
+        "src/lib/testing/trackedQueueBundle.ts",
+        "src/lib/testing/trackedBinaryTreeBundle.ts",
+        "src/lib/testing/trackedGraphBundle.ts",
+        "src/lib/testing/trackedHashMapBundle.ts",
+        "src/lib/testing/testRunner.ts",
+        "src/lib/execution/sandbox.ts",
+        "src/lib/execution/messageValidation.ts",
+        "src/lib/execution/stepCapture.ts"
       ],
-      "passes": false
+      "passes": true
     }
   ],
   "knownIssues": {

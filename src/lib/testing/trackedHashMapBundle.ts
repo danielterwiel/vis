@@ -29,13 +29,31 @@ export function bundleTrackedHashMap(): string {
 
       emitStep(type, args, result, metadata) {
         if (this.onOperation) {
+          // Capture line number from call stack for code highlighting
+          let lineNumber = null;
+          try {
+            const stack = new Error().stack;
+            if (stack) {
+              const lines = stack.split('\\n');
+              for (let i = 2; i < lines.length; i++) {
+                const match = lines[i].match(/:(\\d+):\\d+/);
+                if (match && match[1]) {
+                  const rawLine = parseInt(match[1], 10);
+                  const offset = typeof window !== 'undefined' && window.__userCodeLineOffset ? window.__userCodeLineOffset : 0;
+                  lineNumber = rawLine - offset;
+                  if (lineNumber < 1) lineNumber = null;
+                  break;
+                }
+              }
+            }
+          } catch (e) {}
           this.onOperation({
             type,
             target: "hashMap",
             args,
             result: this.toArray(),
             timestamp: Date.now(),
-            metadata
+            metadata: { ...metadata, lineNumber }
           });
         }
       }
