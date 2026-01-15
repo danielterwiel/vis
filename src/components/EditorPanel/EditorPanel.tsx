@@ -116,19 +116,46 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
 
     // Only load reference when switching TO reference mode (not when already in it)
     if (visualizationMode === "reference" && prevMode !== "reference") {
-      // Load ALL reference solutions for this data structure so all tests can pass
+      // Load the current test case's reference solution
+      // Since all Array tests use the same 'sortArray' function name,
+      // we only load one reference solution (the selected difficulty).
+      // For other data structures that use different function names per difficulty,
+      // load all reference solutions so all tests can pass.
       const allTestCases = getAllTestCasesForDataStructure();
-      const allSolutions = allTestCases
-        .map((tc) => tc.referenceSolution)
-        .filter(Boolean)
-        .join("\n\n");
+      const currentTestCase = getCurrentTestCase();
 
-      if (allSolutions) {
-        setUserCode(allSolutions);
+      // Check if all test cases use the same main function name
+      const functionNames = allTestCases.map((tc) => {
+        const match = tc.referenceSolution?.match(/function\s+(\w+)\s*\(/);
+        return match?.[1];
+      });
+      const uniqueFunctionNames = new Set(functionNames.filter(Boolean));
+      const allUseSameFunctionName = uniqueFunctionNames.size === 1;
+
+      let solution: string;
+      if (allUseSameFunctionName) {
+        // All tests use the same function name - load only current test's solution
+        solution = currentTestCase?.referenceSolution || "";
+      } else {
+        // Tests use different function names - load all solutions
+        solution = allTestCases
+          .map((tc) => tc.referenceSolution)
+          .filter(Boolean)
+          .join("\n\n");
+      }
+
+      if (solution) {
+        setUserCode(solution);
         setCodeStatus("complete");
       }
     }
-  }, [visualizationMode, getAllTestCasesForDataStructure, setUserCode, setCodeStatus]);
+  }, [
+    visualizationMode,
+    getAllTestCasesForDataStructure,
+    getCurrentTestCase,
+    setUserCode,
+    setCodeStatus,
+  ]);
 
   // Update code status when user edits code
   const handleCodeChange = (newCode: string) => {

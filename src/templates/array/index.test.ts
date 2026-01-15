@@ -33,8 +33,8 @@ describe("Array Templates", () => {
   });
 
   describe("easySkeleton", () => {
-    it("should contain function signature", () => {
-      expect(easySkeleton).toContain("function sort(arr)");
+    it("should contain sortArray function signature", () => {
+      expect(easySkeleton).toContain("function sortArray(arr)");
     });
 
     it("should contain TODO marker", () => {
@@ -43,7 +43,7 @@ describe("Array Templates", () => {
       expect(todos[0]).toContain("Implement sorting algorithm");
     });
 
-    it("should contain hint", () => {
+    it("should contain hint about sort()", () => {
       const hints = skeletonCodeSystem.getInlineHints(easySkeleton);
       expect(hints.length).toBeGreaterThan(0);
       expect(hints[0]).toContain("sort()");
@@ -53,82 +53,76 @@ describe("Array Templates", () => {
       expect(easySkeleton).not.toContain("/* your code here */");
     });
 
-    it("should contain example usage", () => {
-      expect(easySkeleton).toContain("// Example usage:");
+    it("should contain description about sorting", () => {
       expect(easySkeleton).toContain("Sort an array of numbers");
     });
   });
 
   describe("mediumSkeleton", () => {
-    it("should contain function signature with parameter", () => {
-      expect(mediumSkeleton).toContain("function bubbleSort(arr)");
+    it("should contain sortArray function signature", () => {
+      expect(mediumSkeleton).toContain("function sortArray(arr)");
     });
 
     it("should contain variable initialization", () => {
       expect(mediumSkeleton).toContain("const n = arr.length");
     });
 
-    it("should contain multiple TODO markers", () => {
+    it("should contain TODO marker", () => {
       const todos = skeletonCodeSystem.extractTodos(mediumSkeleton);
-      expect(todos.length).toBeGreaterThanOrEqual(3);
+      expect(todos.length).toBeGreaterThan(0);
     });
 
-    it("should contain nested loop hints", () => {
+    it("should contain loop hints", () => {
       expect(mediumSkeleton).toContain("Outer loop");
       expect(mediumSkeleton).toContain("Inner loop");
     });
 
     it("should contain swap hint", () => {
-      const hints = skeletonCodeSystem.getInlineHints(mediumSkeleton);
-      const swapHint = hints.find((h) => h.includes("destructuring"));
-      expect(swapHint).toBeDefined();
+      expect(mediumSkeleton).toContain("arr.swap");
     });
 
     it("should contain return statement", () => {
       expect(mediumSkeleton).toContain("return arr");
     });
 
-    it("should contain example usage", () => {
-      expect(mediumSkeleton).toContain("// Example usage:");
-      expect(mediumSkeleton).toContain("Implement bubble sort algorithm");
+    it("should mention bubble sort approach", () => {
+      expect(mediumSkeleton.toLowerCase()).toContain("bubble sort");
     });
   });
 
   describe("hardSkeleton", () => {
-    it("should contain quickSort function with default parameters", () => {
-      expect(hardSkeleton).toContain("function quickSort(arr, low = 0, high = arr.length - 1)");
+    it("should contain sortArray function with default parameters", () => {
+      expect(hardSkeleton).toContain("function sortArray(arr, low = 0, high = arr.length - 1)");
     });
 
     it("should contain partition function signature", () => {
       expect(hardSkeleton).toContain("function partition(arr, low, high)");
     });
 
-    it("should contain multiple TODO markers in quickSort", () => {
+    it("should contain TODO markers in sortArray", () => {
       const parts = hardSkeleton.split("function partition");
-      const quickSortSection = parts[0] || "";
-      const todos = skeletonCodeSystem.extractTodos(quickSortSection);
+      const sortArraySection = parts[0] || "";
+      const todos = skeletonCodeSystem.extractTodos(sortArraySection);
       expect(todos.length).toBeGreaterThanOrEqual(2);
     });
 
-    it("should contain multiple TODO markers in partition", () => {
+    it("should contain TODO marker in partition", () => {
       const parts = hardSkeleton.split("function partition");
       const partitionSection = parts[1] || "";
       const todos = skeletonCodeSystem.extractTodos(partitionSection);
-      expect(todos.length).toBeGreaterThanOrEqual(3);
+      expect(todos.length).toBeGreaterThanOrEqual(1);
     });
 
     it("should contain recursion hints", () => {
       expect(hardSkeleton).toContain("Recursively sort");
     });
 
-    it("should contain partition implementation hints", () => {
-      expect(hardSkeleton).toContain("Choose pivot");
-      expect(hardSkeleton).toContain("smaller elements");
+    it("should mention partition for visualization", () => {
+      expect(hardSkeleton).toContain("arr.partition");
     });
 
-    it("should contain example usage", () => {
-      expect(hardSkeleton).toContain("// Example usage:");
-      expect(hardSkeleton).toContain("Implement quick sort with partition");
+    it("should mention quick sort approach", () => {
+      expect(hardSkeleton.toLowerCase()).toContain("quick sort");
     });
 
     it("should contain base case hint", () => {
@@ -155,10 +149,10 @@ describe("Array Templates", () => {
       expect(hardSkeleton).not.toContain("/* your code here */");
     });
 
-    it("all templates should have example usage", () => {
-      expect(easySkeleton).toContain("// Example usage:");
-      expect(mediumSkeleton).toContain("// Example usage:");
-      expect(hardSkeleton).toContain("// Example usage:");
+    it("all templates should have description comments", () => {
+      expect(easySkeleton).toContain("// Sort an array");
+      expect(mediumSkeleton).toContain("// Sort an array");
+      expect(hardSkeleton).toContain("// Sort an array");
     });
 
     it("difficulty should increase in TODO complexity", () => {

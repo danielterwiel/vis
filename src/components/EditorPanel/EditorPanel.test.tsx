@@ -57,15 +57,14 @@ describe("EditorPanel", () => {
   });
 
   describe("Show Solution functionality", () => {
-    it("loads all reference solutions when visualization mode changes to reference", async () => {
+    it("loads current test reference solution when all tests use same function name", async () => {
       render(<EditorPanel onRunAllTests={mockOnRunAllTests} />);
 
-      // Get all reference solutions for array tests
-      const allReferenceSolutions = arrayTests
-        .map((t) => t.referenceSolution)
-        .filter(Boolean)
-        .join("\n\n");
-      expect(allReferenceSolutions).toBeDefined();
+      // Get reference solution for easy test (current difficulty)
+      const easyReferenceSolution = arrayTests.find(
+        (t) => t.difficulty === "easy",
+      )?.referenceSolution;
+      expect(easyReferenceSolution).toBeDefined();
 
       // Change mode to reference
       await act(async () => {
@@ -74,26 +73,26 @@ describe("EditorPanel", () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      // Verify the store now has ALL reference solutions (so all tests can pass)
+      // Verify the store has the current test's reference solution
+      // (not all solutions, since Array tests all use the same function name 'sortArray')
       const state = useAppStore.getState();
-      expect(state.userCode).toBe(allReferenceSolutions);
+      expect(state.userCode).toBe(easyReferenceSolution);
       expect(state.codeStatus).toBe("complete");
     });
 
     it("does not reload reference solution when re-setting same reference mode", async () => {
       render(<EditorPanel onRunAllTests={mockOnRunAllTests} />);
 
-      // First, switch to reference mode to load all reference solutions
+      // First, switch to reference mode to load reference solution
       await act(async () => {
         useAppStore.setState({ visualizationMode: "reference" });
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      const allReferenceSolutions = arrayTests
-        .map((t) => t.referenceSolution)
-        .filter(Boolean)
-        .join("\n\n");
-      expect(useAppStore.getState().userCode).toBe(allReferenceSolutions);
+      const easyReferenceSolution = arrayTests.find(
+        (t) => t.difficulty === "easy",
+      )?.referenceSolution;
+      expect(useAppStore.getState().userCode).toBe(easyReferenceSolution);
 
       // User modifies the code while in reference mode
       await act(async () => {

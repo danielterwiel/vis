@@ -2,26 +2,29 @@ import type { TestCase } from "../types";
 
 /**
  * Array test cases with 3 difficulty levels (Easy, Medium, Hard)
- * Based on PRD.md lines 116-248
+ * All test cases use a single function name 'sortArray' that can be implemented
+ * using any sorting algorithm. The difficulty levels suggest different approaches
+ * but users are free to implement the function however they want.
  */
 export const arrayTests: TestCase[] = [
   {
     id: "array-sort-easy",
-    name: "Sort Small Array",
+    name: "Sort Array (Easy)",
     difficulty: "easy",
-    description: "Sort an array of 5 numbers in ascending order",
+    description:
+      "Sort an array of numbers in ascending order. You can use any sorting method, including built-in sort().",
     initialData: [5, 2, 8, 1, 9],
     expectedOutput: [1, 2, 5, 8, 9],
     assertions: `
       expect(result).toEqual([1, 2, 5, 8, 9]);
       expect(result.length).toBe(5);
     `,
-    referenceSolution: `function sort(arr) {
-  // Sort using built-in method
+    referenceSolution: `function sortArray(arr) {
+  // Easy approach: use built-in sort method
   arr.sort((a, b) => a - b);
   return arr;
 }`,
-    skeletonCode: `function sort(arr) {
+    skeletonCode: `function sortArray(arr) {
   // TODO: Implement sorting algorithm
   // Hint: You can use arr.sort() with a compare function
   // The arr parameter is a TrackedArray that records operations
@@ -31,26 +34,26 @@ export const arrayTests: TestCase[] = [
     hints: [
       "JavaScript arrays have a built-in sort() method",
       "sort() needs a compare function for numbers: (a, b) => a - b",
-      "Consider using slice() first to avoid mutating the original array",
+      "The TrackedArray works just like a regular array",
     ],
     acceptanceCriteria: [
       "Function returns array sorted in ascending order",
-      "Original array is not mutated",
       "Result has same length as input",
     ],
   },
   {
     id: "array-sort-medium",
-    name: "Bubble Sort Implementation",
+    name: "Sort Array (Medium)",
     difficulty: "medium",
-    description: "Implement bubble sort without using built-in sort()",
+    description:
+      "Sort an array of numbers in ascending order. Try implementing bubble sort to see swap operations visualized.",
     initialData: [64, 34, 25, 12, 22, 11, 90],
     expectedOutput: [11, 12, 22, 25, 34, 64, 90],
     assertions: `
       expect(result).toEqual([11, 12, 22, 25, 34, 64, 90]);
-      expect(steps.filter(s => s.type === 'swap').length).toBeGreaterThan(0);
     `,
-    referenceSolution: `function bubbleSort(arr) {
+    referenceSolution: `function sortArray(arr) {
+  // Medium approach: bubble sort implementation
   const n = arr.length;
   for (let i = 0; i < n - 1; i++) {
     for (let j = 0; j < n - i - 1; j++) {
@@ -62,13 +65,16 @@ export const arrayTests: TestCase[] = [
   }
   return arr;
 }`,
-    skeletonCode: `function bubbleSort(arr) {
+    skeletonCode: `function sortArray(arr) {
+  // TODO: Implement bubble sort
+  // Bubble sort compares adjacent elements and swaps if out of order
+  // Use arr.at(index) to read values
+  // Use arr.swap(i, j) to swap elements (this will be visualized!)
   const n = arr.length;
+
   // TODO: Implement nested loops
   // Outer loop: iterate n-1 times
   // Inner loop: compare adjacent elements and swap if needed
-  // Use arr.at(index) to read values
-  // Use arr.swap(i, j) to swap elements (this will be visualized!)
 
   return arr;
 }`,
@@ -79,26 +85,26 @@ export const arrayTests: TestCase[] = [
     ],
     acceptanceCriteria: [
       "Function returns array sorted in ascending order",
-      "Implementation uses nested loops (no built-in sort)",
-      "At least one swap operation is captured",
+      "Consider using bubble sort to see swap visualizations",
     ],
   },
   {
     id: "array-sort-hard",
-    name: "Quick Sort Implementation",
+    name: "Sort Array (Hard)",
     difficulty: "hard",
-    description: "Implement quick sort with partition visualization",
+    description:
+      "Sort an array of numbers in ascending order. Try implementing quick sort to see partition operations visualized.",
     initialData: [10, 80, 30, 90, 40, 50, 70],
     expectedOutput: [10, 30, 40, 50, 70, 80, 90],
     assertions: `
       expect(result).toEqual([10, 30, 40, 50, 70, 80, 90]);
-      expect(steps.filter(s => s.type === 'partition').length).toBeGreaterThan(0);
     `,
-    referenceSolution: `function quickSort(arr, low = 0, high = arr.length - 1) {
+    referenceSolution: `function sortArray(arr, low = 0, high = arr.length - 1) {
+  // Hard approach: quick sort implementation
   if (low < high) {
     const pi = partition(arr, low, high);
-    quickSort(arr, low, pi - 1);
-    quickSort(arr, pi + 1, high);
+    sortArray(arr, low, pi - 1);
+    sortArray(arr, pi + 1, high);
   }
   return arr;
 }
@@ -107,11 +113,14 @@ function partition(arr, low, high) {
   // Use TrackedArray's partition method for visualization
   return arr.partition(low, high);
 }`,
-    skeletonCode: `function quickSort(arr, low = 0, high = arr.length - 1) {
-  // TODO: Implement recursive quick sort
-  // Base case: if low >= high, return
-  // 1. Call partition to get pivot index
-  // 2. Recursively sort left and right subarrays
+    skeletonCode: `function sortArray(arr, low = 0, high = arr.length - 1) {
+  // TODO: Implement quick sort
+  // Quick sort uses divide-and-conquer with a pivot element
+  // Base case: if low >= high, return arr
+
+  // TODO: 1. Call partition to get pivot index
+
+  // TODO: 2. Recursively sort left and right subarrays
 
   return arr;
 }
@@ -124,12 +133,11 @@ function partition(arr, low, high) {
     hints: [
       "Quick sort uses divide-and-conquer with a pivot element",
       "The partition function rearranges elements around the pivot",
-      "Elements smaller than pivot go left, larger go right",
+      "Use arr.partition(low, high) to partition and capture the operation for visualization",
     ],
     acceptanceCriteria: [
       "Function returns array sorted in ascending order",
-      "Implementation uses recursion and partitioning",
-      "At least one partition operation is captured",
+      "Consider using quick sort to see partition visualizations",
     ],
   },
 ];

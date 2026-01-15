@@ -1,54 +1,60 @@
 /**
  * Array skeleton code templates
  *
- * These templates match the test cases defined in arrayTests.ts
+ * These templates match the test cases defined in arrayTests.ts.
+ * All templates use a single function name 'sortArray' that users implement.
+ * The difficulty levels suggest different approaches but users can implement
+ * the function however they want.
  */
 
 import { skeletonCodeSystem } from "../skeletonCodeSystem";
 
 /**
- * Easy: Sort Small Array
- * Uses built-in Array.sort() method
+ * Easy: Sort Array using any method
+ * Suggests using built-in Array.sort() method
  */
-const easySkeleton = `// Example usage: Sort an array of numbers
+const easySkeleton = `// Sort an array of numbers in ascending order
+// You can use any sorting method, including built-in sort()
 
-function sort(arr) {
+function sortArray(arr) {
   // TODO: Implement sorting algorithm
   // Hint: You can use arr.sort() with a compare function
-
-}
-`;
-
-/**
- * Medium: Bubble Sort Implementation
- * Requires nested loops and element swapping
- */
-const mediumSkeleton = `// Example usage: Implement bubble sort algorithm
-
-function bubbleSort(arr) {
-  const n = arr.length;
-
-  // TODO: Implement nested loops
-  // Outer loop: iterate n-1 times
-
-    // TODO: Inner loop: compare adjacent elements and swap if needed
-
-      // TODO: Compare and swap adjacent elements
-      // Hint: Use destructuring to swap: [arr[j], arr[j+1]] = [arr[j+1], arr[j]]
 
   return arr;
 }
 `;
 
 /**
- * Hard: Quick Sort Implementation
- * Requires recursion and partitioning
+ * Medium: Sort Array with bubble sort approach
+ * Suggests using nested loops and element swapping for visualization
  */
-const hardSkeleton = `// Example usage: Implement quick sort with partition
+const mediumSkeleton = `// Sort an array of numbers in ascending order
+// Try implementing bubble sort to see swap operations visualized
 
-function quickSort(arr, low = 0, high = arr.length - 1) {
+function sortArray(arr) {
+  const n = arr.length;
+
+  // TODO: Implement bubble sort with nested loops
+  // Outer loop: iterate n-1 times
+  // Inner loop: compare adjacent elements
+
+  // Use arr.at(index) to read values
+  // Use arr.swap(i, j) to swap elements (this will be visualized!)
+
+  return arr;
+}
+`;
+
+/**
+ * Hard: Sort Array with quick sort approach
+ * Suggests using recursion and partitioning for visualization
+ */
+const hardSkeleton = `// Sort an array of numbers in ascending order
+// Try implementing quick sort to see partition operations visualized
+
+function sortArray(arr, low = 0, high = arr.length - 1) {
   // TODO: Implement recursive quick sort
-  // Base case: if low >= high, return
+  // Base case: if low >= high, return arr
 
   // TODO: 1. Call partition to get pivot index
 
@@ -58,12 +64,8 @@ function quickSort(arr, low = 0, high = arr.length - 1) {
 }
 
 function partition(arr, low, high) {
-  // TODO: Implement partition
-  // 1. Choose pivot (last element)
-
-  // TODO: 2. Move smaller elements to left of pivot
-
-  // TODO: 3. Return final pivot position
+  // TODO: Use arr.partition(low, high) for visualization
+  // This method handles the partitioning and captures the operation
 
 }
 `;

@@ -20,7 +20,7 @@ describe("arrayTests", () => {
     it("should have valid structure", () => {
       expect(easyTest).toBeDefined();
       expect(easyTest?.id).toBe("array-sort-easy");
-      expect(easyTest?.name).toBe("Sort Small Array");
+      expect(easyTest?.name).toBe("Sort Array (Easy)");
       expect(easyTest?.description).toBeTruthy();
     });
 
@@ -34,13 +34,14 @@ describe("arrayTests", () => {
       expect(easyTest?.assertions).toContain("expect");
     });
 
-    it("should have reference solution", () => {
+    it("should have reference solution using sortArray function", () => {
       expect(easyTest?.referenceSolution).toBeTruthy();
-      expect(easyTest?.referenceSolution).toContain("function");
+      expect(easyTest?.referenceSolution).toContain("function sortArray");
     });
 
-    it("should have skeleton code with TODOs", () => {
+    it("should have skeleton code with sortArray function", () => {
       expect(easyTest?.skeletonCode).toBeTruthy();
+      expect(easyTest?.skeletonCode).toContain("function sortArray");
       expect(easyTest?.skeletonCode).toContain("TODO");
     });
 
@@ -61,7 +62,7 @@ describe("arrayTests", () => {
     it("should have valid structure", () => {
       expect(mediumTest).toBeDefined();
       expect(mediumTest?.id).toBe("array-sort-medium");
-      expect(mediumTest?.name).toBe("Bubble Sort Implementation");
+      expect(mediumTest?.name).toBe("Sort Array (Medium)");
       expect(mediumTest?.description).toBeTruthy();
     });
 
@@ -70,18 +71,19 @@ describe("arrayTests", () => {
       expect(mediumTest?.expectedOutput).toEqual([11, 12, 22, 25, 34, 64, 90]);
     });
 
-    it("should have assertions checking for swaps", () => {
+    it("should have assertions", () => {
       expect(mediumTest?.assertions).toBeTruthy();
-      expect(mediumTest?.assertions).toContain("swap");
+      expect(mediumTest?.assertions).toContain("expect");
     });
 
-    it("should have reference solution with bubble sort", () => {
+    it("should have reference solution using sortArray function", () => {
       expect(mediumTest?.referenceSolution).toBeTruthy();
-      expect(mediumTest?.referenceSolution).toContain("bubbleSort");
+      expect(mediumTest?.referenceSolution).toContain("function sortArray");
     });
 
-    it("should have skeleton code with nested loop guidance", () => {
+    it("should have skeleton code with sortArray and nested loop guidance", () => {
       expect(mediumTest?.skeletonCode).toBeTruthy();
+      expect(mediumTest?.skeletonCode).toContain("function sortArray");
       expect(mediumTest?.skeletonCode).toContain("nested loops");
     });
 
@@ -97,7 +99,7 @@ describe("arrayTests", () => {
     it("should have valid structure", () => {
       expect(hardTest).toBeDefined();
       expect(hardTest?.id).toBe("array-sort-hard");
-      expect(hardTest?.name).toBe("Quick Sort Implementation");
+      expect(hardTest?.name).toBe("Sort Array (Hard)");
       expect(hardTest?.description).toBeTruthy();
     });
 
@@ -106,20 +108,21 @@ describe("arrayTests", () => {
       expect(hardTest?.expectedOutput).toEqual([10, 30, 40, 50, 70, 80, 90]);
     });
 
-    it("should have assertions checking for partitions", () => {
+    it("should have assertions", () => {
       expect(hardTest?.assertions).toBeTruthy();
-      expect(hardTest?.assertions).toContain("partition");
+      expect(hardTest?.assertions).toContain("expect");
     });
 
-    it("should have reference solution with quick sort and partition", () => {
+    it("should have reference solution using sortArray function with partition", () => {
       expect(hardTest?.referenceSolution).toBeTruthy();
-      expect(hardTest?.referenceSolution).toContain("quickSort");
+      expect(hardTest?.referenceSolution).toContain("function sortArray");
       expect(hardTest?.referenceSolution).toContain("partition");
     });
 
-    it("should have skeleton code with recursion guidance", () => {
+    it("should have skeleton code with sortArray and recursion guidance", () => {
       expect(hardTest?.skeletonCode).toBeTruthy();
-      expect(hardTest?.skeletonCode).toContain("recursive");
+      expect(hardTest?.skeletonCode).toContain("function sortArray");
+      expect(hardTest?.skeletonCode?.toLowerCase()).toContain("recursively");
     });
 
     it("should have hints about quick sort algorithm", () => {

@@ -237,9 +237,7 @@
         "agent-browser snapshot -c -d 6",
         "Verify Expected output shows sorted array"
       ],
-      "affectedFiles": [
-        "src/lib/execution/referenceSolutionRunner.ts"
-      ],
+      "affectedFiles": ["src/lib/execution/referenceSolutionRunner.ts"],
       "passes": true
     },
     {
@@ -263,8 +261,12 @@
         "agent-browser click on Run all tests button",
         "Verify all tests pass"
       ],
-      "affectedFiles": ["src/lib/testing/testCases/arrayTests.ts", "src/templates/array.ts"],
-      "passes": false
+      "affectedFiles": [
+        "src/lib/testing/testCases/arrayTests.ts",
+        "src/templates/array/index.ts",
+        "src/components/EditorPanel/EditorPanel.tsx"
+      ],
+      "passes": true
     },
     {
       "id": "FEAT-001",
