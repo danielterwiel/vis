@@ -632,3 +632,18 @@ All acceptance criteria met:
 - No unnecessary re-renders when test results don't change ✓
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1271 tests passing). Updated prd.json to mark PERF-003 as passes=true.
+
+2026-01-15: Verified PERF-004 (Hoist static helper functions outside components) - Investigation revealed that this task was already complete. The `formatStep` function in ArrayVisualizer.tsx is already defined at module level (lines 237-256), outside the ArrayVisualizer component which ends at line 197. Similarly, `getHighlightIndices` is also at module level (lines 202-232).
+
+Verification performed:
+1. Reviewed src/components/visualizers/ArrayVisualizer.tsx
+2. Confirmed formatStep function at module level (outside component)
+3. Confirmed getHighlightIndices function also at module level
+4. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors)
+
+All acceptance criteria were already met:
+- formatStep function is defined at module level, not inside component ✓
+- Function behavior remains identical ✓
+- No performance regression ✓
+
+No code changes required. Updated prd.json to mark PERF-004 as passes=true.

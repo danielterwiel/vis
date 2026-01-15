@@ -405,7 +405,7 @@
       ],
       "affectedFiles": ["src/components/visualizers/ArrayVisualizer.tsx"],
       "technicalNotes": "Move `function formatStep(step: CapturedStep): string` outside the component function. If it needs props, consider using useCallback instead.",
-      "passes": false
+      "passes": true
     },
     {
       "id": "PERF-005",
