@@ -120,10 +120,10 @@
         "Verify buttons and badge next to Editor title have consistent sizing"
       ],
       "affectedFiles": [
-        "src/components/EditorPanel/EditorPanel.tsx",
-        "src/components/EditorPanel/EditorPanel.css"
+        "src/styles/global.css",
+        "src/components/EditorPanel/PresetSelector.css"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "UI-006",

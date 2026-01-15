@@ -412,3 +412,22 @@ All acceptance criteria met:
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1287 tests passing). Updated prd.json to mark FEAT-001 as passes=true.
 
+2026-01-15: Completed UI-005 (Fix inconsistent button and badge sizes in Editor header) - Standardized all interactive elements in the Editor header to have consistent 32px height.
+
+Changes made:
+
+1. **src/styles/global.css**:
+   - `.data-structure-select`: Added `height: 32px`, `box-sizing: border-box`, updated padding to `0.375rem 0.75rem`
+   - `.difficulty-badge`: Added `height: 32px`, `box-sizing: border-box`, `justify-content: center`, updated padding to `0.375rem 0.75rem`
+   - `.reference-mode-badge`: Added `height: 32px`, `box-sizing: border-box`, `display: inline-flex`, `align-items: center`, updated padding to `0.375rem 0.75rem`
+
+2. **src/components/EditorPanel/PresetSelector.css**:
+   - `.preset-selector-trigger`: Changed from `padding: 0.5rem 1rem` to `padding: 0.375rem 0.75rem`, added `height: 32px`, `box-sizing: border-box`, changed `border-radius` from `0.375rem` to `4px` for consistency
+
+All acceptance criteria met:
+- All buttons in Editor header have consistent height (32px) ✓
+- Badge has consistent sizing relative to buttons ✓
+- Visual alignment is clean and professional ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1287 tests passing). Updated prd.json to mark UI-005 as passes=true.
+
