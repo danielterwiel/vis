@@ -567,3 +567,36 @@ All acceptance criteria met:
 - All icons still render correctly ✓
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1271 tests passing). Updated prd.json to mark PERF-001 as passes=true.
+
+2026-01-15: Completed PERF-002 (Use Set for O(1) lookups instead of Array.includes()) - Replaced Array.includes() with Set.has() in hot render paths for improved performance.
+
+Changes made:
+
+1. **ArrayVisualizer.tsx**: In the D3 data join callback that runs for each bar element, converted the highlight index arrays (active, comparing, swapped) to Sets before the loop:
+   ```typescript
+   const activeSet = new Set(highlightIndices.active);
+   const comparingSet = new Set(highlightIndices.comparing);
+   const swappedSet = new Set(highlightIndices.swapped);
+   ```
+   Changed `.includes(i)` calls to `.has(i)` for O(1) lookup per element.
+
+2. **BinaryTreeVisualizer.tsx**: Added `pathSet` parameter to `getNodeColor()` function. Before rendering nodes, convert `metadata.path` array to a Set:
+   ```typescript
+   const pathSet = metadata?.path ? new Set(metadata.path) : undefined;
+   ```
+   Changed `metadata.path?.includes(value)` to `pathSet?.has(value)` for O(1) lookup.
+
+3. **urlParams.ts**: Defined static Sets at module level for validation:
+   ```typescript
+   const VALID_DATA_STRUCTURES: Set<string> = new Set([...]);
+   const VALID_DIFFICULTIES: Set<string> = new Set([...]);
+   ```
+   Changed `Array.includes()` to `Set.has()` in `isValidDataStructure()` and `isValidDifficulty()`.
+
+All acceptance criteria met:
+- ArrayVisualizer highlight indices use Set instead of Array ✓
+- BinaryTreeVisualizer path lookup uses Set ✓
+- urlParams validation uses Set for data structure types ✓
+- No performance regression in visualizations ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1271 tests passing). Updated prd.json to mark PERF-002 as passes=true.

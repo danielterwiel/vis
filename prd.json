@@ -365,7 +365,7 @@
         "src/lib/urlParams.ts"
       ],
       "technicalNotes": "Convert arrays to Sets at the point of use: `const activeSet = new Set(highlightIndices.active)`. For static validation arrays, define Set at module level.",
-      "passes": false
+      "passes": true
     },
     {
       "id": "PERF-003",

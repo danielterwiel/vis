@@ -7,6 +7,24 @@ const PARAM_DATA_STRUCTURE = "ds";
 const PARAM_DIFFICULTY = "difficulty";
 
 /**
+ * Valid data structure types as Set for O(1) lookup
+ */
+const VALID_DATA_STRUCTURES: Set<string> = new Set([
+  "array",
+  "linkedList",
+  "stack",
+  "queue",
+  "tree",
+  "graph",
+  "hashMap",
+]);
+
+/**
+ * Valid difficulty levels as Set for O(1) lookup
+ */
+const VALID_DIFFICULTIES: Set<string> = new Set(["easy", "medium", "hard"]);
+
+/**
  * Get URL parameters
  */
 export function getUrlParams() {
@@ -34,7 +52,7 @@ export function updateUrlParams(dataStructure: DataStructureType, difficulty: Di
  */
 export function isValidDataStructure(value: string | null): value is DataStructureType {
   if (!value) return false;
-  return ["array", "linkedList", "stack", "queue", "tree", "graph", "hashMap"].includes(value);
+  return VALID_DATA_STRUCTURES.has(value);
 }
 
 /**
@@ -42,5 +60,5 @@ export function isValidDataStructure(value: string | null): value is DataStructu
  */
 export function isValidDifficulty(value: string | null): value is DifficultyLevel {
   if (!value) return false;
-  return ["easy", "medium", "hard"].includes(value);
+  return VALID_DIFFICULTIES.has(value);
 }

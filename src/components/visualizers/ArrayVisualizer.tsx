@@ -145,15 +145,20 @@ export function ArrayVisualizer({
       .attr("transform", (_, i) => `translate(${i * barSpacing},0)`)
       .style("opacity", 1);
 
+    // Convert highlight arrays to Sets for O(1) lookup in render loop
+    const activeSet = new Set(highlightIndices.active);
+    const comparingSet = new Set(highlightIndices.comparing);
+    const swappedSet = new Set(highlightIndices.swapped);
+
     // Update rectangles with highlighting and animations
     barsMerge
       .select<SVGRectElement>("rect")
       .transition()
       .duration(duration)
       .attr("class", (_, i) => {
-        if (highlightIndices.active.includes(i)) return "bar-rect bar-active";
-        if (highlightIndices.comparing.includes(i)) return "bar-rect bar-comparing";
-        if (highlightIndices.swapped.includes(i)) return "bar-rect bar-swapped";
+        if (activeSet.has(i)) return "bar-rect bar-active";
+        if (comparingSet.has(i)) return "bar-rect bar-comparing";
+        if (swappedSet.has(i)) return "bar-rect bar-swapped";
         return "bar-rect";
       })
       .attr("y", (d) => innerHeight - (d / maxValue) * innerHeight)

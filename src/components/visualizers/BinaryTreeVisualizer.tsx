@@ -78,6 +78,9 @@ export function BinaryTreeVisualizer({
         }
       | undefined;
 
+    // Convert path array to Set for O(1) lookup in render loop
+    const pathSet = metadata?.path ? new Set(metadata.path) : undefined;
+
     // Draw links (edges)
     g.selectAll(".link")
       .data(links, (d: unknown) => {
@@ -131,7 +134,7 @@ export function BinaryTreeVisualizer({
             .attr("cx", (d) => d.x + 50)
             .attr("cy", (d) => d.y + 50)
             .attr("r", 0)
-            .attr("fill", (d) => getNodeColor(d.data.value, metadata))
+            .attr("fill", (d) => getNodeColor(d.data.value, metadata, pathSet))
             .attr("stroke", "#fff")
             .attr("stroke-width", 2)
             .transition()
@@ -162,7 +165,7 @@ export function BinaryTreeVisualizer({
             .duration(duration)
             .attr("cx", (d) => d.x + 50)
             .attr("cy", (d) => d.y + 50)
-            .attr("fill", (d) => getNodeColor(d.data.value, metadata));
+            .attr("fill", (d) => getNodeColor(d.data.value, metadata, pathSet));
 
           update
             .select("text")
@@ -216,11 +219,12 @@ function getNodeColor(
         comparing?: boolean;
       }
     | undefined,
+  pathSet?: Set<number>,
 ): string {
   if (!metadata) return "#4169e1"; // Default blue
 
-  // Check if this node is in the path
-  const inPath = metadata.path?.includes(value);
+  // Check if this node is in the path using O(1) Set lookup
+  const inPath = pathSet?.has(value);
 
   if (metadata.deleted && metadata.value === value) return "#dc2626"; // Red for deleted
   if (metadata.found && metadata.value === value) return "#9333ea"; // Purple for found
