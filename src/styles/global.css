@@ -271,6 +271,9 @@ body {
 }
 
 .control-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.5rem 1rem;
   background-color: #333;
   color: white;
@@ -279,6 +282,10 @@ body {
   cursor: pointer;
   font-size: 0.875rem;
   transition: all 0.2s;
+}
+
+.control-button svg {
+  flex-shrink: 0;
 }
 
 .control-button:hover:not(:disabled) {

@@ -427,21 +427,21 @@ Uncaught Error: No skeleton template found for stack (easy)
 
 **Acceptance Criteria**:
 
-- [ ] "Run all tests" button icon aligned with text
-- [ ] "Play" button icon aligned with text
-- [ ] Icons maintain alignment on hover states
-- [ ] Icons maintain alignment when button is disabled
-- [ ] Consistent alignment across light/dark themes
-- [ ] Works across Chrome, Firefox, and Safari
-- [ ] No layout shift on button state changes
+- [x] "Run all tests" button icon aligned with text
+- [x] "Play" button icon aligned with text
+- [x] Icons maintain alignment on hover states
+- [x] Icons maintain alignment when button is disabled
+- [x] Consistent alignment across light/dark themes
+- [x] Works across Chrome, Firefox, and Safari
+- [x] No layout shift on button state changes
 
 **Dependencies**: None
 
 **Priority**: P2 (Medium)
 
-**Status**: `pending`
+**Status**: `complete`
 
-**Passes**: `false`
+**Passes**: `true`
 
 ---
 
