@@ -247,7 +247,68 @@ export const stackQueueTests: TestCase[] = [
     ],
   },
   {
-    id: "min-stack-hard",
+    id: "stack-queue-using-stacks-medium",
+    name: "Queue Using Two Stacks",
+    difficulty: "medium",
+    description: "Implement queue operations (enqueue, dequeue) using only two stacks",
+    initialData: [1, 2, 3, 4, 5],
+    expectedOutput: [1, 2, 3, 4, 5],
+    assertions: `
+      expect(result).toEqual([1, 2, 3, 4, 5]);
+      expect(steps.filter(s => s.type === 'push').length).toBeGreaterThan(0);
+      expect(steps.filter(s => s.type === 'pop').length).toBeGreaterThan(0);
+    `,
+    referenceSolution: `function queueUsingStacks(arr) {
+  const stack1 = createTrackedStack();
+  const stack2 = createTrackedStack();
+  const result = [];
+
+  // Enqueue all elements (push to stack1)
+  for (let i = 0; i < arr.length; i++) {
+    stack1.push(arr[i]);
+  }
+
+  // Dequeue all elements (transfer to stack2, then pop)
+  // Transfer from stack1 to stack2 reverses order (LIFO -> FIFO)
+  while (!stack1.isEmpty()) {
+    stack2.push(stack1.pop());
+  }
+
+  // Pop from stack2 gives FIFO order
+  while (!stack2.isEmpty()) {
+    result.push(stack2.pop());
+  }
+
+  return result;
+}`,
+    skeletonCode: `function queueUsingStacks(arr) {
+  const stack1 = createTrackedStack();
+  const stack2 = createTrackedStack();
+  const result = [];
+
+  // TODO: Enqueue all elements by pushing to stack1
+
+  // TODO: To dequeue, transfer all elements from stack1 to stack2
+  // This reverses the order (LIFO becomes FIFO)
+
+  // TODO: Pop all elements from stack2 into result array
+  // Elements come out in original order (FIFO)
+
+  return result;
+}`,
+    hints: [
+      "Use stack1 for enqueue operations (just push)",
+      "To dequeue, first transfer all elements from stack1 to stack2",
+      "Popping from stack2 gives FIFO order because the transfer reversed the order",
+    ],
+    acceptanceCriteria: [
+      "Function returns elements in FIFO order (same as input)",
+      "Only stack operations (push, pop) are used",
+      "Result array matches expected output [1, 2, 3, 4, 5]",
+    ],
+  },
+  {
+    id: "stack-min-stack-hard",
     name: "Min Stack with O(1) getMin",
     difficulty: "hard",
     description: "Implement a stack that supports push, pop, and getMin in O(1) time",

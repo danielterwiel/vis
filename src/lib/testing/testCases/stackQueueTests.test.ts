@@ -3,8 +3,8 @@ import { stackQueueTests } from "./stackQueueTests";
 
 describe("stackQueueTests", () => {
   describe("structure", () => {
-    it("should export 5 test cases", () => {
-      expect(stackQueueTests).toHaveLength(5);
+    it("should export 6 test cases (3 stack + 3 queue)", () => {
+      expect(stackQueueTests).toHaveLength(6);
     });
 
     it("should have unique IDs", () => {
@@ -200,6 +200,30 @@ describe("stackQueueTests", () => {
       });
     });
 
+    describe("Stack: Queue Using Two Stacks (Medium)", () => {
+      const test = stackQueueTests.find((t) => t.id === "stack-queue-using-stacks-medium");
+
+      it("should have array as input", () => {
+        expect(Array.isArray(test?.initialData)).toBe(true);
+        expect(test?.initialData).toEqual([1, 2, 3, 4, 5]);
+      });
+
+      it("should expect FIFO order as output", () => {
+        expect(test?.expectedOutput).toEqual([1, 2, 3, 4, 5]);
+      });
+
+      it("should use two stacks", () => {
+        expect(test?.referenceSolution).toContain("createTrackedStack");
+        const stackMatches = test?.referenceSolution.match(/createTrackedStack/g);
+        expect(stackMatches?.length).toBe(2);
+      });
+
+      it("should verify push and pop operations", () => {
+        expect(test?.assertions).toContain("push");
+        expect(test?.assertions).toContain("pop");
+      });
+    });
+
     describe("Queue: Basic Operations (Easy)", () => {
       const test = stackQueueTests.find((t) => t.id === "queue-basic-operations-easy");
 
@@ -273,7 +297,7 @@ describe("stackQueueTests", () => {
     });
 
     describe("Min Stack (Hard)", () => {
-      const test = stackQueueTests.find((t) => t.id === "min-stack-hard");
+      const test = stackQueueTests.find((t) => t.id === "stack-min-stack-hard");
 
       it("should have array as input", () => {
         expect(Array.isArray(test?.initialData)).toBe(true);

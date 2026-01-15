@@ -73,8 +73,9 @@ function App() {
       case "linkedList":
         return linkedListTests;
       case "stack":
+        return stackQueueTests.filter((test) => test.id.startsWith("stack-"));
       case "queue":
-        return stackQueueTests;
+        return stackQueueTests.filter((test) => test.id.startsWith("queue-"));
       case "tree":
         return binaryTreeTests;
       case "graph":

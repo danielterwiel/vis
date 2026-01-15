@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "project": {
     "name": "Data Structure Visualizer",
     "description": "CodePen-like application for visualizing data structures with real-time animated visualization. 100% client-side, no backend.",
@@ -12,448 +12,356 @@
     "methodology": "Ralph Wiggum - Autonomous AI Agent Development",
     "validationCommand": "npm run validate",
     "devServer": "npm run dev",
-    "iteration": 1,
+    "devServerPort": 5175,
+    "iteration": 2,
     "testingTool": "agent-browser"
   },
   "userStories": [
     {
-      "id": "BUG-001",
-      "title": "Binary Tree Template Registration Mismatch - EditorPanel Crash",
-      "description": "The Binary Tree templates are registered with identifier 'binarytree' but the DataStructureType uses 'tree', causing complete page crash. EditorPanel component throws error and page displays blank. Console shows: 'An error occurred in the <EditorPanel> component'.",
-      "category": "critical",
+      "id": "UI-001",
+      "category": "UI Cleanup",
+      "priority": "high",
+      "title": "Remove duplicate Run All Tests button",
+      "description": "There are two 'Run All Tests' buttons - one at the top of the editor panel and one below the 'Test Cases' heading. Remove the one below 'Test Cases' to reduce UI clutter.",
+      "acceptanceCriteria": [
+        "Only one 'Run All Tests' button exists in the UI",
+        "The remaining button is at the top of the editor panel",
+        "Button still runs all tests correctly"
+      ],
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175",
+        "agent-browser snapshot -i",
+        "Verify only one 'Run all tests' button appears in snapshot",
+        "agent-browser click on Run All Tests button",
+        "Verify tests execute correctly"
+      ],
+      "affectedFiles": ["src/components/TestPanel/TestPanel.tsx"],
+      "passes": false
+    },
+    {
+      "id": "UI-002",
+      "category": "UI Cleanup",
+      "priority": "medium",
+      "title": "Remove Skeleton button",
+      "description": "The 'Skeleton' button in the visualization mode buttons doesn't provide significant value. Remove it from the UI.",
+      "acceptanceCriteria": [
+        "No 'Skeleton' button appears in the visualization mode buttons",
+        "Other visualization mode buttons (My Execution, Show Expected, Compare) still work"
+      ],
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175",
+        "agent-browser snapshot -i",
+        "Verify no 'Skeleton' button in snapshot"
+      ],
+      "affectedFiles": ["src/components/VisualizationPanel/VisualizationPanel.tsx"],
+      "passes": false
+    },
+    {
+      "id": "UI-003",
+      "category": "UI Cleanup",
+      "priority": "low",
+      "title": "Hide 'No operation' text when no steps exist",
+      "description": "In the Graph visualizer, a 'No operation' div is shown when there are no steps. This looks weird - if there are no steps, don't render anything there.",
+      "acceptanceCriteria": [
+        "No 'No operation' text visible in visualization panel when there are no steps",
+        "Step indicator renders normally when steps exist"
+      ],
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=graph",
+        "agent-browser snapshot -c -d 6",
+        "Verify no 'No operation' text in snapshot"
+      ],
+      "affectedFiles": ["src/components/visualizers/GraphVisualization.tsx"],
+      "passes": false
+    },
+    {
+      "id": "BUG-ARRAY-001",
+      "category": "Reference Solution",
       "priority": "critical",
-      "status": "verified",
-      "passes": true,
-      "actualBehavior": "Navigating to http://localhost:5173/?ds=tree&difficulty=easy results in completely blank page. Console shows EditorPanel component error. No UI elements render.",
-      "expectedBehavior": "Binary Tree page loads successfully with skeleton code in editor and test cases visible.",
+      "title": "Array reference solutions return undefined",
+      "description": "When clicking 'Show Solution' and then 'Run All Tests' for Array, all tests fail with 'Expected undefined to equal [sorted array]'. The reference solutions are not executing or returning values correctly.",
       "acceptanceCriteria": [
-        "Binary Tree templates are registered with identifier 'tree' (not 'binarytree')",
-        "Navigating to ?ds=tree loads without errors",
-        "EditorPanel renders successfully with skeleton code",
-        "No console errors when Binary Tree is selected",
-        "All three difficulty levels (easy, medium, hard) load correctly for Binary Tree",
-        "Visualization panel displays tree structure placeholder",
-        "Test cases panel shows Binary Tree test cases"
+        "Array Sort Small Array test passes with expected output [1,2,5,8,9]",
+        "Array Bubble Sort test passes with expected output [11,12,22,25,34,64,90]",
+        "Array Quick Sort test passes with expected output [10,30,40,50,70,80,90]",
+        "All 3 Array tests show as passed (3/3 passed)"
       ],
-      "verify": [
-        {
-          "step": 1,
-          "action": "Navigate to Binary Tree page",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=tree&difficulty=easy'",
-          "expected": "Page loads without blank screen"
-        },
-        {
-          "step": 2,
-          "action": "Check console for errors",
-          "command": "agent-browser console --json",
-          "expected": "No EditorPanel errors, no template registration errors"
-        },
-        {
-          "step": 3,
-          "action": "Verify page content renders",
-          "command": "agent-browser snapshot",
-          "expected": "Editor, test cases, and visualization panels all visible"
-        },
-        {
-          "step": 4,
-          "action": "Verify skeleton code loaded",
-          "command": "agent-browser snapshot -i | grep 'textbox'",
-          "expected": "Editor textbox present with content"
-        },
-        {
-          "step": 5,
-          "action": "Test Show Solution button",
-          "command": "agent-browser click @showSolutionButton",
-          "expected": "Reference solution loads without errors"
-        },
-        {
-          "step": 6,
-          "action": "Test all difficulty levels",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=tree&difficulty=medium' && agent-browser goto 'http://localhost:5173/?ds=tree&difficulty=hard'",
-          "expected": "All difficulty levels load successfully"
-        }
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=array",
+        "agent-browser snapshot -i",
+        "agent-browser click on Show Solution button",
+        "agent-browser click on Run all tests button",
+        "sleep 2",
+        "agent-browser snapshot -c -d 6",
+        "Verify '3/3 passed' in snapshot text"
       ],
-      "technicalDetails": {
-        "files": ["src/templates/binaryTree/index.ts"],
-        "rootCause": "Template registration uses 'binarytree' identifier but DataStructureType enum uses 'tree'",
-        "fix": "Change registration calls from registerTemplate('binarytree', ...) to registerTemplate('tree', ...)",
-        "location": "src/templates/binaryTree/index.ts lines 78-80"
-      }
+      "technicalNotes": "Reference solutions are in src/lib/testing/testCases/arrayTests.ts. Check how solutions are loaded and executed in the sandbox.",
+      "affectedFiles": [
+        "src/lib/testing/testCases/arrayTests.ts",
+        "src/lib/execution/sandboxExecutor.ts"
+      ],
+      "passes": false
     },
     {
-      "id": "BUG-002",
-      "title": "Loop Counter Variable Scoping Error in Code Instrumentation",
-      "description": "When instrumenting user code with loop counters for infinite loop detection, the __loopCount_N variables are not properly scoped. This causes 'is not defined' errors when running reference solutions with loops. Affects Stack (Balanced Parentheses), Queue (Basic Queue Operations, Reverse First K, Interleave), and HashMap (all tests). Different loop counter indexes fail: __loopCount_0, __loopCount_9.",
-      "category": "critical",
+      "id": "BUG-LINKEDLIST-001",
+      "category": "Reference Solution",
       "priority": "critical",
-      "status": "verified",
-      "passes": true,
-      "actualBehavior": "Running tests with reference solutions containing loops throws errors: '__loopCount_0 is not defined' or '__loopCount_9 is not defined'. Tests fail immediately with this error.",
-      "expectedBehavior": "Loop counter variables are properly declared and scoped. All reference solutions with loops execute successfully without variable scoping errors.",
+      "title": "Linked List reference solutions return null",
+      "description": "When clicking 'Show Solution' and then 'Run All Tests' for Linked List, all tests fail returning null instead of expected values.",
       "acceptanceCriteria": [
-        "Stack easy test 'Balanced Parentheses Checker' reference solution runs without '__loopCount_0' error",
-        "Queue tests with loops execute without loop counter errors",
-        "HashMap tests execute without '__loopCount_9' error",
-        "All reference solutions with while, for, and do-while loops work correctly",
-        "Loop counter variables are declared at correct scope (function-level)",
-        "Counter declaration placement handles nested functions and arrow functions",
-        "SWC instrumentation properly handles all loop types"
+        "Find Element in List test passes (returns 30)",
+        "Reverse Linked List test passes (returns [5,4,3,2,1])",
+        "Detect and Handle Cycle test passes (returns false)",
+        "All 3 Linked List tests show as passed"
       ],
-      "verify": [
-        {
-          "step": 1,
-          "action": "Test Stack - Balanced Parentheses",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=stack&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep '__loopCount'",
-          "expected": "No __loopCount errors appear"
-        },
-        {
-          "step": 2,
-          "action": "Test Queue - Basic Queue Operations",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=queue&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep '__loopCount'",
-          "expected": "No __loopCount errors appear"
-        },
-        {
-          "step": 3,
-          "action": "Test HashMap - All difficulties",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=hashMap&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep '__loopCount'",
-          "expected": "No __loopCount errors appear"
-        },
-        {
-          "step": 4,
-          "action": "Verify test results show passed, not errors",
-          "command": "agent-browser snapshot | grep 'Passed\\|passed'",
-          "expected": "Tests show 'Passed' status, not loop counter errors"
-        },
-        {
-          "step": 5,
-          "action": "Check console for instrumentation errors",
-          "command": "agent-browser console",
-          "expected": "No errors related to loop counter variables"
-        }
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=linkedList",
+        "agent-browser snapshot -i",
+        "agent-browser click on Show Solution button",
+        "agent-browser click on Run all tests button",
+        "sleep 2",
+        "agent-browser snapshot -c -d 6",
+        "Verify '3/3 passed' in snapshot text"
       ],
-      "technicalDetails": {
-        "files": ["src/lib/execution/instrumenter.ts"],
-        "rootCause": "Regex-based loop counter injection (lines 83-109) doesn't properly handle function scoping. The counter declaration is inserted before the loop keyword but may be in wrong scope when loop is inside a function.",
-        "investigation": "The regex `/(while\\s*\\(|for\\s*\\(|do\\s*\\{)/g` captures loop keywords but the replacement inserts counter declaration immediately before the keyword. This doesn't account for function boundaries.",
-        "potentialFix": [
-          "Use SWC AST transformation instead of regex to properly detect function boundaries",
-          "Declare all loop counters at function scope at the beginning of each function",
-          "Track function depth during transformation and insert declarations at correct level",
-          "Consider using function-scoped counter with loop-specific suffixes"
-        ]
-      }
+      "affectedFiles": [
+        "src/lib/testing/testCases/linkedListTests.ts",
+        "src/lib/execution/sandboxExecutor.ts"
+      ],
+      "passes": false
     },
     {
-      "id": "BUG-003",
-      "title": "Array Reference Solutions Return Undefined - Missing Return Statements",
-      "description": "All Array reference solutions fail tests because they return undefined instead of the expected sorted array. Easy, medium, and hard difficulty all affected. Tests show: 'Expected undefined to equal [1,2,5,8,9]' type errors.",
-      "category": "critical",
-      "priority": "high",
-      "status": "verified",
-      "passes": true,
-      "actualBehavior": "Array reference solutions execute but return undefined. Tests fail with: 'Sort Small Array: Expected undefined to equal [1,2,5,8,9]', 'Bubble Sort: Expected undefined to equal [11,12,22,25,34,64,90]', 'Quick Sort: Expected undefined to equal [10,30,40,50,70,80,90]'.",
-      "expectedBehavior": "Array reference solutions return the sorted array. Tests pass with correct output matching expected values.",
+      "id": "BUG-LINKEDLIST-002",
+      "category": "Visualization",
+      "priority": "medium",
+      "title": "Linked List visualization shows 'null undefined' rendering bug",
+      "description": "The LinkedList visualization shows 'null undefined [0] HEAD TAIL' which appears to be rendering placeholder or initial state incorrectly.",
       "acceptanceCriteria": [
-        "Array easy reference solution returns sorted array",
-        "Array medium reference solution returns bubble-sorted array",
-        "Array hard reference solution returns quick-sorted array",
-        "All Array tests pass when using reference solutions",
-        "No 'Expected undefined to equal' errors occur"
+        "LinkedList visualization shows meaningful node data, not 'null undefined'",
+        "HEAD and TAIL pointers are positioned correctly",
+        "Initial state shows the actual linked list data from the test case"
       ],
-      "verify": [
-        {
-          "step": 1,
-          "action": "Navigate to Array easy",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=array&difficulty=easy'",
-          "expected": "Page loads successfully"
-        },
-        {
-          "step": 2,
-          "action": "Load reference solution and run tests",
-          "command": "agent-browser click @showSolutionButton && sleep 1 && agent-browser click @runAllTestsButton && sleep 2",
-          "expected": "Tests execute"
-        },
-        {
-          "step": 3,
-          "action": "Verify test passes",
-          "command": "agent-browser snapshot | grep 'Sort Small Array'",
-          "expected": "Test shows 'Passed' status, not 'Expected undefined'"
-        },
-        {
-          "step": 4,
-          "action": "Test medium difficulty",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=array&difficulty=medium' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Bubble Sort'",
-          "expected": "Bubble Sort test passes"
-        },
-        {
-          "step": 5,
-          "action": "Test hard difficulty",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=array&difficulty=hard' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Quick Sort'",
-          "expected": "Quick Sort test passes"
-        }
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=linkedList",
+        "agent-browser snapshot -c -d 6",
+        "Verify visualization does not contain 'null undefined' text"
       ],
-      "technicalDetails": {
-        "files": ["src/lib/testing/testCases/arrayTests.ts"],
-        "rootCause": "Reference solutions in arrayTests.ts likely missing return statements or returning void",
-        "investigation": "Check referenceSolution fields for easy, medium, and hard tests - they probably mutate array in place but don't return it"
-      }
+      "affectedFiles": ["src/components/visualizers/LinkedListVisualization.tsx"],
+      "passes": false
     },
     {
-      "id": "BUG-004",
-      "title": "LinkedList Reference Solutions Return Null - Incorrect Implementation",
-      "description": "All LinkedList reference solutions fail tests because they return null instead of expected values. Easy test expects node value 30, medium expects reversed list [5,4,3,2,1], hard expects boolean false. All return null.",
-      "category": "critical",
-      "priority": "high",
-      "status": "verified",
-      "passes": false,
-      "actualBehavior": "LinkedList reference solutions return null. Tests fail with: 'Find Element: Expected null to be 30', 'Reverse Linked List: Expected null to equal [5,4,3,2,1]', 'Detect Cycle: Expected null to be false'.",
-      "expectedBehavior": "LinkedList reference solutions return correct values: node value for find, reversed list array for reverse, boolean for cycle detection.",
+      "id": "BUG-STACK-001",
+      "category": "Test Cases",
+      "priority": "critical",
+      "title": "Stack and Queue share tests without filtering",
+      "description": "Both Stack and Queue data structures return the same stackQueueTests array without filtering. Stack page shows Queue test cases like 'Basic Queue Operations' and 'Interleave Two Halves of Queue'. Queue page shows Stack tests like 'Balanced Parentheses Checker' and 'Min Stack'.",
       "acceptanceCriteria": [
-        "LinkedList easy reference solution returns correct node value",
-        "LinkedList medium reference solution returns reversed list as array",
-        "LinkedList hard reference solution returns boolean for cycle detection",
-        "All LinkedList tests pass when using reference solutions",
-        "No 'Expected null' errors occur"
+        "Stack page only shows Stack-related tests (Balanced Parentheses, Min Stack)",
+        "Queue page only shows Queue-related tests (Basic Queue Operations, Reverse First K, Interleave)",
+        "Each data structure has exactly 3 tests (easy, medium, hard)"
       ],
-      "verify": [
-        {
-          "step": 1,
-          "action": "Test LinkedList easy",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=linkedList&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2",
-          "expected": "Test passes"
-        },
-        {
-          "step": 2,
-          "action": "Verify find element test",
-          "command": "agent-browser snapshot | grep 'Find Element'",
-          "expected": "Shows 'Passed', not 'Expected null to be 30'"
-        },
-        {
-          "step": 3,
-          "action": "Test medium difficulty",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=linkedList&difficulty=medium' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Reverse'",
-          "expected": "Reverse test passes"
-        },
-        {
-          "step": 4,
-          "action": "Test hard difficulty",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=linkedList&difficulty=hard' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Cycle'",
-          "expected": "Cycle detection test passes"
-        }
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=stack",
+        "agent-browser snapshot -c -d 6",
+        "Verify only 3 tests are shown and all relate to Stack operations",
+        "agent-browser navigate http://localhost:5175/?ds=queue",
+        "agent-browser snapshot -c -d 6",
+        "Verify only 3 tests are shown and all relate to Queue operations"
       ],
-      "technicalDetails": {
-        "files": ["src/lib/testing/testCases/linkedListTests.ts"],
-        "rootCause": "Reference solutions return null or don't return correct values",
-        "investigation": "Check referenceSolution implementations - they may have incorrect return statements or logic errors"
-      }
+      "technicalNotes": "Root cause is in src/App.tsx lines 75-77 where both 'stack' and 'queue' cases return stackQueueTests without filtering. Tests should be filtered by their id prefix (stack- vs queue-).",
+      "affectedFiles": ["src/App.tsx", "src/lib/testing/testCases/stackQueueTests.ts"],
+      "passes": true
     },
     {
-      "id": "BUG-005",
-      "title": "Graph Reference Solutions Return Undefined - BFS and Dijkstra Issues",
-      "description": "All Graph reference solutions fail tests because they return undefined instead of expected arrays. BFS should return vertex traversal array ['A','B','C','D','E'], Dijkstra should return path array.",
-      "category": "critical",
-      "priority": "high",
-      "status": "verified",
-      "passes": false,
-      "actualBehavior": "Graph reference solutions return undefined. Tests fail with: 'BFS Traversal: Expected undefined to equal [\"A\",\"B\",\"C\",\"D\",\"E\"]', 'Detect Cycle: Expected undefined to be true', 'Dijkstra: Expected undefined to equal [\"A\",\"C\",\"B\",\"D\",\"E\"]'.",
-      "expectedBehavior": "Graph reference solutions return correct arrays/booleans. BFS returns traversal order, cycle detection returns boolean, Dijkstra returns shortest path.",
+      "id": "BUG-STACK-002",
+      "category": "Runtime Error",
+      "priority": "critical",
+      "title": "createTrackedStack is not defined in sandbox",
+      "description": "When running Stack tests, errors occur: 'createTrackedStack is not defined'. The factory function for creating tracked stacks is not available in the sandbox environment.",
       "acceptanceCriteria": [
-        "Graph BFS test passes with correct vertex traversal array",
-        "Graph cycle detection returns boolean correctly",
-        "Graph Dijkstra's algorithm returns correct path array",
-        "TrackedGraph.bfs() method returns array in correct format",
-        "All Graph tests pass when using reference solutions",
-        "No 'Expected undefined' errors occur"
+        "createTrackedStack function is available in sandbox",
+        "Stack tests execute without 'not defined' errors",
+        "Stack reference solutions pass all tests"
       ],
-      "verify": [
-        {
-          "step": 1,
-          "action": "Test Graph BFS",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=graph&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2",
-          "expected": "BFS test passes"
-        },
-        {
-          "step": 2,
-          "action": "Verify BFS returns array",
-          "command": "agent-browser snapshot | grep 'BFS Traversal'",
-          "expected": "Shows 'Passed', not 'Expected undefined'"
-        },
-        {
-          "step": 3,
-          "action": "Test cycle detection",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=graph&difficulty=medium' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Cycle'",
-          "expected": "Cycle detection test passes"
-        },
-        {
-          "step": 4,
-          "action": "Test Dijkstra",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=graph&difficulty=hard' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Dijkstra'",
-          "expected": "Dijkstra test passes"
-        },
-        {
-          "step": 5,
-          "action": "Verify TrackedGraph.bfs() method exists",
-          "command": "grep -n 'bfs' src/lib/dataStructures/TrackedGraph.ts",
-          "expected": "BFS method is defined and returns array"
-        }
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=stack",
+        "agent-browser click on Show Solution button",
+        "agent-browser click on Run all tests button",
+        "sleep 2",
+        "agent-browser snapshot -c -d 6",
+        "Verify no 'createTrackedStack is not defined' error in snapshot"
       ],
-      "technicalDetails": {
-        "files": [
-          "src/lib/testing/testCases/graphTests.ts",
-          "src/lib/dataStructures/TrackedGraph.ts"
-        ],
-        "rootCause": "Reference solution calls graph.bfs(start) but may not return the result, or TrackedGraph.bfs() doesn't return correctly",
-        "investigation": "Verify TrackedGraph has bfs() method that returns array. Check if reference solution returns the bfs() call result."
-      }
+      "affectedFiles": [
+        "src/lib/execution/sandboxExecutor.ts",
+        "src/lib/testing/trackedStackBundle.ts"
+      ],
+      "passes": false
     },
     {
-      "id": "BUG-006",
-      "title": "Stack and Queue Test Cases Use createTracked* Functions Not Available in Sandbox",
-      "description": "Stack test cases reference createTrackedQueue function, and Queue test cases reference createTrackedStack function. These factory functions don't exist in the sandbox environment, causing 'is not defined' errors. The tests appear to be using the wrong tracked data structure constructors.",
-      "category": "critical",
-      "priority": "high",
-      "status": "verified",
-      "passes": false,
-      "actualBehavior": "Stack tests fail with 'createTrackedQueue is not defined'. Queue tests fail with 'createTrackedStack is not defined'. Multiple tests affected across both data structures.",
-      "expectedBehavior": "Test cases use correct tracked data structure constructors available in sandbox. Stack tests use createTrackedStack or TrackedStack. Queue tests use createTrackedQueue or TrackedQueue.",
+      "id": "BUG-QUEUE-001",
+      "category": "Runtime Error",
+      "priority": "critical",
+      "title": "createTrackedQueue is not defined in sandbox",
+      "description": "When running Queue tests, errors occur: 'createTrackedQueue is not defined'. The factory function for creating tracked queues is not available in the sandbox environment.",
       "acceptanceCriteria": [
-        "Stack test cases only reference createTrackedStack or TrackedStack",
-        "Queue test cases only reference createTrackedQueue or TrackedQueue",
-        "All createTracked* factory functions are properly bundled in test runner",
-        "No 'is not defined' errors for tracked data structure constructors",
-        "Stack tests execute successfully without Queue-related errors",
-        "Queue tests execute successfully without Stack-related errors"
+        "createTrackedQueue function is available in sandbox",
+        "Queue tests execute without 'not defined' errors",
+        "Queue reference solutions pass all tests"
       ],
-      "verify": [
-        {
-          "step": 1,
-          "action": "Test Stack - Check for Queue references",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=stack&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'createTrackedQueue'",
-          "expected": "No 'createTrackedQueue is not defined' errors"
-        },
-        {
-          "step": 2,
-          "action": "Test Queue - Check for Stack references",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=queue&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'createTrackedStack'",
-          "expected": "No 'createTrackedStack is not defined' errors"
-        },
-        {
-          "step": 3,
-          "action": "Verify bundle includes correct factories",
-          "command": "grep -n 'createTrackedStack\\|createTrackedQueue' src/lib/testing/testRunner.ts",
-          "expected": "Both factory functions are imported and included in bundle"
-        },
-        {
-          "step": 4,
-          "action": "Review Stack test cases",
-          "command": "grep -n 'createTracked' src/lib/testing/testCases/stackQueueTests.ts | head -20",
-          "expected": "Stack tests use createTrackedStack, Queue tests use createTrackedQueue"
-        }
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=queue",
+        "agent-browser click on Show Solution button",
+        "agent-browser click on Run all tests button",
+        "sleep 2",
+        "agent-browser snapshot -c -d 6",
+        "Verify no 'createTrackedQueue is not defined' error in snapshot"
       ],
-      "technicalDetails": {
-        "files": ["src/lib/testing/testCases/stackQueueTests.ts", "src/lib/testing/testRunner.ts"],
-        "rootCause": "Test cases in stackQueueTests.ts reference wrong tracked data structure constructors, OR factory functions aren't properly exported/bundled",
-        "investigation": "Check if test case setup code uses createTrackedQueue when it should use createTrackedStack and vice versa. Also verify testRunner.ts bundles these factory functions."
-      }
+      "affectedFiles": [
+        "src/lib/execution/sandboxExecutor.ts",
+        "src/lib/testing/trackedQueueBundle.ts"
+      ],
+      "passes": false
     },
     {
-      "id": "BUG-007",
-      "title": "Stack Data Structure Shows Queue Test Cases (Test Case Mismatch)",
-      "description": "When Stack data structure is selected, the test cases displayed include Queue-specific tests like 'Basic Queue Operations', 'Reverse First K Elements', and 'Interleave Two Halves of Queue'. These should only appear for Queue data structure.",
-      "category": "high",
-      "priority": "high",
-      "status": "verified",
-      "passes": false,
-      "actualBehavior": "Selecting Stack shows 5 test cases: 'Balanced Parentheses Checker' (correct), 'Basic Queue Operations' (wrong), 'Reverse First K Elements' (wrong), 'Interleave Two Halves of Queue' (wrong), 'Min Stack with O(1) getMin' (correct).",
-      "expectedBehavior": "Stack should only show Stack-specific test cases. Queue test cases should only appear when Queue data structure is selected.",
+      "id": "BUG-BINARYTREE-001",
+      "category": "Reference Solution",
+      "priority": "critical",
+      "title": "Binary Tree solutions return arrays with null values",
+      "description": "Binary Tree reference solutions return arrays with null values interspersed. Example: 'Expected [null,20,null,30,null,40,...] to equal [20,30,40,50,60,70,80]'. The traversal is including null children in the result.",
       "acceptanceCriteria": [
-        "Stack data structure shows only Stack test cases (no Queue tests)",
-        "Queue data structure shows only Queue test cases (no Stack tests)",
-        "Test case IDs correctly map to data structures (stack- prefix for stack tests, queue- prefix for queue tests)",
-        "Test case filtering in UI correctly separates Stack and Queue tests",
-        "Each data structure shows exactly 3 test cases (easy, medium, hard)"
+        "In-Order Traversal test passes with [20,30,40,50,60,70,80]",
+        "Validate BST Property test passes (returns boolean true)",
+        "Balance an Unbalanced BST test passes with [1,2,3,4,5,6,7]",
+        "All 3 Binary Tree tests show as passed"
       ],
-      "verify": [
-        {
-          "step": 1,
-          "action": "Navigate to Stack and list test cases",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=stack&difficulty=easy' && agent-browser snapshot | grep 'Queue'",
-          "expected": "No Queue-related test names appear"
-        },
-        {
-          "step": 2,
-          "action": "Verify Stack test case count",
-          "command": "agent-browser snapshot | grep -E 'easy|medium|hard' | wc -l",
-          "expected": "Exactly 3 test cases shown"
-        },
-        {
-          "step": 3,
-          "action": "Navigate to Queue and verify no Stack tests",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=queue&difficulty=easy' && agent-browser snapshot | grep 'Stack'",
-          "expected": "No Stack-specific tests like 'Min Stack' appear"
-        },
-        {
-          "step": 4,
-          "action": "Review test case definitions",
-          "command": "grep -n 'id.*:.*stack\\|id.*:.*queue' src/lib/testing/testCases/stackQueueTests.ts | head -20",
-          "expected": "Test IDs properly use 'stack-' and 'queue-' prefixes"
-        }
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=tree",
+        "agent-browser click on Show Solution button",
+        "agent-browser click on Run all tests button",
+        "sleep 2",
+        "agent-browser snapshot -c -d 6",
+        "Verify '3/3 passed' in snapshot text"
       ],
-      "technicalDetails": {
-        "files": [
-          "src/lib/testing/testCases/stackQueueTests.ts",
-          "src/components/TestPanel/TestPanel.tsx"
-        ],
-        "rootCause": "Test case filtering logic doesn't properly separate Stack and Queue tests, OR test IDs are incorrect/inconsistent",
-        "investigation": "Check how TestPanel filters tests by data structure type. Verify test case IDs in stackQueueTests.ts use correct prefixes."
-      }
+      "affectedFiles": [
+        "src/lib/testing/testCases/binaryTreeTests.ts",
+        "src/lib/dataStructures/TrackedBinaryTree.ts"
+      ],
+      "passes": false
     },
     {
-      "id": "BUG-008",
-      "title": "HashMap Tests All Fail with Loop Counter Error - Same as BUG-002",
-      "description": "All HashMap tests (easy, medium, hard) fail with '__loopCount_9 is not defined' error. This is manifestation of BUG-002 affecting HashMap specifically. Tests cannot execute because of instrumentation scoping issue.",
-      "category": "critical",
-      "priority": "high",
-      "status": "verified",
-      "passes": true,
-      "actualBehavior": "HashMap tests fail immediately with '__loopCount_9 is not defined'. All three difficulty levels affected: 'Basic Get/Set Operations', 'Collision Handling with Chaining', 'Character Frequency Counter'.",
-      "expectedBehavior": "HashMap tests execute successfully without loop counter errors. Reference solutions with loops work correctly.",
+      "id": "BUG-GRAPH-001",
+      "category": "Reference Solution",
+      "priority": "critical",
+      "title": "Graph solutions return undefined - graph methods not working",
+      "description": "Graph reference solutions return undefined. The solutions call graph.bfs(start) and graph.hasCycle() but these methods may not be available or working correctly in the sandbox.",
       "acceptanceCriteria": [
-        "HashMap easy test runs without '__loopCount_9' error",
-        "HashMap medium test runs without loop counter errors",
-        "HashMap hard test runs without loop counter errors",
-        "All HashMap reference solutions execute successfully"
+        "BFS Traversal test passes with [A,B,C,D,E]",
+        "Detect Cycle test passes (returns true)",
+        "Dijkstra's Shortest Path test passes with [A,C,B,D,E]",
+        "All 3 Graph tests show as passed"
       ],
-      "verify": [
-        {
-          "step": 1,
-          "action": "Test HashMap easy",
-          "command": "agent-browser goto 'http://localhost:5173/?ds=hashMap&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep '__loopCount'",
-          "expected": "No __loopCount errors"
-        },
-        {
-          "step": 2,
-          "action": "Verify tests pass",
-          "command": "agent-browser snapshot | grep 'Passed\\|passed'",
-          "expected": "Tests show Passed status"
-        }
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=graph",
+        "agent-browser click on Show Solution button",
+        "agent-browser click on Run all tests button",
+        "sleep 2",
+        "agent-browser snapshot -c -d 6",
+        "Verify '3/3 passed' in snapshot text"
       ],
-      "technicalDetails": {
-        "files": ["src/lib/execution/instrumenter.ts", "src/lib/testing/testCases/hashMapTests.ts"],
-        "rootCause": "Same as BUG-002 - loop counter scoping issue in instrumenter.ts",
-        "note": "This will be resolved when BUG-002 is fixed. Tracking separately to verify HashMap specifically."
-      }
+      "technicalNotes": "TrackedGraph class has bfs() and hasCycle() methods in src/lib/dataStructures/TrackedGraph.ts. Verify the bundle exposes these methods correctly.",
+      "affectedFiles": [
+        "src/lib/testing/testCases/graphTests.ts",
+        "src/lib/testing/trackedGraphBundle.ts"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUG-HASHMAP-001",
+      "category": "Reference Solution",
+      "priority": "critical",
+      "title": "HashMap solutions fail with property access errors",
+      "description": "HashMap reference solutions fail with errors like 'Cannot read properties of undefined (reading size)' and 'Cannot read properties of undefined (reading char)'. The HashMap data structure is not properly initialized or accessible.",
+      "acceptanceCriteria": [
+        "Basic Get/Set Operations test passes with [3,7,11]",
+        "Collision Handling with Chaining test passes",
+        "Character Frequency Counter test passes",
+        "All 3 HashMap tests show as passed"
+      ],
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=hashMap",
+        "agent-browser click on Show Solution button",
+        "agent-browser click on Run all tests button",
+        "sleep 2",
+        "agent-browser snapshot -c -d 6",
+        "Verify '3/3 passed' in snapshot text"
+      ],
+      "affectedFiles": [
+        "src/lib/testing/testCases/hashMapTests.ts",
+        "src/lib/testing/trackedHashMapBundle.ts"
+      ],
+      "passes": false
+    },
+    {
+      "id": "ENH-001",
+      "category": "Enhancement",
+      "priority": "low",
+      "title": "Align challenges with popular algorithm platforms",
+      "description": "The code challenges and test cases should resemble popular algorithm and data structure challenges from platforms like Structy, GreatFrontend, and LeetCode. This makes the visualizer more relevant and educational.",
+      "acceptanceCriteria": [
+        "Test case descriptions match common algorithm problem formats",
+        "Problems have clear input/output specifications",
+        "Difficulty levels align with industry standards"
+      ],
+      "stepsToVerify": [
+        "Review test cases in src/lib/testing/testCases/",
+        "Compare with popular platforms like LeetCode and Structy",
+        "Verify problem statements are clear and educational"
+      ],
+      "affectedFiles": ["src/lib/testing/testCases/*.ts"],
+      "passes": false
     }
   ],
+  "knownIssues": {
+    "criticalBlocking": [
+      "BUG-ARRAY-001: Array reference solutions return undefined instead of sorted arrays",
+      "BUG-LINKEDLIST-001: Linked List reference solutions return null",
+      "BUG-STACK-001: Stack and Queue share tests without proper filtering",
+      "BUG-STACK-002: createTrackedStack is not defined in sandbox",
+      "BUG-QUEUE-001: createTrackedQueue is not defined in sandbox",
+      "BUG-BINARYTREE-001: Binary Tree solutions return arrays with null values",
+      "BUG-GRAPH-001: Graph solutions return undefined - graph.bfs() not working",
+      "BUG-HASHMAP-001: HashMap solutions fail with property access errors"
+    ],
+    "uiCleanup": [
+      "UI-001: Two 'Run All Tests' buttons - remove duplicate",
+      "UI-002: 'Skeleton' button should be removed",
+      "UI-003: 'No operation' text shown in Graph visualizer when no steps"
+    ],
+    "visualization": [
+      "BUG-LINKEDLIST-002: LinkedList visualization shows 'null undefined' rendering bug"
+    ],
+    "enhancements": ["ENH-001: Align challenges with popular algorithm platforms"],
+    "fixPriority": [
+      "1. BUG-STACK-001 - Separate Stack and Queue test filtering (foundational)",
+      "2. BUG-STACK-002/BUG-QUEUE-001 - Fix factory functions in sandbox",
+      "3. BUG-ARRAY-001 - Fix Array reference solutions",
+      "4. BUG-LINKEDLIST-001 - Fix Linked List reference solutions",
+      "5. BUG-BINARYTREE-001 - Fix Binary Tree null value issue",
+      "6. BUG-GRAPH-001 - Fix Graph method availability",
+      "7. BUG-HASHMAP-001 - Fix HashMap property access",
+      "8. UI issues (UI-001, UI-002, UI-003)",
+      "9. BUG-LINKEDLIST-002 - Fix visualization rendering",
+      "10. ENH-001 - Align with popular platforms"
+    ]
+  },
   "completionCriteria": {
     "required": [
-      "All critical user stories (BUG-001, BUG-002, BUG-003, BUG-004, BUG-005, BUG-006) must have passes=true",
-      "All high priority user stories (BUG-007, BUG-008) must have passes=true",
+      "All critical user stories must have passes=true",
+      "All high priority user stories must have passes=true",
       "npm run validate must exit with code 0",
       "Test coverage must be >= 80%",
       "No TypeScript errors",
       "No linting errors",
-      "Application loads successfully at localhost:5173 for all data structures",
+      "Application loads successfully at localhost:5175 for all data structures",
       "All data structures load without console errors or blank screens",
       "All reference solutions execute successfully across all data structures and difficulty levels",
       "Agent-browser verification confirms all acceptance criteria met"
@@ -462,14 +370,13 @@
       "Bundle size is under 4MB",
       "All animations maintain 60fps",
       "Visualizations render correctly for all data structures",
-      "No D3/React conflicts or warnings in console",
-      "All test cases show correct pass/fail status (no 'undefined' or 'null' returns)"
+      "No D3/React conflicts or warnings in console"
     ]
   },
   "technicalNotes": {
     "testingApproach": "Use agent-browser for automated UI verification. Each user story includes specific agent-browser commands for validation.",
     "testingMethodology": "Systematic testing performed 2026-01-15 using agent-browser. Each data structure tested with Show Solution + Run All Tests workflow across all difficulty levels.",
-    "devServer": "npm run dev starts development server at http://localhost:5173",
+    "devServer": "npm run dev starts development server at http://localhost:5175",
     "validation": "npm run validate runs all checks: lint + format + typecheck + test",
     "browserRequirements": "Chrome/Chromium required for agent-browser testing",
     "sandboxSecurity": "User code runs in sandboxed iframe with allow-scripts only",
@@ -483,37 +390,21 @@
       "date": "2026-01-15",
       "tool": "agent-browser",
       "coverage": "All 7 data structures tested (Array, LinkedList, Stack, Queue, Binary Tree, Graph, HashMap)",
-      "testPattern": "Navigate to ?ds={structure}&difficulty=easy → Click Show Solution → Click Run All Tests → Check results and console",
-      "bugsVerified": [
-        "BUG-001: Binary Tree page completely blank with EditorPanel error",
-        "BUG-002: Loop counter scoping errors in Stack, Queue, HashMap",
-        "BUG-003: Array reference solutions return undefined",
-        "BUG-004: LinkedList reference solutions return null",
-        "BUG-005: Graph reference solutions return undefined",
-        "BUG-006: createTracked* functions not defined in sandbox",
-        "BUG-007: Stack shows Queue test cases",
-        "BUG-008: HashMap loop counter errors (duplicate of BUG-002)"
+      "testPattern": "Navigate to ?ds={structure}&difficulty=easy -> Click Show Solution -> Click Run All Tests -> Check results and console",
+      "bugsDiscovered": [
+        "Array: undefined returns",
+        "LinkedList: null returns + visualization bug",
+        "Stack/Queue: shared tests not filtered + factory functions undefined",
+        "BinaryTree: null values in arrays",
+        "Graph: undefined returns",
+        "HashMap: property access errors"
       ]
     },
-    "knownIssues": {
-      "criticalBlocking": [
-        "BUG-001: Binary Tree completely broken - must fix first",
-        "BUG-002: Loop counter issue blocks Stack, Queue, HashMap - high impact"
-      ],
-      "referenceImplementations": [
-        "BUG-003, BUG-004, BUG-005: All reference solutions need return statement fixes"
-      ],
-      "testInfrastructure": [
-        "BUG-006: Sandbox bundle missing factory functions",
-        "BUG-007: Test case filtering/organization issue"
-      ],
-      "fixPriority": [
-        "1. BUG-001 (Binary Tree template) - Blocks entire data structure",
-        "2. BUG-002 (Loop counter) - Blocks 3 data structures",
-        "3. BUG-003, BUG-004, BUG-005 (Return statements) - All reference solutions fail",
-        "4. BUG-006 (Factory functions) - Multiple tests fail",
-        "5. BUG-007 (Test organization) - UX issue"
-      ]
+    "rootCauseAnalysis": {
+      "stackQueueSharing": "src/App.tsx lines 75-77 return stackQueueTests for both stack and queue without filtering by test ID prefix",
+      "factoryFunctions": "createTrackedStack and createTrackedQueue may not be exported or bundled for sandbox execution",
+      "undefinedReturns": "Reference solutions may not be properly injected or executed in sandbox iframe",
+      "nullValues": "Binary tree traversal includes null children in result arrays"
     },
     "ralphWiggumBestPractices": {
       "source": "https://www.aihero.dev/tips-for-ai-coding-with-ralph-wiggum",
@@ -526,9 +417,9 @@
         "Living TODO list (PRD is scope definition + progress tracker)",
         "Explicit stop conditions (completionCriteria)",
         "Technical details for implementation guidance",
-        "Session metadata tracking (iteration, date, tools used)"
-      ],
-      "iterationNotes": "Start with BUG-001, mark passes: true when complete. Move to BUG-002, repeat. Ralph loop continues until all passes: true."
+        "Session metadata tracking (iteration, date, tools used)",
+        "Priority-based fix ordering for efficient debugging"
+      ]
     }
   }
 }
