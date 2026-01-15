@@ -600,3 +600,35 @@ All acceptance criteria met:
 - No performance regression in visualizations ✓
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1271 tests passing). Updated prd.json to mark PERF-002 as passes=true.
+
+2026-01-15: Completed PERF-003 (Memoize derived state calculations in TestPanel) - Wrapped the `passedCount` and `totalRun` calculations in `useMemo` to prevent unnecessary recalculations on every render.
+
+Changes made:
+1. **TestPanel.tsx**:
+   - Added `useMemo` to the React imports
+   - Wrapped the `passedCount` and `totalRun` calculations in `useMemo` with `testResults` as the dependency
+   - Changed from two separate statements to a destructured object return for cleaner code
+
+Before:
+```typescript
+const passedCount = Array.from(testResults.values()).filter((r) => r.passed).length;
+const totalRun = testResults.size;
+```
+
+After:
+```typescript
+const { passedCount, totalRun } = useMemo(() => {
+  const results = Array.from(testResults.values());
+  return {
+    passedCount: results.filter((r) => r.passed).length,
+    totalRun: testResults.size,
+  };
+}, [testResults]);
+```
+
+All acceptance criteria met:
+- passedCount and totalRun are wrapped in useMemo ✓
+- Dependencies correctly specify testResults ✓
+- No unnecessary re-renders when test results don't change ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1271 tests passing). Updated prd.json to mark PERF-003 as passes=true.

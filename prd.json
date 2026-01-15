@@ -385,7 +385,7 @@
       ],
       "affectedFiles": ["src/components/TestPanel/TestPanel.tsx"],
       "technicalNotes": "Use `useMemo(() => { const arr = Array.from(testResults.values()); return { passedCount: arr.filter(r => r.passed).length, totalRun: testResults.size }; }, [testResults])`",
-      "passes": false
+      "passes": true
     },
     {
       "id": "PERF-004",

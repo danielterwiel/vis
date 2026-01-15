@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from "react";
+import { useState, useMemo, type ReactElement } from "react";
 import IconCheck from "@tabler/icons-react/dist/esm/icons/IconCheck.mjs";
 import IconX from "@tabler/icons-react/dist/esm/icons/IconX.mjs";
 import IconCircle from "@tabler/icons-react/dist/esm/icons/IconCircle.mjs";
@@ -43,8 +43,13 @@ export function TestPanel({ testCases, onRunTest }: TestPanelProps) {
     return result.passed ? "passed" : "failed";
   };
 
-  const passedCount = Array.from(testResults.values()).filter((r) => r.passed).length;
-  const totalRun = testResults.size;
+  const { passedCount, totalRun } = useMemo(() => {
+    const results = Array.from(testResults.values());
+    return {
+      passedCount: results.filter((r) => r.passed).length,
+      totalRun: testResults.size,
+    };
+  }, [testResults]);
 
   return (
     <div className="test-panel">
