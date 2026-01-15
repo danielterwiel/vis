@@ -3,15 +3,30 @@ import type { TestCase } from "../types";
 /**
  * Binary Tree test cases with 3 difficulty levels (Easy, Medium, Hard)
  * Based on PRD.md lines 528-536
+ *
+ * All test cases use the same input dataset [50, 30, 70, 20, 40, 60, 80] which creates
+ * a balanced BST. This provides consistency and allows users to see how different
+ * tree operations work on the same data.
  */
+
+// Single dataset used across all Binary Tree test cases
+// When inserted in order, creates a balanced BST:
+//          50
+//        /    \
+//       30     70
+//      /  \   /  \
+//     20  40 60  80
+const BINARYTREE_INPUT_DATA = [50, 30, 70, 20, 40, 60, 80];
+const BINARYTREE_SORTED_OUTPUT = [20, 30, 40, 50, 60, 70, 80];
+
 export const binaryTreeTests: TestCase[] = [
   {
     id: "binarytree-traversal-easy",
     name: "In-Order Traversal",
     difficulty: "easy",
     description: "Traverse a binary search tree in sorted order (in-order)",
-    initialData: [50, 30, 70, 20, 40, 60, 80],
-    expectedOutput: [20, 30, 40, 50, 60, 70, 80],
+    initialData: BINARYTREE_INPUT_DATA,
+    expectedOutput: BINARYTREE_SORTED_OUTPUT,
     assertions: `
       expect(result).toEqual([20, 30, 40, 50, 60, 70, 80]);
       expect(result.length).toBe(7);
@@ -73,7 +88,7 @@ export const binaryTreeTests: TestCase[] = [
     name: "Validate BST Property",
     difficulty: "medium",
     description: "Validate whether a binary tree satisfies the BST property (left < root < right)",
-    initialData: [50, 30, 70, 20, 40, 60, 80],
+    initialData: BINARYTREE_INPUT_DATA,
     expectedOutput: true,
     assertions: `
       expect(result).toBe(true);
@@ -106,11 +121,12 @@ export const binaryTreeTests: TestCase[] = [
     id: "binarytree-balance-hard",
     name: "Balance an Unbalanced BST",
     difficulty: "hard",
-    description: "Given an unbalanced BST, create a balanced BST with the same values",
-    initialData: [1, 2, 3, 4, 5, 6, 7], // This creates a right-skewed tree
-    expectedOutput: [1, 2, 3, 4, 5, 6, 7], // Balanced tree still contains same values
+    description:
+      "Given an unbalanced BST (created by inserting values in sorted order), create a balanced BST with the same values",
+    initialData: BINARYTREE_SORTED_OUTPUT, // Inserting in sorted order creates a right-skewed tree
+    expectedOutput: BINARYTREE_SORTED_OUTPUT, // Balanced tree still contains same values
     assertions: `
-      expect(result.sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+      expect(result.sort((a, b) => a - b)).toEqual([20, 30, 40, 50, 60, 70, 80]);
       expect(result.length).toBe(7);
       // Check that the height is more balanced (log n)
       // For 7 nodes, balanced height should be 3 (log2(7) ≈ 2.8)
@@ -142,6 +158,7 @@ export const binaryTreeTests: TestCase[] = [
 }`,
     skeletonCode: `function balanceBST(tree) {
   // TODO: Balance the BST
+  // The input tree is unbalanced (right-skewed from inserting sorted values)
   // Algorithm:
   // 1. Get sorted values via in-order traversal
   // 2. Create new TrackedBinaryTree

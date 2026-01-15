@@ -3,7 +3,17 @@ import type { TestCase } from "../types";
 /**
  * HashMap Test Cases
  * Based on PRD specifications (lines 548-556)
+ *
+ * HashMap tests create their own data structures internally using createTrackedHashMap(),
+ * so they don't use a shared input dataset in the same way as other data structures.
+ * Each test demonstrates different hash map concepts:
+ * - Easy: Basic get/set operations with string keys
+ * - Medium: Collision handling with small capacity
+ * - Hard: Character frequency counting with string input
  */
+
+// Shared string input for character frequency counting
+const HASHMAP_STRING_INPUT = "hello world";
 
 export const hashMapTests: TestCase[] = [
   // Easy: Implement basic get/set
@@ -162,7 +172,7 @@ export const hashMapTests: TestCase[] = [
     difficulty: "hard",
     description:
       "Use a hash map to count character frequencies in a string and return the most frequent character",
-    initialData: "hello world" as string,
+    initialData: HASHMAP_STRING_INPUT as string,
     expectedOutput: { char: "l", count: 3 },
     assertions: `
       expect(result.char).toBe("l");

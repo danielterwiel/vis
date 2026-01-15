@@ -466,3 +466,59 @@ All acceptance criteria met:
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1291 tests passing, increased from 1287 due to 4 new tests). Updated prd.json to mark UI-006 as passes=true.
 
+2026-01-15: Completed DATA-002 (Use single dataset for other data structure test cases) - Unified datasets across all data structure test cases for consistency.
+
+Changes made:
+
+1. **LinkedList** (linkedListTests.ts):
+   - All 3 tests now use `LINKEDLIST_INPUT_DATA = [10, 20, 30, 40, 50]`
+   - Easy: Find element (returns 30)
+   - Medium: Reverse list (returns [50, 40, 30, 20, 10])
+   - Hard: Detect cycle (returns false)
+
+2. **Binary Tree** (binaryTreeTests.ts):
+   - Easy and Medium use `BINARYTREE_INPUT_DATA = [50, 30, 70, 20, 40, 60, 80]` (creates balanced BST)
+   - Hard uses `BINARYTREE_SORTED_OUTPUT = [20, 30, 40, 50, 60, 70, 80]` (sorted order creates unbalanced tree to balance)
+   - All tests produce the same sorted output [20, 30, 40, 50, 60, 70, 80]
+
+3. **Stack** (stackQueueTests.ts):
+   - Easy: Balanced parentheses - uses string input "(()())" (inherently different)
+   - Medium/Hard: Both use `STACK_INPUT_DATA = [5, 2, 8, 1, 9]`
+   - Queue using stacks returns [5, 2, 8, 1, 9] (FIFO order)
+   - Min stack returns 1 (minimum value)
+
+4. **Queue** (stackQueueTests.ts):
+   - All 3 queue tests use `QUEUE_INPUT_DATA = [1, 2, 3, 4, 5, 6]`
+   - 6 elements support interleaving operation (requires even count)
+   - Easy: Basic operations returns [1, 2, 3, 4, 5, 6]
+   - Medium: Reverse first k=3 returns [3, 2, 1, 4, 5, 6]
+   - Hard: Interleave halves returns [1, 4, 2, 5, 3, 6]
+
+5. **Graph** (graphTests.ts):
+   - All 3 tests use `GRAPH_VERTICES = ["A", "B", "C", "D", "E"]`
+   - Different edge configurations for different algorithms
+   - Easy: BFS on undirected tree graph
+   - Medium: Cycle detection on directed graph with cycle (added edge D→E)
+   - Hard: Dijkstra's on weighted directed graph
+
+6. **HashMap** (hashMapTests.ts):
+   - Tests create their own hashmaps internally (documented approach)
+   - Hard test uses `HASHMAP_STRING_INPUT = "hello world"` for frequency counting
+
+Test files updated with dataset consistency tests:
+- linkedListTests.test.ts: Added "should use the same dataset across all difficulty levels" test
+- binaryTreeTests.test.ts: Added "Dataset Consistency" describe block
+- stackQueueTests.test.ts: Added "Dataset Consistency" describe block for stack and queue
+- graphTests.test.ts: Added "should use the same vertex set across all tests" test
+
+All acceptance criteria met:
+- LinkedList test cases use single dataset ✓
+- Stack test cases use single dataset (numeric tests share [5, 2, 8, 1, 9]) ✓
+- Queue test cases use single dataset [1, 2, 3, 4, 5, 6] ✓
+- Binary Tree test cases use related datasets (same values, different order) ✓
+- Graph test cases use single vertex set ["A", "B", "C", "D", "E"] ✓
+- HashMap test cases documented (create internal data structures) ✓
+- All reference solutions still pass ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1297 tests passing, increased from 1291 due to 6 new dataset consistency tests). Updated prd.json to mark DATA-002 as passes=true.
+

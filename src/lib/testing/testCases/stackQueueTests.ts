@@ -3,7 +3,23 @@ import type { TestCase } from "../types";
 /**
  * Stack and Queue test cases with 3 difficulty levels (Easy, Medium, Hard)
  * Based on PRD.md lines 519-526
+ *
+ * Stack tests use different input types based on the problem:
+ * - Easy (balanced parentheses): String input "(()())"
+ * - Medium/Hard (numeric): Single dataset [5, 2, 8, 1, 9]
+ *
+ * Queue tests use a single dataset [1, 2, 3, 4, 5, 6] for consistency.
+ * This 6-element array supports all queue operations including interleaving
+ * which requires an even-length array.
  */
+
+// Single dataset for stack numeric tests (medium, hard)
+const STACK_INPUT_DATA = [5, 2, 8, 1, 9];
+
+// Single dataset for queue tests (easy, medium, hard)
+// Using 6 elements to support interleaving (requires even count)
+const QUEUE_INPUT_DATA = [1, 2, 3, 4, 5, 6];
+
 export const stackQueueTests: TestCase[] = [
   {
     id: "stack-balanced-parentheses-easy",
@@ -60,12 +76,12 @@ export const stackQueueTests: TestCase[] = [
     name: "Basic Queue Operations",
     difficulty: "easy",
     description: "Process a series of enqueue and dequeue operations on a queue",
-    initialData: [1, 2, 3, 4, 5],
-    expectedOutput: [1, 2, 3, 4, 5],
+    initialData: QUEUE_INPUT_DATA,
+    expectedOutput: [1, 2, 3, 4, 5, 6],
     assertions: `
-      expect(result).toEqual([1, 2, 3, 4, 5]);
-      expect(steps.filter(s => s.type === 'enqueue').length).toBe(5);
-      expect(steps.filter(s => s.type === 'dequeue').length).toBe(5);
+      expect(result).toEqual([1, 2, 3, 4, 5, 6]);
+      expect(steps.filter(s => s.type === 'enqueue').length).toBe(6);
+      expect(steps.filter(s => s.type === 'dequeue').length).toBe(6);
     `,
     referenceSolution: `function processQueue(arr) {
   const queue = createTrackedQueue();
@@ -113,10 +129,10 @@ export const stackQueueTests: TestCase[] = [
     difficulty: "medium",
     description:
       "Reverse the first K elements of a queue while maintaining the order of remaining elements",
-    initialData: [1, 2, 3, 4, 5],
-    expectedOutput: [3, 2, 1, 4, 5],
+    initialData: QUEUE_INPUT_DATA,
+    expectedOutput: [3, 2, 1, 4, 5, 6],
     assertions: `
-      expect(result).toEqual([3, 2, 1, 4, 5]);
+      expect(result).toEqual([3, 2, 1, 4, 5, 6]);
       expect(steps.filter(s => s.type === 'enqueue').length).toBeGreaterThan(0);
       expect(steps.filter(s => s.type === 'dequeue').length).toBeGreaterThan(0);
     `,
@@ -177,7 +193,7 @@ export const stackQueueTests: TestCase[] = [
       "Move the remaining (n-k) elements to maintain their order",
     ],
     acceptanceCriteria: [
-      "Function returns [3, 2, 1, 4, 5] for input [1, 2, 3, 4, 5] with k=3",
+      "Function returns [3, 2, 1, 4, 5, 6] for input [1, 2, 3, 4, 5, 6] with k=3",
       "Both enqueue and dequeue operations are captured",
       "Result array matches expected output",
     ],
@@ -188,7 +204,7 @@ export const stackQueueTests: TestCase[] = [
     difficulty: "hard",
     description:
       "Interleave the first and second halves of a queue (e.g., [1,2,3,4,5,6] becomes [1,4,2,5,3,6])",
-    initialData: [1, 2, 3, 4, 5, 6],
+    initialData: QUEUE_INPUT_DATA,
     expectedOutput: [1, 4, 2, 5, 3, 6],
     assertions: `
       expect(result).toEqual([1, 4, 2, 5, 3, 6]);
@@ -251,10 +267,10 @@ export const stackQueueTests: TestCase[] = [
     name: "Queue Using Two Stacks",
     difficulty: "medium",
     description: "Implement queue operations (enqueue, dequeue) using only two stacks",
-    initialData: [1, 2, 3, 4, 5],
-    expectedOutput: [1, 2, 3, 4, 5],
+    initialData: STACK_INPUT_DATA,
+    expectedOutput: [5, 2, 8, 1, 9],
     assertions: `
-      expect(result).toEqual([1, 2, 3, 4, 5]);
+      expect(result).toEqual([5, 2, 8, 1, 9]);
       expect(steps.filter(s => s.type === 'push').length).toBeGreaterThan(0);
       expect(steps.filter(s => s.type === 'pop').length).toBeGreaterThan(0);
     `,
@@ -304,7 +320,7 @@ export const stackQueueTests: TestCase[] = [
     acceptanceCriteria: [
       "Function returns elements in FIFO order (same as input)",
       "Only stack operations (push, pop) are used",
-      "Result array matches expected output [1, 2, 3, 4, 5]",
+      "Result array matches expected output [5, 2, 8, 1, 9]",
     ],
   },
   {
@@ -312,7 +328,7 @@ export const stackQueueTests: TestCase[] = [
     name: "Min Stack with O(1) getMin",
     difficulty: "hard",
     description: "Implement a stack that supports push, pop, and getMin in O(1) time",
-    initialData: [5, 2, 8, 1, 9],
+    initialData: STACK_INPUT_DATA,
     expectedOutput: 1,
     assertions: `
       expect(result).toBe(1);

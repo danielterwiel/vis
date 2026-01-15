@@ -205,11 +205,11 @@ describe("stackQueueTests", () => {
 
       it("should have array as input", () => {
         expect(Array.isArray(test?.initialData)).toBe(true);
-        expect(test?.initialData).toEqual([1, 2, 3, 4, 5]);
+        expect(test?.initialData).toEqual([5, 2, 8, 1, 9]);
       });
 
       it("should expect FIFO order as output", () => {
-        expect(test?.expectedOutput).toEqual([1, 2, 3, 4, 5]);
+        expect(test?.expectedOutput).toEqual([5, 2, 8, 1, 9]);
       });
 
       it("should use two stacks", () => {
@@ -229,11 +229,11 @@ describe("stackQueueTests", () => {
 
       it("should have array as input", () => {
         expect(Array.isArray(test?.initialData)).toBe(true);
-        expect(test?.initialData).toEqual([1, 2, 3, 4, 5]);
+        expect(test?.initialData).toEqual([1, 2, 3, 4, 5, 6]);
       });
 
       it("should expect FIFO order as output", () => {
-        expect(test?.expectedOutput).toEqual([1, 2, 3, 4, 5]);
+        expect(test?.expectedOutput).toEqual([1, 2, 3, 4, 5, 6]);
       });
 
       it("should use queue data structure", () => {
@@ -254,11 +254,11 @@ describe("stackQueueTests", () => {
 
       it("should have array as input", () => {
         expect(Array.isArray(test?.initialData)).toBe(true);
-        expect(test?.initialData).toEqual([1, 2, 3, 4, 5]);
+        expect(test?.initialData).toEqual([1, 2, 3, 4, 5, 6]);
       });
 
       it("should expect reversed first k elements as output", () => {
-        expect(test?.expectedOutput).toEqual([3, 2, 1, 4, 5]);
+        expect(test?.expectedOutput).toEqual([3, 2, 1, 4, 5, 6]);
       });
 
       it("should use queue and stack", () => {
@@ -317,6 +317,24 @@ describe("stackQueueTests", () => {
       it("should verify push operations", () => {
         expect(test?.assertions).toContain("push");
       });
+    });
+  });
+
+  describe("Dataset Consistency", () => {
+    it("should use the same dataset for stack numeric tests (medium, hard)", () => {
+      const stackMedium = stackQueueTests.find((t) => t.id === "stack-queue-using-stacks-medium");
+      const stackHard = stackQueueTests.find((t) => t.id === "stack-min-stack-hard");
+      expect(stackMedium?.initialData).toEqual([5, 2, 8, 1, 9]);
+      expect(stackHard?.initialData).toEqual([5, 2, 8, 1, 9]);
+    });
+
+    it("should use the same dataset for all queue tests", () => {
+      const queueEasy = stackQueueTests.find((t) => t.id === "queue-basic-operations-easy");
+      const queueMedium = stackQueueTests.find((t) => t.id === "queue-reverse-first-k-medium");
+      const queueHard = stackQueueTests.find((t) => t.id === "queue-interleave-halves-hard");
+      expect(queueEasy?.initialData).toEqual([1, 2, 3, 4, 5, 6]);
+      expect(queueMedium?.initialData).toEqual([1, 2, 3, 4, 5, 6]);
+      expect(queueHard?.initialData).toEqual([1, 2, 3, 4, 5, 6]);
     });
   });
 });

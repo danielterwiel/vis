@@ -3,14 +3,21 @@ import type { TestCase } from "../types";
 /**
  * LinkedList test cases with 3 difficulty levels (Easy, Medium, Hard)
  * Based on PRD.md lines 509-516
+ *
+ * All test cases use the same input dataset [10, 20, 30, 40, 50] for consistency.
+ * This allows users to see how different linked list operations work on the same data.
  */
+
+// Single dataset used across all LinkedList test cases
+const LINKEDLIST_INPUT_DATA = [10, 20, 30, 40, 50];
+
 export const linkedListTests: TestCase[] = [
   {
     id: "linkedlist-find-easy",
     name: "Find Element in List",
     difficulty: "easy",
     description: "Traverse the list and find a specific element",
-    initialData: [10, 20, 30, 40, 50],
+    initialData: LINKEDLIST_INPUT_DATA,
     additionalArgs: [30], // target value to search for
     expectedOutput: 30,
     assertions: `
@@ -45,10 +52,10 @@ export const linkedListTests: TestCase[] = [
     name: "Reverse Linked List",
     difficulty: "medium",
     description: "Reverse a linked list in place",
-    initialData: [1, 2, 3, 4, 5],
-    expectedOutput: [5, 4, 3, 2, 1],
+    initialData: LINKEDLIST_INPUT_DATA,
+    expectedOutput: [50, 40, 30, 20, 10],
     assertions: `
-      expect(result).toEqual([5, 4, 3, 2, 1]);
+      expect(result).toEqual([50, 40, 30, 20, 10]);
       expect(steps.filter(s => s.type === 'reverse').length).toBeGreaterThan(0);
     `,
     referenceSolution: `function reverseList(list) {
@@ -80,7 +87,7 @@ export const linkedListTests: TestCase[] = [
     name: "Detect and Handle Cycle",
     difficulty: "hard",
     description: "Detect if the linked list has a cycle",
-    initialData: [1, 2, 3, 4, 5],
+    initialData: LINKEDLIST_INPUT_DATA,
     expectedOutput: false,
     assertions: `
       expect(result).toBe(false);

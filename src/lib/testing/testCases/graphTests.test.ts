@@ -229,4 +229,14 @@ describe("graphTests", () => {
       }
     });
   });
+
+  describe("Dataset Consistency", () => {
+    it("should use the same vertex set across all tests", () => {
+      const expectedVertices = ["A", "B", "C", "D", "E"];
+      for (const test of graphTests) {
+        const data = test.initialData as { vertices: string[] };
+        expect(data.vertices).toEqual(expectedVertices);
+      }
+    });
+  });
 });

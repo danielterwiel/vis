@@ -208,4 +208,25 @@ describe("binaryTreeTests", () => {
       expect(hard?.referenceSolution.length).toBeGreaterThan(medium?.referenceSolution.length ?? 0);
     });
   });
+
+  describe("Dataset Consistency", () => {
+    it("should use related datasets across all difficulty levels", () => {
+      const [easy, medium, hard] = binaryTreeTests;
+
+      // Easy and Medium use the same dataset (balanced BST)
+      expect(easy?.initialData).toEqual([50, 30, 70, 20, 40, 60, 80]);
+      expect(medium?.initialData).toEqual([50, 30, 70, 20, 40, 60, 80]);
+
+      // Hard uses sorted order of the same values (creates unbalanced tree)
+      expect(hard?.initialData).toEqual([20, 30, 40, 50, 60, 70, 80]);
+    });
+
+    it("should have consistent expected outputs based on the dataset", () => {
+      const [easy, , hard] = binaryTreeTests;
+
+      // Both easy and hard produce the same sorted output
+      expect(easy?.expectedOutput).toEqual([20, 30, 40, 50, 60, 70, 80]);
+      expect(hard?.expectedOutput).toEqual([20, 30, 40, 50, 60, 70, 80]);
+    });
+  });
 });

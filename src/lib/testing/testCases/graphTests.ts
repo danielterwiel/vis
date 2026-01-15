@@ -5,7 +5,16 @@ import type { TestCase } from "../types";
  * - Easy: BFS traversal
  * - Medium: Detect cycle in directed graph
  * - Hard: Dijkstra's shortest path
+ *
+ * All test cases use the same vertex set ["A", "B", "C", "D", "E"] for consistency.
+ * Different edge configurations are used to demonstrate different graph properties:
+ * - Easy: Undirected tree structure for BFS
+ * - Medium: Directed graph with cycle (B -> C -> D -> B)
+ * - Hard: Weighted directed graph for shortest path
  */
+
+// Single vertex set used across all Graph test cases
+const GRAPH_VERTICES = ["A", "B", "C", "D", "E"];
 
 export const graphTests: TestCase[] = [
   // ========== EASY: BFS Traversal ==========
@@ -15,7 +24,7 @@ export const graphTests: TestCase[] = [
     difficulty: "easy",
     description: "Traverse a graph using Breadth-First Search from a starting vertex",
     initialData: {
-      vertices: ["A", "B", "C", "D", "E"],
+      vertices: GRAPH_VERTICES,
       edges: [
         { from: "A", to: "B" },
         { from: "A", to: "C" },
@@ -62,12 +71,13 @@ export const graphTests: TestCase[] = [
     difficulty: "medium",
     description: "Detect if a directed graph contains a cycle",
     initialData: {
-      vertices: ["A", "B", "C", "D"],
+      vertices: GRAPH_VERTICES,
       edges: [
         { from: "A", to: "B", directed: true },
         { from: "B", to: "C", directed: true },
         { from: "C", to: "D", directed: true },
         { from: "D", to: "B", directed: true }, // Creates cycle: B -> C -> D -> B
+        { from: "D", to: "E", directed: true }, // E is reachable but not in cycle
       ],
       directed: true,
     },
@@ -108,7 +118,7 @@ export const graphTests: TestCase[] = [
     difficulty: "hard",
     description: "Find the shortest path between two vertices using Dijkstra's algorithm",
     initialData: {
-      vertices: ["A", "B", "C", "D", "E"],
+      vertices: GRAPH_VERTICES,
       edges: [
         { from: "A", to: "B", weight: 4 },
         { from: "A", to: "C", weight: 2 },

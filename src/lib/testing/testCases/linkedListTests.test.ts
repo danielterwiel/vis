@@ -210,16 +210,23 @@ describe("linkedListTests", () => {
       const test = linkedListTests[1];
       expect(test?.id).toBe("linkedlist-reverse-medium");
       expect(test?.name).toContain("Reverse");
-      expect(test?.initialData).toEqual([1, 2, 3, 4, 5]);
-      expect(test?.expectedOutput).toEqual([5, 4, 3, 2, 1]);
+      expect(test?.initialData).toEqual([10, 20, 30, 40, 50]);
+      expect(test?.expectedOutput).toEqual([50, 40, 30, 20, 10]);
     });
 
     it("Hard: Detect Cycle - should return boolean", () => {
       const test = linkedListTests[2];
       expect(test?.id).toBe("linkedlist-cycle-hard");
       expect(test?.name).toContain("Cycle");
-      expect(test?.initialData).toEqual([1, 2, 3, 4, 5]);
+      expect(test?.initialData).toEqual([10, 20, 30, 40, 50]);
       expect(test?.expectedOutput).toBe(false);
+    });
+
+    it("should use the same dataset across all difficulty levels", () => {
+      const [easy, medium, hard] = linkedListTests;
+      expect(easy?.initialData).toEqual([10, 20, 30, 40, 50]);
+      expect(medium?.initialData).toEqual([10, 20, 30, 40, 50]);
+      expect(hard?.initialData).toEqual([10, 20, 30, 40, 50]);
     });
   });
 

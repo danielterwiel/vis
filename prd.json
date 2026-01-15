@@ -141,7 +141,10 @@
         "agent-browser snapshot -i",
         "Verify badge shows 'hard' not 'easy'"
       ],
-      "affectedFiles": ["src/components/TestPanel/TestPanel.tsx", "src/components/TestPanel/TestPanel.css"],
+      "affectedFiles": [
+        "src/components/TestPanel/TestPanel.tsx",
+        "src/components/TestPanel/TestPanel.css"
+      ],
       "passes": true
     },
     {
@@ -212,7 +215,7 @@
         "src/lib/testing/testCases/graphTests.ts",
         "src/lib/testing/testCases/hashMapTests.ts"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUG-001",
