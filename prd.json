@@ -53,7 +53,7 @@
         "Verify no 'Visualization' title heading in snapshot"
       ],
       "affectedFiles": ["src/components/VisualizationPanel/VisualizationPanel.tsx"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "UI-003",

@@ -55,7 +55,8 @@ describe("App", () => {
   it("renders the visualization panel after initialization", async () => {
     render(<App />);
     await waitFor(() => {
-      expect(screen.getByText("Visualization")).toBeDefined();
+      // Check for the mode selector title which is part of the visualization panel
+      expect(screen.getByText("Visualization Mode")).toBeDefined();
     });
   });
 

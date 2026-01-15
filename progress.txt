@@ -232,3 +232,19 @@ All acceptance criteria met:
 - Visualization panel still functions correctly (all 1290 tests pass)
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1290 tests passing). Updated prd.json to mark UI-001 as passes=true and corrected affectedFiles to ModeSelector.tsx.
+
+2026-01-15: Completed UI-002 (Remove Visualization title) - Removed the 'Visualization' h2 heading from the visualization panel. The panel's purpose is self-evident from its content.
+
+Changes made:
+1. **VisualizationPanel.tsx**: Removed the `<h2>Visualization</h2>` heading from the visualization-header div (line 420)
+2. **VisualizationPanel.test.tsx**: Updated test "renders the visualization panel" to check for "Visualization Mode" instead of the removed "Visualization" heading
+3. **App.test.tsx**: Updated test "renders the visualization panel after initialization" to check for "Visualization Mode" instead of the removed "Visualization" heading
+4. **global.css**: Removed unused `.visualization-header h2` styling rules (both regular and media query versions) since the h2 element no longer exists
+
+All acceptance criteria met:
+- No 'Visualization' heading appears in the visualization panel
+- The h2 element has been removed (not just the container)
+- Visualization panel layout adjusts appropriately (controls remain in the header)
+- All 1290 tests pass
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1290 tests passing). Updated prd.json to mark UI-002 as passes=true.

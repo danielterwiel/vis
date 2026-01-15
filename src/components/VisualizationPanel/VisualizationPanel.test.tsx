@@ -25,7 +25,8 @@ describe("VisualizationPanel", () => {
 
   it("renders the visualization panel", () => {
     render(<VisualizationPanel />);
-    expect(screen.getByText("Visualization")).toBeDefined();
+    // Check that the panel renders by looking for the mode selector title
+    expect(screen.getByText("Visualization Mode")).toBeInTheDocument();
   });
 
   it("renders ModeSelector component", () => {

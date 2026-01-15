@@ -258,11 +258,6 @@ body {
   border-bottom: 1px solid #d0d0d0;
 }
 
-.visualization-header h2 {
-  font-size: 1.2rem;
-  margin: 0 0 1rem 0;
-}
-
 .visualization-controls {
   display: flex;
   gap: 0.5rem;
@@ -479,8 +474,7 @@ body {
     font-size: 1.2rem;
   }
 
-  .editor-header h2,
-  .visualization-header h2 {
+  .editor-header h2 {
     font-size: 1rem;
   }
 

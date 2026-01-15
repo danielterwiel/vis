@@ -417,7 +417,6 @@ function VisualizationPanel() {
         hasSteps={userCodeSteps.length > 0}
       />
       <div className="visualization-header">
-        <h2>Visualization</h2>
         <div className="visualization-controls">
           <button
             onClick={() => setIsAnimating(!isAnimating)}
