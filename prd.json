@@ -100,7 +100,7 @@
         "src/lib/testing/testCases/arrayTests.ts",
         "src/lib/execution/sandboxExecutor.ts"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUG-LINKEDLIST-001",

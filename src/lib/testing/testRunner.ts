@@ -135,8 +135,22 @@ export async function runTest(
   const startTime = Date.now();
 
   try {
-    // Step 1: Extract the main function name to call
-    const functionName = extractMainFunction(userCode);
+    // Step 1: Determine the function name to call
+    // First, try to get the expected function name from the test case's reference solution
+    // This ensures we call the correct function when multiple functions are defined
+    const expectedFunctionName = testCase.referenceSolution
+      ? extractMainFunction(testCase.referenceSolution)
+      : null;
+
+    // Check if the user code contains the expected function
+    const userFunctionName = extractMainFunction(userCode);
+
+    // Use the expected function name if it exists in user code, otherwise use the first function found
+    const functionName =
+      expectedFunctionName && userCode.includes(`function ${expectedFunctionName}`)
+        ? expectedFunctionName
+        : userFunctionName;
+
     if (!functionName) {
       return {
         testId: testCase.id,

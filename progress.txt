@@ -53,3 +53,28 @@ All acceptance criteria verified with agent-browser:
 Files modified: src/lib/execution/stepCapture.ts, src/lib/execution/sandbox.ts, src/lib/testing/trackedStackBundle.ts, src/lib/testing/trackedQueueBundle.ts, src/lib/testing/testRunner.ts, src/lib/testing/expectBundle.ts, src/components/EditorPanel/EditorPanel.tsx, src/lib/testing/testCases/stackQueueTests.ts, src/lib/execution/stepCapture.test.ts
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1294 tests passing, increased from 1290). Updated prd.json to mark BUG-STACK-002 and BUG-QUEUE-001 as passes=true.
+
+2026-01-15: Completed BUG-ARRAY-001 (Array reference solutions return undefined) - Fixed critical bug where Array tests failed when using reference solutions. Two root causes identified and fixed:
+
+1. **Show Solution only loaded one reference solution**: When clicking "Show Solution", only the currently selected difficulty's reference solution was loaded. This meant running "Run All Tests" would use the same code for all difficulty levels, but each test expects a different function (sort, bubbleSort, quickSort). Fixed by modifying EditorPanel.tsx to load ALL reference solutions for the data structure when "Show Solution" is clicked.
+
+2. **Test runner called wrong function for each test**: The testRunner extracted the first function name from user code and called it for ALL tests. Fixed by modifying testRunner.ts to determine the expected function name from each test case's reference solution and call that specific function if it exists in the user code.
+
+Root cause analysis:
+- Easy test expected `function sort(arr)` → uses built-in `.sort()`
+- Medium test expected `function bubbleSort(arr)` → requires swap operations to be captured
+- Hard test expected `function quickSort(arr, low, high)` → requires partition operations to be captured
+- Each test has different assertions that check for specific operation types (swaps, partitions)
+
+Files modified:
+- src/components/EditorPanel/EditorPanel.tsx: Added `getAllTestCasesForDataStructure()` callback and modified reference solution loading to concatenate all solutions for the data structure
+- src/lib/testing/testRunner.ts: Modified `runTest()` to extract expected function name from test case's reference solution and call correct function
+- src/components/EditorPanel/EditorPanel.test.tsx: Updated tests to expect all reference solutions when entering reference mode
+
+All acceptance criteria verified with agent-browser:
+- Array Sort Small Array test passes with expected output [1,2,5,8,9]
+- Array Bubble Sort test passes with expected output [11,12,22,25,34,64,90]
+- Array Quick Sort test passes with expected output [10,30,40,50,70,80,90]
+- All 3 Array tests show as passed (3/3 passed)
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1294 tests passing). Updated prd.json to mark BUG-ARRAY-001 as passes=true.

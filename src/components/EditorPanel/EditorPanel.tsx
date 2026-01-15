@@ -87,6 +87,28 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
     resetHints();
   }, [selectedDataStructure, selectedDifficulty, setUserCode, setCodeStatus, resetHints]);
 
+  // Get all test cases for the current data structure
+  const getAllTestCasesForDataStructure = useCallback(() => {
+    switch (selectedDataStructure) {
+      case "array":
+        return arrayTests;
+      case "linkedList":
+        return linkedListTests;
+      case "stack":
+        return stackQueueTests.filter((t) => t.id.startsWith("stack-"));
+      case "queue":
+        return stackQueueTests.filter((t) => t.id.startsWith("queue-"));
+      case "tree":
+        return binaryTreeTests;
+      case "graph":
+        return graphTests;
+      case "hashMap":
+        return hashMapTests;
+      default:
+        return arrayTests;
+    }
+  }, [selectedDataStructure]);
+
   // Load reference solution when visualization mode changes to "reference"
   useEffect(() => {
     const prevMode = prevModeRef.current;
@@ -94,13 +116,19 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
 
     // Only load reference when switching TO reference mode (not when already in it)
     if (visualizationMode === "reference" && prevMode !== "reference") {
-      const testCase = getCurrentTestCase();
-      if (testCase?.referenceSolution) {
-        setUserCode(testCase.referenceSolution);
+      // Load ALL reference solutions for this data structure so all tests can pass
+      const allTestCases = getAllTestCasesForDataStructure();
+      const allSolutions = allTestCases
+        .map((tc) => tc.referenceSolution)
+        .filter(Boolean)
+        .join("\n\n");
+
+      if (allSolutions) {
+        setUserCode(allSolutions);
         setCodeStatus("complete");
       }
     }
-  }, [visualizationMode, getCurrentTestCase, setUserCode, setCodeStatus]);
+  }, [visualizationMode, getAllTestCasesForDataStructure, setUserCode, setCodeStatus]);
 
   // Update code status when user edits code
   const handleCodeChange = (newCode: string) => {
