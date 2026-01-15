@@ -22,6 +22,36 @@
 }
 
 /* Node styles */
+.node-rect {
+  fill: #646cff;
+  stroke: #535bf2;
+  stroke-width: 2;
+  transition:
+    fill 0.3s ease,
+    stroke 0.3s ease;
+}
+
+.node-rect.active {
+  fill: #4ade80;
+  stroke: #22c55e;
+}
+
+.node-rect.comparing {
+  fill: #fb923c;
+  stroke: #f97316;
+}
+
+.node-rect.deleted {
+  fill: #ef4444;
+  stroke: #dc2626;
+}
+
+.node-rect.found {
+  fill: #a78bfa;
+  stroke: #8b5cf6;
+}
+
+/* Legacy circle support (if needed) */
 .node-circle {
   fill: #646cff;
   stroke: #535bf2;
@@ -69,4 +99,35 @@
 .arrow {
   stroke: #646cff;
   stroke-width: 2;
+}
+
+.null-arrow {
+  stroke: #888;
+  stroke-width: 2;
+  stroke-dasharray: 4, 4;
+}
+
+.null-pointer {
+  fill: #888;
+  font-size: 14px;
+  font-weight: 500;
+  font-style: italic;
+  pointer-events: none;
+}
+
+/* Node labels (HEAD/TAIL) */
+.node-label {
+  fill: #aaa;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+}
+
+.head-label {
+  fill: #4ade80;
+}
+
+.tail-label {
+  fill: #fb923c;
 }

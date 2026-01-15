@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
+import { LinkedListVisualizer } from "../visualizers/LinkedListVisualizer";
 import type { DataStructureType, VisualizationStep } from "../../store/useAppStore";
+import type { LinkedListNode } from "../../lib/dataStructures/TrackedLinkedList";
 import "./ComparisonView.css";
 
 interface ComparisonViewProps {
@@ -38,7 +40,16 @@ export function ComparisonView({
             isAnimating={isAnimating}
           />
         );
-      // TODO: Add other data structure visualizers
+      case "linkedList":
+        return (
+          <LinkedListVisualizer
+            data={data as LinkedListNode<unknown> | null}
+            steps={steps}
+            currentStepIndex={stepIndex}
+            isAnimating={isAnimating}
+          />
+        );
+      // TODO: Add other data structure visualizers (Stack, Queue, Tree, Graph, HashMap)
       default:
         return (
           <ArrayVisualizer

@@ -16,6 +16,8 @@ interface NodeData {
   index: number;
   x: number;
   y: number;
+  isHead?: boolean;
+  isTail?: boolean;
 }
 
 export function LinkedListVisualizer({
@@ -39,6 +41,8 @@ export function LinkedListVisualizer({
         index,
         x: 0, // Will be calculated
         y: 0,
+        isHead: index === 0,
+        isTail: current.next === null || current.next === undefined,
       });
       current = current.next || null;
       index++;
@@ -46,10 +50,11 @@ export function LinkedListVisualizer({
 
     // Calculate node positions (horizontal layout)
     const width = 800;
-    const height = 200;
-    const nodeRadius = 30;
-    const nodeSpacing = 120;
-    const startX = 50;
+    const height = 300; // Increased height for labels
+    const nodeWidth = 70;
+    const nodeHeight = 50;
+    const nodeSpacing = 140;
+    const startX = 80;
     const centerY = height / 2;
 
     nodes.forEach((node, i) => {
@@ -104,16 +109,16 @@ export function LinkedListVisualizer({
     // Animation duration
     const duration = isAnimating ? 500 : 0;
 
-    // Draw arrows between nodes
+    // Draw arrows between nodes (pointer lines)
     const arrowData = nodes.slice(0, -1).map((node, i) => {
       const nextNode = nodes[i + 1];
       if (!nextNode) {
         throw new Error("Unexpected missing node");
       }
       return {
-        x1: node.x + nodeRadius,
+        x1: node.x + nodeWidth / 2,
         y1: node.y,
-        x2: nextNode.x - nodeRadius,
+        x2: nextNode.x - nodeWidth / 2,
         y2: nextNode.y,
         index: i,
       };
@@ -146,7 +151,79 @@ export function LinkedListVisualizer({
     // Exit
     arrows.exit().transition().duration(duration).style("opacity", 0).remove();
 
-    // Draw nodes
+    // Draw null pointer at the end
+    if (nodes.length > 0) {
+      const lastNode = nodes[nodes.length - 1];
+      if (!lastNode) {
+        throw new Error("Unexpected missing last node");
+      }
+      const nullData = [
+        {
+          x: lastNode.x + nodeWidth / 2 + 40,
+          y: lastNode.y,
+        },
+      ];
+
+      const nullPointers = mainGroup
+        .selectAll<SVGTextElement, (typeof nullData)[number]>("text.null-pointer")
+        .data(nullData);
+
+      nullPointers
+        .enter()
+        .append("text")
+        .attr("class", "null-pointer")
+        .attr("x", (d) => d.x)
+        .attr("y", (d) => d.y)
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.3em")
+        .style("opacity", 0)
+        .text("null")
+        .merge(nullPointers)
+        .transition()
+        .duration(duration)
+        .attr("x", (d) => d.x)
+        .attr("y", (d) => d.y)
+        .style("opacity", 1);
+
+      nullPointers.exit().transition().duration(duration).style("opacity", 0).remove();
+
+      // Draw arrow from last node to null
+      const nullArrowData = [
+        {
+          x1: lastNode.x + nodeWidth / 2,
+          y1: lastNode.y,
+          x2: lastNode.x + nodeWidth / 2 + 25,
+          y2: lastNode.y,
+        },
+      ];
+
+      const nullArrows = mainGroup
+        .selectAll<SVGLineElement, (typeof nullArrowData)[number]>("line.null-arrow")
+        .data(nullArrowData);
+
+      nullArrows
+        .enter()
+        .append("line")
+        .attr("class", "null-arrow")
+        .attr("x1", (d) => d.x1)
+        .attr("y1", (d) => d.y1)
+        .attr("x2", (d) => d.x1)
+        .attr("y2", (d) => d.y1)
+        .attr("stroke", "#888")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "4,4")
+        .merge(nullArrows)
+        .transition()
+        .duration(duration)
+        .attr("x1", (d) => d.x1)
+        .attr("y1", (d) => d.y1)
+        .attr("x2", (d) => d.x2)
+        .attr("y2", (d) => d.y2);
+
+      nullArrows.exit().transition().duration(duration).style("opacity", 0).remove();
+    }
+
+    // Draw nodes as rectangles
     const nodeGroups = mainGroup
       .selectAll<SVGGElement, NodeData>("g.node")
       .data(nodes, (d) => `node-${d.index}-${d.value}`);
@@ -159,12 +236,19 @@ export function LinkedListVisualizer({
       .attr("transform", (d) => `translate(${d.x},${d.y})`);
 
     enterGroups
-      .append("circle")
-      .attr("r", 0)
-      .attr("class", "node-circle")
+      .append("rect")
+      .attr("width", 0)
+      .attr("height", 0)
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("class", "node-rect")
+      .attr("rx", 4)
       .transition()
       .duration(duration)
-      .attr("r", nodeRadius);
+      .attr("width", nodeWidth)
+      .attr("height", nodeHeight)
+      .attr("x", -nodeWidth / 2)
+      .attr("y", -nodeHeight / 2);
 
     enterGroups
       .append("text")
@@ -188,6 +272,32 @@ export function LinkedListVisualizer({
       .duration(duration)
       .style("opacity", 1);
 
+    // Add head label
+    enterGroups
+      .filter((d) => d.isHead === true)
+      .append("text")
+      .attr("class", "node-label head-label")
+      .attr("text-anchor", "middle")
+      .attr("dy", "55px")
+      .style("opacity", 0)
+      .text("HEAD")
+      .transition()
+      .duration(duration)
+      .style("opacity", 1);
+
+    // Add tail label
+    enterGroups
+      .filter((d) => d.isTail === true)
+      .append("text")
+      .attr("class", "node-label tail-label")
+      .attr("text-anchor", "middle")
+      .attr("dy", "70px")
+      .style("opacity", 0)
+      .text("TAIL")
+      .transition()
+      .duration(duration)
+      .style("opacity", 1);
+
     // Update
     const mergedGroups = enterGroups.merge(nodeGroups);
 
@@ -197,16 +307,19 @@ export function LinkedListVisualizer({
       .attr("transform", (d) => `translate(${d.x},${d.y})`);
 
     mergedGroups
-      .select("circle")
+      .select("rect")
       .transition()
       .duration(duration)
-      .attr("r", nodeRadius)
+      .attr("width", nodeWidth)
+      .attr("height", nodeHeight)
+      .attr("x", -nodeWidth / 2)
+      .attr("y", -nodeHeight / 2)
       .attr("class", (d) => {
-        if (deletedIndices.has(d.index)) return "node-circle deleted";
-        if (foundIndices.has(d.index)) return "node-circle found";
-        if (compareIndices.has(d.index)) return "node-circle comparing";
-        if (highlightIndices.has(d.index)) return "node-circle active";
-        return "node-circle";
+        if (deletedIndices.has(d.index)) return "node-rect deleted";
+        if (foundIndices.has(d.index)) return "node-rect found";
+        if (compareIndices.has(d.index)) return "node-rect comparing";
+        if (highlightIndices.has(d.index)) return "node-rect active";
+        return "node-rect";
       });
 
     mergedGroups
@@ -220,6 +333,20 @@ export function LinkedListVisualizer({
       .transition()
       .duration(duration)
       .text((d) => `[${d.index}]`);
+
+    // Update head label
+    mergedGroups
+      .select("text.head-label")
+      .transition()
+      .duration(duration)
+      .style("opacity", (d) => (d.isHead ? 1 : 0));
+
+    // Update tail label
+    mergedGroups
+      .select("text.tail-label")
+      .transition()
+      .duration(duration)
+      .style("opacity", (d) => (d.isTail ? 1 : 0));
 
     // Exit
     nodeGroups.exit().transition().duration(duration).style("opacity", 0).remove();

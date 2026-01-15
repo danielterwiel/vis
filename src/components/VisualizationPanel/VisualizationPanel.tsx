@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import useAppStore from "../../store/useAppStore";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
+import { LinkedListVisualizer } from "../visualizers/LinkedListVisualizer";
 import { arrayTests } from "../../lib/testing/testCases";
 import { ModeSelector } from "./ModeSelector";
 import { ComparisonView } from "./ComparisonView";
@@ -213,7 +214,16 @@ function VisualizationPanel() {
             isAnimating={isAnimating}
           />
         );
-      // TODO: Add other data structure visualizers
+      case "linkedList":
+        return (
+          <LinkedListVisualizer
+            data={currentData}
+            steps={currentSteps}
+            currentStepIndex={currentStepIndex}
+            isAnimating={isAnimating}
+          />
+        );
+      // TODO: Add other data structure visualizers (Stack, Queue, Tree, Graph, HashMap)
       default:
         return (
           <ArrayVisualizer
