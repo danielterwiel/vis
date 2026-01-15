@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "project": {
     "name": "Data Structure Visualizer",
     "description": "CodePen-like application for visualizing data structures with real-time animated visualization. 100% client-side, no backend.",
@@ -13,7 +13,7 @@
     "validationCommand": "npm run validate",
     "devServer": "npm run dev",
     "devServerPort": 5175,
-    "iteration": 2,
+    "iteration": 3,
     "testingTool": "agent-browser"
   },
   "userStories": [
@@ -21,341 +21,314 @@
       "id": "UI-001",
       "category": "UI Cleanup",
       "priority": "high",
-      "title": "Remove duplicate Run All Tests button",
-      "description": "There are two 'Run All Tests' buttons - one at the top of the editor panel and one below the 'Test Cases' heading. Remove the one below 'Test Cases' to reduce UI clutter.",
+      "title": "Remove visualization helper text",
+      "description": "Remove the text 'Visualizing your code execution with captured operations.' and its container from the visualization panel. This text adds clutter without providing value.",
       "acceptanceCriteria": [
-        "Only one 'Run All Tests' button exists in the UI",
-        "The remaining button is at the top of the editor panel",
-        "Button still runs all tests correctly"
+        "No 'Visualizing your code execution with captured operations.' text appears anywhere in the UI",
+        "The container element that held this text is also removed",
+        "Visualization panel still functions correctly"
       ],
       "stepsToVerify": [
         "agent-browser navigate http://localhost:5175",
-        "agent-browser snapshot -i",
-        "Verify only one 'Run all tests' button appears in snapshot",
-        "agent-browser click on Run All Tests button",
-        "Verify tests execute correctly"
+        "agent-browser snapshot -c -d 6",
+        "Verify no 'Visualizing your code execution' text in snapshot"
       ],
-      "affectedFiles": ["src/components/TestPanel/TestPanel.tsx"],
+      "affectedFiles": ["src/components/VisualizationPanel/ModeSelector.tsx"],
       "passes": true
     },
     {
       "id": "UI-002",
       "category": "UI Cleanup",
-      "priority": "medium",
-      "title": "Remove Skeleton button",
-      "description": "The 'Skeleton' button in the visualization mode buttons doesn't provide significant value. Remove it from the UI.",
+      "priority": "high",
+      "title": "Remove Visualization title",
+      "description": "Remove the 'Visualization' title heading and its container from the visualization panel. The panel's purpose is self-evident from its content.",
       "acceptanceCriteria": [
-        "No 'Skeleton' button appears in the visualization mode buttons",
-        "Other visualization mode buttons (My Execution, Show Expected, Compare) still work"
+        "No 'Visualization' heading appears in the visualization panel",
+        "The container element for the title is removed",
+        "Visualization panel layout adjusts appropriately"
+      ],
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175",
+        "agent-browser snapshot -c -d 6",
+        "Verify no 'Visualization' title heading in snapshot"
+      ],
+      "affectedFiles": ["src/components/VisualizationPanel/VisualizationPanel.tsx"],
+      "passes": false
+    },
+    {
+      "id": "UI-003",
+      "category": "UI Enhancement",
+      "priority": "high",
+      "title": "Reorganize playback controls below visualization",
+      "description": "Position all playback controls in a logical order below the visualization area. Controls should include: Play button, step indicator (e.g., 'Step 8 / 20'), replay button, previous step button, and next step button. Style these controls clearly as belonging to the visualization, without overlapping the visualization content.",
+      "acceptanceCriteria": [
+        "Play button is visible below visualization",
+        "Step indicator shows current step and total (e.g., 'Step 8 / 20') next to play button",
+        "Replay, previous step, and next step buttons are visible and logically ordered",
+        "Controls have consistent styling that visually groups them together",
+        "Controls do not overlap with the visualization content",
+        "All controls function correctly when clicked"
+      ],
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=array",
+        "agent-browser click on Show Solution button",
+        "agent-browser click on Run all tests button",
+        "sleep 1",
+        "agent-browser snapshot -i",
+        "Verify playback controls are below visualization and properly styled"
+      ],
+      "affectedFiles": [
+        "src/components/VisualizationPanel/VisualizationPanel.tsx",
+        "src/components/VisualizationPanel/VisualizationPanel.css"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-004",
+      "category": "UI Cleanup",
+      "priority": "medium",
+      "title": "Remove Show Expected button",
+      "description": "Remove the 'Show Expected' button from the visualization mode buttons. The 'Compare' button already provides this functionality and having both is redundant.",
+      "acceptanceCriteria": [
+        "No 'Show Expected' button appears in visualization mode buttons",
+        "'Compare' button still works correctly",
+        "'My Execution' button still works correctly"
       ],
       "stepsToVerify": [
         "agent-browser navigate http://localhost:5175",
         "agent-browser snapshot -i",
-        "Verify no 'Skeleton' button in snapshot"
+        "Verify no 'Show Expected' button in snapshot",
+        "Verify 'Compare' button is present"
       ],
       "affectedFiles": ["src/components/VisualizationPanel/VisualizationPanel.tsx"],
-      "passes": true
-    },
-    {
-      "id": "UI-003",
-      "category": "UI Cleanup",
-      "priority": "low",
-      "title": "Hide 'No operation' text when no steps exist",
-      "description": "In the Graph visualizer, a 'No operation' div is shown when there are no steps. This looks weird - if there are no steps, don't render anything there.",
-      "acceptanceCriteria": [
-        "No 'No operation' text visible in visualization panel when there are no steps",
-        "Step indicator renders normally when steps exist"
-      ],
-      "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=graph",
-        "agent-browser snapshot -c -d 6",
-        "Verify no 'No operation' text in snapshot"
-      ],
-      "affectedFiles": ["src/components/visualizers/GraphVisualization.tsx"],
       "passes": false
     },
     {
-      "id": "BUG-ARRAY-001",
-      "category": "Reference Solution",
-      "priority": "critical",
-      "title": "Array reference solutions return undefined",
-      "description": "When clicking 'Show Solution' and then 'Run All Tests' for Array, all tests fail with 'Expected undefined to equal [sorted array]'. The reference solutions are not executing or returning values correctly.",
+      "id": "UI-005",
+      "category": "UI Consistency",
+      "priority": "medium",
+      "title": "Fix inconsistent button and badge sizes in Editor header",
+      "description": "The buttons and badge next to the Editor title all have different sizes. They should have consistent sizing for a polished appearance.",
       "acceptanceCriteria": [
-        "Array Sort Small Array test passes with expected output [1,2,5,8,9]",
-        "Array Bubble Sort test passes with expected output [11,12,22,25,34,64,90]",
-        "Array Quick Sort test passes with expected output [10,30,40,50,70,80,90]",
-        "All 3 Array tests show as passed (3/3 passed)"
+        "All buttons in Editor header have consistent height",
+        "Badge has consistent sizing relative to buttons",
+        "Visual alignment is clean and professional"
+      ],
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175",
+        "agent-browser snapshot -i",
+        "Verify buttons and badge next to Editor title have consistent sizing"
+      ],
+      "affectedFiles": [
+        "src/components/EditorPanel/EditorPanel.tsx",
+        "src/components/EditorPanel/EditorPanel.css"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-006",
+      "category": "UI Bug",
+      "priority": "medium",
+      "title": "Fix difficulty badge not updating after Show Solution",
+      "description": "The difficulty badge remains on 'easy' even after clicking 'Show Solution' which loads the solution for the currently selected test (which could be hard). The badge should reflect the actual difficulty of the active test case.",
+      "acceptanceCriteria": [
+        "When selecting a hard test case, badge shows 'hard'",
+        "When clicking 'Show Solution', badge still reflects selected test difficulty",
+        "Badge updates correctly when switching between test cases of different difficulties"
       ],
       "stepsToVerify": [
         "agent-browser navigate http://localhost:5175/?ds=array",
         "agent-browser snapshot -i",
+        "Select hard test case",
         "agent-browser click on Show Solution button",
-        "agent-browser click on Run all tests button",
-        "sleep 2",
-        "agent-browser snapshot -c -d 6",
-        "Verify '3/3 passed' in snapshot text"
+        "agent-browser snapshot -i",
+        "Verify badge shows 'hard' not 'easy'"
       ],
-      "technicalNotes": "Reference solutions are in src/lib/testing/testCases/arrayTests.ts. Check how solutions are loaded and executed in the sandbox.",
-      "affectedFiles": [
-        "src/lib/testing/testCases/arrayTests.ts",
-        "src/lib/execution/sandboxExecutor.ts"
-      ],
-      "passes": true
+      "affectedFiles": ["src/components/EditorPanel/EditorPanel.tsx", "src/store/useAppStore.ts"],
+      "passes": false
     },
     {
-      "id": "BUG-LINKEDLIST-001",
-      "category": "Reference Solution",
-      "priority": "critical",
-      "title": "Linked List reference solutions return null",
-      "description": "When clicking 'Show Solution' and then 'Run All Tests' for Linked List, all tests fail returning null instead of expected values.",
+      "id": "UI-007",
+      "category": "UI Bug",
+      "priority": "low",
+      "title": "Fix Run icon alignment in test case items",
+      "description": "The icon next to 'Run' in the test case items is not properly aligned with the text.",
       "acceptanceCriteria": [
-        "Find Element in List test passes (returns 30)",
-        "Reverse Linked List test passes (returns [5,4,3,2,1])",
-        "Detect and Handle Cycle test passes (returns false)",
-        "All 3 Linked List tests show as passed"
+        "Run icon is vertically centered with 'Run' text",
+        "Icon spacing is consistent across all test case items"
       ],
       "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=linkedList",
+        "agent-browser navigate http://localhost:5175",
         "agent-browser snapshot -i",
+        "Verify Run icons are properly aligned in test case items"
+      ],
+      "affectedFiles": ["src/components/TestPanel/TestPanel.tsx"],
+      "passes": false
+    },
+    {
+      "id": "DATA-001",
+      "category": "Test Data",
+      "priority": "high",
+      "title": "Use single dataset for Array test cases",
+      "description": "The Array data structure uses multiple different datasets for its 3 test cases. For simplicity, use a single consistent dataset across all Array test cases.",
+      "acceptanceCriteria": [
+        "All 3 Array test cases use the same input dataset",
+        "Test cases still have different expected outputs based on difficulty/algorithm",
+        "Reference solutions pass all tests with the unified dataset"
+      ],
+      "stepsToVerify": [
+        "Review src/lib/testing/testCases/arrayTests.ts",
+        "Verify all test cases use same input data",
+        "agent-browser navigate http://localhost:5175/?ds=array",
         "agent-browser click on Show Solution button",
         "agent-browser click on Run all tests button",
-        "sleep 2",
-        "agent-browser snapshot -c -d 6",
-        "Verify '3/3 passed' in snapshot text"
+        "Verify all tests pass"
+      ],
+      "affectedFiles": ["src/lib/testing/testCases/arrayTests.ts"],
+      "passes": false
+    },
+    {
+      "id": "DATA-002",
+      "category": "Test Data",
+      "priority": "medium",
+      "title": "Use single dataset for other data structure test cases",
+      "description": "Similar to Array, all other data structures should use a single consistent dataset across their test cases for simplicity.",
+      "acceptanceCriteria": [
+        "LinkedList test cases use single dataset",
+        "Stack test cases use single dataset",
+        "Queue test cases use single dataset",
+        "Binary Tree test cases use single dataset",
+        "Graph test cases use single dataset",
+        "HashMap test cases use single dataset",
+        "All reference solutions still pass"
+      ],
+      "stepsToVerify": [
+        "Review all test case files in src/lib/testing/testCases/",
+        "Verify each data structure uses consistent input data",
+        "Run Show Solution + Run All Tests for each data structure",
+        "Verify all tests pass"
       ],
       "affectedFiles": [
         "src/lib/testing/testCases/linkedListTests.ts",
-        "src/lib/testing/types.ts",
-        "src/lib/testing/testRunner.ts"
-      ],
-      "passes": true
-    },
-    {
-      "id": "BUG-LINKEDLIST-002",
-      "category": "Visualization",
-      "priority": "medium",
-      "title": "Linked List visualization shows 'null undefined' rendering bug",
-      "description": "The LinkedList visualization shows 'null undefined [0] HEAD TAIL' which appears to be rendering placeholder or initial state incorrectly.",
-      "acceptanceCriteria": [
-        "LinkedList visualization shows meaningful node data, not 'null undefined'",
-        "HEAD and TAIL pointers are positioned correctly",
-        "Initial state shows the actual linked list data from the test case"
-      ],
-      "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=linkedList",
-        "agent-browser snapshot -c -d 6",
-        "Verify visualization does not contain 'null undefined' text"
-      ],
-      "affectedFiles": [
-        "src/components/visualizers/LinkedListVisualizer.tsx",
-        "src/components/VisualizationPanel/VisualizationPanel.tsx"
-      ],
-      "passes": true
-    },
-    {
-      "id": "BUG-STACK-001",
-      "category": "Test Cases",
-      "priority": "critical",
-      "title": "Stack and Queue share tests without filtering",
-      "description": "Both Stack and Queue data structures return the same stackQueueTests array without filtering. Stack page shows Queue test cases like 'Basic Queue Operations' and 'Interleave Two Halves of Queue'. Queue page shows Stack tests like 'Balanced Parentheses Checker' and 'Min Stack'.",
-      "acceptanceCriteria": [
-        "Stack page only shows Stack-related tests (Balanced Parentheses, Min Stack)",
-        "Queue page only shows Queue-related tests (Basic Queue Operations, Reverse First K, Interleave)",
-        "Each data structure has exactly 3 tests (easy, medium, hard)"
-      ],
-      "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=stack",
-        "agent-browser snapshot -c -d 6",
-        "Verify only 3 tests are shown and all relate to Stack operations",
-        "agent-browser navigate http://localhost:5175/?ds=queue",
-        "agent-browser snapshot -c -d 6",
-        "Verify only 3 tests are shown and all relate to Queue operations"
-      ],
-      "technicalNotes": "Root cause is in src/App.tsx lines 75-77 where both 'stack' and 'queue' cases return stackQueueTests without filtering. Tests should be filtered by their id prefix (stack- vs queue-).",
-      "affectedFiles": ["src/App.tsx", "src/lib/testing/testCases/stackQueueTests.ts"],
-      "passes": true
-    },
-    {
-      "id": "BUG-STACK-002",
-      "category": "Runtime Error",
-      "priority": "critical",
-      "title": "createTrackedStack is not defined in sandbox",
-      "description": "When running Stack tests, errors occur: 'createTrackedStack is not defined'. The factory function for creating tracked stacks is not available in the sandbox environment.",
-      "acceptanceCriteria": [
-        "createTrackedStack function is available in sandbox",
-        "Stack tests execute without 'not defined' errors",
-        "Stack reference solutions pass all tests"
-      ],
-      "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=stack",
-        "agent-browser click on Show Solution button",
-        "agent-browser click on Run all tests button",
-        "sleep 2",
-        "agent-browser snapshot -c -d 6",
-        "Verify no 'createTrackedStack is not defined' error in snapshot"
-      ],
-      "affectedFiles": [
-        "src/lib/execution/sandboxExecutor.ts",
-        "src/lib/testing/trackedStackBundle.ts"
-      ],
-      "passes": true
-    },
-    {
-      "id": "BUG-QUEUE-001",
-      "category": "Runtime Error",
-      "priority": "critical",
-      "title": "createTrackedQueue is not defined in sandbox",
-      "description": "When running Queue tests, errors occur: 'createTrackedQueue is not defined'. The factory function for creating tracked queues is not available in the sandbox environment.",
-      "acceptanceCriteria": [
-        "createTrackedQueue function is available in sandbox",
-        "Queue tests execute without 'not defined' errors",
-        "Queue reference solutions pass all tests"
-      ],
-      "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=queue",
-        "agent-browser click on Show Solution button",
-        "agent-browser click on Run all tests button",
-        "sleep 2",
-        "agent-browser snapshot -c -d 6",
-        "Verify no 'createTrackedQueue is not defined' error in snapshot"
-      ],
-      "affectedFiles": [
-        "src/lib/execution/sandboxExecutor.ts",
-        "src/lib/testing/trackedQueueBundle.ts"
-      ],
-      "passes": true
-    },
-    {
-      "id": "BUG-BINARYTREE-001",
-      "category": "Reference Solution",
-      "priority": "critical",
-      "title": "Binary Tree solutions return arrays with null values",
-      "description": "Binary Tree reference solutions return arrays with null values interspersed. Example: 'Expected [null,20,null,30,null,40,...] to equal [20,30,40,50,60,70,80]'. The traversal is including null children in the result.",
-      "acceptanceCriteria": [
-        "In-Order Traversal test passes with [20,30,40,50,60,70,80]",
-        "Validate BST Property test passes (returns boolean true)",
-        "Balance an Unbalanced BST test passes with [1,2,3,4,5,6,7]",
-        "All 3 Binary Tree tests show as passed"
-      ],
-      "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=tree",
-        "agent-browser click on Show Solution button",
-        "agent-browser click on Run all tests button",
-        "sleep 2",
-        "agent-browser snapshot -c -d 6",
-        "Verify '3/3 passed' in snapshot text"
-      ],
-      "affectedFiles": [
+        "src/lib/testing/testCases/stackQueueTests.ts",
         "src/lib/testing/testCases/binaryTreeTests.ts",
-        "src/lib/dataStructures/TrackedBinaryTree.ts"
-      ],
-      "passes": true
-    },
-    {
-      "id": "BUG-GRAPH-001",
-      "category": "Reference Solution",
-      "priority": "critical",
-      "title": "Graph solutions return undefined - graph methods not working",
-      "description": "Graph reference solutions return undefined. The solutions call graph.bfs(start) and graph.hasCycle() but these methods may not be available or working correctly in the sandbox.",
-      "acceptanceCriteria": [
-        "BFS Traversal test passes with [A,B,C,D,E]",
-        "Detect Cycle test passes (returns true)",
-        "Dijkstra's Shortest Path test passes with [A,C,B,D,E]",
-        "All 3 Graph tests show as passed"
-      ],
-      "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=graph",
-        "agent-browser click on Show Solution button",
-        "agent-browser click on Run all tests button",
-        "sleep 2",
-        "agent-browser snapshot -c -d 6",
-        "Verify '3/3 passed' in snapshot text"
-      ],
-      "technicalNotes": "TrackedGraph class has bfs() and hasCycle() methods in src/lib/dataStructures/TrackedGraph.ts. Verify the bundle exposes these methods correctly.",
-      "affectedFiles": [
         "src/lib/testing/testCases/graphTests.ts",
-        "src/lib/testing/trackedGraphBundle.ts"
+        "src/lib/testing/testCases/hashMapTests.ts"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUG-HASHMAP-001",
-      "category": "Reference Solution",
+      "id": "BUG-001",
+      "category": "Visualization Bug",
       "priority": "critical",
-      "title": "HashMap solutions fail with property access errors",
-      "description": "HashMap reference solutions fail with errors like 'Cannot read properties of undefined (reading size)' and 'Cannot read properties of undefined (reading char)'. The HashMap data structure is not properly initialized or accessible.",
+      "title": "Fix Array Compare mode showing unsorted expected output",
+      "description": "In the Array data structure's 'Compare' mode, the 'Expected output' is not actually sorted. It should show the correctly sorted array.",
       "acceptanceCriteria": [
-        "Basic Get/Set Operations test passes with [3,7,11]",
-        "Collision Handling with Chaining test passes",
-        "Character Frequency Counter test passes",
-        "All 3 HashMap tests show as passed"
+        "In Compare mode, Expected output shows properly sorted array",
+        "User's execution output is shown correctly alongside",
+        "Comparison clearly shows differences between user output and expected"
       ],
       "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=hashMap",
+        "agent-browser navigate http://localhost:5175/?ds=array",
         "agent-browser click on Show Solution button",
         "agent-browser click on Run all tests button",
-        "sleep 2",
+        "sleep 1",
+        "agent-browser click on Compare button",
         "agent-browser snapshot -c -d 6",
-        "Verify '3/3 passed' in snapshot text"
+        "Verify Expected output shows sorted array"
       ],
       "affectedFiles": [
-        "src/lib/testing/testCases/hashMapTests.ts",
-        "src/lib/testing/trackedHashMapBundle.ts",
-        "src/lib/testing/testRunner.ts"
+        "src/components/VisualizationPanel/VisualizationPanel.tsx",
+        "src/lib/testing/testCases/arrayTests.ts"
       ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "ENH-001",
-      "category": "Enhancement",
-      "priority": "low",
-      "title": "Align challenges with popular algorithm platforms",
-      "description": "The code challenges and test cases should resemble popular algorithm and data structure challenges from platforms like Structy, GreatFrontend, and LeetCode. This makes the visualizer more relevant and educational.",
+      "id": "BUG-002",
+      "category": "Test Design",
+      "priority": "high",
+      "title": "Simplify Array test case to use single function",
+      "description": "The Array test case appears to require 3 different function names (possibly bubbleSort, quickSort, etc.). This is not immediately clear to users. Simplify to a single function (e.g., 'sortArray') that can be implemented in different ways.",
       "acceptanceCriteria": [
-        "Test case descriptions match common algorithm problem formats",
-        "Problems have clear input/output specifications",
-        "Difficulty levels align with industry standards"
+        "Array tests require only a single function name (e.g., 'sortArray')",
+        "Users can implement this function using any sorting algorithm",
+        "Test descriptions make it clear what function to implement",
+        "Reference solutions work with the simplified function name"
       ],
       "stepsToVerify": [
-        "Review test cases in src/lib/testing/testCases/",
-        "Compare with popular platforms like LeetCode and Structy",
-        "Verify problem statements are clear and educational"
+        "Review src/lib/testing/testCases/arrayTests.ts",
+        "Verify single function name is used",
+        "agent-browser navigate http://localhost:5175/?ds=array",
+        "Verify skeleton code shows single function to implement",
+        "agent-browser click on Show Solution button",
+        "agent-browser click on Run all tests button",
+        "Verify all tests pass"
       ],
-      "affectedFiles": ["src/lib/testing/testCases/*.ts"],
+      "affectedFiles": ["src/lib/testing/testCases/arrayTests.ts", "src/templates/array.ts"],
+      "passes": false
+    },
+    {
+      "id": "FEAT-001",
+      "category": "Feature",
+      "priority": "high",
+      "title": "Highlight code lines during visualization playback",
+      "description": "When playing steps in the visualization (via play, next, or previous buttons), highlight the corresponding lines in the code editor that triggered the visualization change. The highlight should fade away after a sensible timeout. Timing must be carefully considered: highlights should not overlap when playing continuously, but also should not flash too quickly to be visible.",
+      "acceptanceCriteria": [
+        "When stepping through visualization, corresponding code line(s) highlight",
+        "Highlights fade away smoothly after a brief period",
+        "During continuous play, highlights do not overlap awkwardly",
+        "Highlights are visible long enough to be noticed (not just a flash)",
+        "Previous/next step buttons trigger appropriate line highlights",
+        "Play button triggers sequential highlights as animation progresses"
+      ],
+      "stepsToVerify": [
+        "agent-browser navigate http://localhost:5175/?ds=array",
+        "agent-browser click on Show Solution button",
+        "agent-browser click on Run all tests button",
+        "sleep 1",
+        "Click next step button multiple times",
+        "Verify code lines highlight and fade",
+        "Click play button",
+        "Verify highlights appear sequentially without overlap"
+      ],
+      "technicalNotes": "Consider using CodeMirror decorations for highlighting. Timeout should be around 300-500ms for visibility. Clear previous highlight before applying new one during rapid stepping. May need to track line numbers in captured operations.",
+      "affectedFiles": [
+        "src/components/EditorPanel/EditorPanel.tsx",
+        "src/lib/execution/instrumenter.ts",
+        "src/store/useAppStore.ts"
+      ],
       "passes": false
     }
   ],
   "knownIssues": {
-    "criticalBlocking": [
-      "BUG-ARRAY-001: Array reference solutions return undefined instead of sorted arrays",
-      "BUG-LINKEDLIST-001: Linked List reference solutions return null",
-      "BUG-STACK-001: Stack and Queue share tests without proper filtering",
-      "BUG-STACK-002: createTrackedStack is not defined in sandbox",
-      "BUG-QUEUE-001: createTrackedQueue is not defined in sandbox",
-      "BUG-BINARYTREE-001: Binary Tree solutions return arrays with null values",
-      "BUG-GRAPH-001: Graph solutions return undefined - graph.bfs() not working",
-      "BUG-HASHMAP-001: HashMap solutions fail with property access errors"
-    ],
     "uiCleanup": [
-      "UI-001: Two 'Run All Tests' buttons - remove duplicate",
-      "UI-002: 'Skeleton' button should be removed",
-      "UI-003: 'No operation' text shown in Graph visualizer when no steps"
+      "UI-001: Remove 'Visualizing your code execution' helper text",
+      "UI-002: Remove 'Visualization' title heading",
+      "UI-004: Remove redundant 'Show Expected' button",
+      "UI-005: Inconsistent button/badge sizes in Editor header",
+      "UI-006: Difficulty badge not updating after Show Solution",
+      "UI-007: Run icon alignment in test case items"
     ],
-    "visualization": [
-      "BUG-LINKEDLIST-002: LinkedList visualization shows 'null undefined' rendering bug"
+    "uiEnhancements": ["UI-003: Reorganize playback controls below visualization"],
+    "dataConsistency": [
+      "DATA-001: Array uses multiple datasets",
+      "DATA-002: Other data structures use multiple datasets"
     ],
-    "enhancements": ["ENH-001: Align challenges with popular algorithm platforms"],
+    "bugs": [
+      "BUG-001: Array Compare mode shows unsorted expected output",
+      "BUG-002: Array tests require multiple function names"
+    ],
+    "features": ["FEAT-001: Code line highlighting during playback"],
     "fixPriority": [
-      "1. BUG-STACK-001 - Separate Stack and Queue test filtering (foundational)",
-      "2. BUG-STACK-002/BUG-QUEUE-001 - Fix factory functions in sandbox",
-      "3. BUG-ARRAY-001 - Fix Array reference solutions",
-      "4. BUG-LINKEDLIST-001 - Fix Linked List reference solutions",
-      "5. BUG-BINARYTREE-001 - Fix Binary Tree null value issue",
-      "6. BUG-GRAPH-001 - Fix Graph method availability",
-      "7. BUG-HASHMAP-001 - Fix HashMap property access",
-      "8. UI issues (UI-001, UI-002, UI-003)",
-      "9. BUG-LINKEDLIST-002 - Fix visualization rendering",
-      "10. ENH-001 - Align with popular platforms"
+      "1. UI-001, UI-002 - Remove unnecessary text/titles (quick wins)",
+      "2. UI-003 - Reorganize playback controls (improves UX)",
+      "3. UI-004 - Remove Show Expected button",
+      "4. BUG-001 - Fix Compare mode expected output",
+      "5. BUG-002 - Simplify Array function names",
+      "6. DATA-001 - Unify Array datasets",
+      "7. FEAT-001 - Code line highlighting (complex feature)",
+      "8. UI-005, UI-006, UI-007 - Polish UI details",
+      "9. DATA-002 - Unify other data structure datasets"
     ]
   },
   "completionCriteria": {
@@ -367,8 +340,7 @@
       "No TypeScript errors",
       "No linting errors",
       "Application loads successfully at localhost:5175 for all data structures",
-      "All data structures load without console errors or blank screens",
-      "All reference solutions execute successfully across all data structures and difficulty levels",
+      "All reference solutions execute successfully",
       "Agent-browser verification confirms all acceptance criteria met"
     ],
     "recommended": [
@@ -380,7 +352,6 @@
   },
   "technicalNotes": {
     "testingApproach": "Use agent-browser for automated UI verification. Each user story includes specific agent-browser commands for validation.",
-    "testingMethodology": "Systematic testing performed 2026-01-15 using agent-browser. Each data structure tested with Show Solution + Run All Tests workflow across all difficulty levels.",
     "devServer": "npm run dev starts development server at http://localhost:5175",
     "validation": "npm run validate runs all checks: lint + format + typecheck + test",
     "browserRequirements": "Chrome/Chromium required for agent-browser testing",
@@ -391,40 +362,10 @@
       "d3Rendering": "16ms (60fps)",
       "testExecution": "< 1s per test case"
     },
-    "bugDiscoverySession": {
-      "date": "2026-01-15",
-      "tool": "agent-browser",
-      "coverage": "All 7 data structures tested (Array, LinkedList, Stack, Queue, Binary Tree, Graph, HashMap)",
-      "testPattern": "Navigate to ?ds={structure}&difficulty=easy -> Click Show Solution -> Click Run All Tests -> Check results and console",
-      "bugsDiscovered": [
-        "Array: undefined returns",
-        "LinkedList: null returns + visualization bug",
-        "Stack/Queue: shared tests not filtered + factory functions undefined",
-        "BinaryTree: null values in arrays",
-        "Graph: undefined returns",
-        "HashMap: property access errors"
-      ]
-    },
-    "rootCauseAnalysis": {
-      "stackQueueSharing": "src/App.tsx lines 75-77 return stackQueueTests for both stack and queue without filtering by test ID prefix",
-      "factoryFunctions": "createTrackedStack and createTrackedQueue may not be exported or bundled for sandbox execution",
-      "undefinedReturns": "Reference solutions may not be properly injected or executed in sandbox iframe",
-      "nullValues": "Binary tree traversal includes null children in result arrays"
-    },
-    "ralphWiggumBestPractices": {
-      "source": "https://www.aihero.dev/tips-for-ai-coding-with-ralph-wiggum",
-      "appliedPractices": [
-        "Atomic user stories with clear acceptance criteria",
-        "Each bug is bite-sized and independently fixable",
-        "Auto-runnable verification steps using agent-browser",
-        "No human gut-checks - agent can verify itself",
-        "Progress tracking via passes: true/false field",
-        "Living TODO list (PRD is scope definition + progress tracker)",
-        "Explicit stop conditions (completionCriteria)",
-        "Technical details for implementation guidance",
-        "Session metadata tracking (iteration, date, tools used)",
-        "Priority-based fix ordering for efficient debugging"
-      ]
+    "codeHighlightingNotes": {
+      "approach": "Use CodeMirror decorations API to highlight lines",
+      "timing": "300-500ms visibility, clear before new highlight during rapid steps",
+      "dataRequirement": "Captured operations need to include source line numbers from instrumentation"
     }
   }
 }

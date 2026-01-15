@@ -67,9 +67,6 @@ export function ModeSelector({ currentMode, onModeChange, hasSteps }: ModeSelect
         {currentMode === "user-code" && !hasSteps && (
           <p className="hint-text">Run a test to see your code&apos;s execution visualized here.</p>
         )}
-        {currentMode === "user-code" && hasSteps && (
-          <p>Visualizing your code execution with captured operations.</p>
-        )}
         {currentMode === "expected-output" && (
           <p>Showing the expected output - what a correct solution produces.</p>
         )}

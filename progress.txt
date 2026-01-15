@@ -217,3 +217,18 @@ All acceptance criteria verified with agent-browser:
 - No 'null undefined' text found in visualization snapshot
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1290 tests passing). Updated prd.json to mark BUG-LINKEDLIST-002 as passes=true.
+
+2026-01-15: Completed UI-001 (Remove visualization helper text) - Removed the "Visualizing your code execution with captured operations." text and its container from the ModeSelector component in the visualization panel.
+
+Changes made:
+1. **ModeSelector.tsx**: Removed the conditional paragraph at lines 70-72 that displayed "Visualizing your code execution with captured operations." when user-code mode had steps
+2. **ModeSelector.test.tsx**: Updated the test "displays user-code mode description when has steps" to verify that NO description text is shown when user-code mode has steps (the visualization speaks for itself)
+
+Rationale: This text was identified as clutter that didn't provide meaningful value. When users have run their code and see the visualization, the visual feedback is self-explanatory. The hint text shown when there are NO steps ("Run a test to see your code's execution visualized here.") is retained as it provides useful guidance.
+
+All acceptance criteria met:
+- No 'Visualizing your code execution with captured operations.' text appears in the UI
+- The container element (conditional paragraph) has been removed
+- Visualization panel still functions correctly (all 1290 tests pass)
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1290 tests passing). Updated prd.json to mark UI-001 as passes=true and corrected affectedFiles to ModeSelector.tsx.

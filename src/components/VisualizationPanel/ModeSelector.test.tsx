@@ -106,10 +106,11 @@ describe("ModeSelector", () => {
     expect(screen.getByText(/Run a test to see your code/i)).toBeInTheDocument();
   });
 
-  it("displays user-code mode description when has steps", () => {
+  it("does not display description when user-code mode has steps", () => {
     render(<ModeSelector {...defaultProps} currentMode="user-code" hasSteps />);
 
-    expect(screen.getByText(/Visualizing your code execution/i)).toBeInTheDocument();
+    // No description text is shown when user has steps - the visualization speaks for itself
+    expect(screen.queryByText(/Visualizing your code execution/i)).not.toBeInTheDocument();
   });
 
   it("displays expected-output mode description", () => {
