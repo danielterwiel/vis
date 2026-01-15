@@ -2940,3 +2940,111 @@ All validation passing:
 ### Next Task
 
 Next incomplete task in Phase 9: Move "Example usage" comments to top of skeleton functions (PRD line 958)
+
+---
+
+## Task: Move "Example usage" comments to top of skeleton functions (PRD line 958)
+
+**Date**: 2026-01-14
+**Status**: ✅ COMPLETE
+
+### Changes Made
+
+**Updated Files**:
+1. `src/templates/array/index.ts` - Moved example usage comments to top
+2. `src/templates/array/index.test.ts` - Updated tests to match new format
+
+### Implementation Details
+
+**Format Change** (per PRD lines 300-318):
+
+**OLD FORMAT**:
+```javascript
+function sort(arr) {
+  // TODO: Implement sorting algorithm
+}
+
+// Example usage:
+// const result = sort([5, 2, 8, 1, 9]);
+// console.log(result); // [1, 2, 5, 8, 9]
+```
+
+**NEW FORMAT**:
+```javascript
+// Example usage: Sort an array of numbers
+
+function sort(arr) {
+  // TODO: Implement sorting algorithm
+}
+```
+
+**Key Changes**:
+1. "Example usage" comment moves to top with brief description
+2. One empty line between comment and function
+3. No more code examples at bottom
+4. Follows PRD specification exactly
+
+### Templates Updated
+
+**Easy Skeleton**:
+- Old: Example usage at bottom with function calls
+- New: `// Example usage: Sort an array of numbers` at top
+
+**Medium Skeleton**:
+- Old: Example usage at bottom with function calls
+- New: `// Example usage: Implement bubble sort algorithm` at top
+
+**Hard Skeleton**:
+- Old: Example usage at bottom with function calls
+- New: `// Example usage: Implement quick sort with partition` at top
+
+### Test Updates
+
+Updated three tests to check for new format:
+1. `easySkeleton` - checks for "Sort an array of numbers"
+2. `mediumSkeleton` - checks for "Implement bubble sort algorithm"
+3. `hardSkeleton` - checks for "Implement quick sort with partition"
+
+All tests continue to pass (29 tests total in array templates).
+
+### Validation Results
+
+```bash
+npm run validate
+```
+
+**Results**:
+- ✅ Linting: 0 warnings, 0 errors
+- ✅ Formatting: All files correct
+- ✅ Type checking: No errors
+- ✅ Tests: 1202 passed, 12 skipped (51 test files)
+
+### Design Rationale
+
+**Why this format?**
+1. **Cleaner**: No commented-out code examples cluttering the template
+2. **PRD Compliant**: Matches specification in lines 300-318
+3. **Focused**: Brief description tells user what the function does
+4. **Consistent**: "Example usage" followed by colon, then brief description
+
+**User Benefits**:
+- Immediately see purpose of function
+- Less visual clutter
+- Clear separation between description and implementation
+- Follows modern code comment best practices
+
+### Scope Notes
+
+**Current Implementation**:
+- Only array templates exist currently
+- Other data structures (linkedList, stack, queue, tree, graph, hashMap) don't have templates yet
+- When those templates are created, they should follow this new format
+
+**Future-Proofing**:
+- Template format now documented in PRD
+- Test assertions verify format compliance
+- Easy to replicate for other data structures
+
+### Next Task
+
+Next incomplete task in Phase 9: Show all 3 test cases simultaneously (no filter) (PRD line 959)

@@ -955,7 +955,7 @@ vis/
 - [x] Convert hints section to icon button with modal
 - [x] Add Tabler icons throughout UI (strategically)
 - [x] Fix Examples dialog UI/UX
-- [ ] Move "Example usage" comments to top of skeleton functions
+- [x] Move "Example usage" comments to top of skeleton functions
 - [ ] Show all 3 test cases simultaneously (no filter)
 - [ ] Add play button above editor for running all tests
 - [ ] Implement auto-play visualization on code execution

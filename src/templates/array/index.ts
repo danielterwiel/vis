@@ -10,22 +10,22 @@ import { skeletonCodeSystem } from "../skeletonCodeSystem";
  * Easy: Sort Small Array
  * Uses built-in Array.sort() method
  */
-const easySkeleton = `function sort(arr) {
+const easySkeleton = `// Example usage: Sort an array of numbers
+
+function sort(arr) {
   // TODO: Implement sorting algorithm
   // Hint: You can use arr.sort() with a compare function
 
 }
-
-// Example usage:
-// const result = sort([5, 2, 8, 1, 9]);
-// console.log(result); // [1, 2, 5, 8, 9]
 `;
 
 /**
  * Medium: Bubble Sort Implementation
  * Requires nested loops and element swapping
  */
-const mediumSkeleton = `function bubbleSort(arr) {
+const mediumSkeleton = `// Example usage: Implement bubble sort algorithm
+
+function bubbleSort(arr) {
   const n = arr.length;
 
   // TODO: Implement nested loops
@@ -38,17 +38,15 @@ const mediumSkeleton = `function bubbleSort(arr) {
 
   return arr;
 }
-
-// Example usage:
-// const result = bubbleSort([64, 34, 25, 12, 22, 11, 90]);
-// console.log(result); // [11, 12, 22, 25, 34, 64, 90]
 `;
 
 /**
  * Hard: Quick Sort Implementation
  * Requires recursion and partitioning
  */
-const hardSkeleton = `function quickSort(arr, low = 0, high = arr.length - 1) {
+const hardSkeleton = `// Example usage: Implement quick sort with partition
+
+function quickSort(arr, low = 0, high = arr.length - 1) {
   // TODO: Implement recursive quick sort
   // Base case: if low >= high, return
 
@@ -68,10 +66,6 @@ function partition(arr, low, high) {
   // TODO: 3. Return final pivot position
 
 }
-
-// Example usage:
-// const result = quickSort([10, 80, 30, 90, 40, 50, 70]);
-// console.log(result); // [10, 30, 40, 50, 70, 80, 90]
 `;
 
 /**

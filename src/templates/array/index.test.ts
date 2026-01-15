@@ -55,7 +55,7 @@ describe("Array Templates", () => {
 
     it("should contain example usage", () => {
       expect(easySkeleton).toContain("// Example usage:");
-      expect(easySkeleton).toContain("sort([5, 2, 8, 1, 9])");
+      expect(easySkeleton).toContain("Sort an array of numbers");
     });
   });
 
@@ -89,7 +89,8 @@ describe("Array Templates", () => {
     });
 
     it("should contain example usage", () => {
-      expect(mediumSkeleton).toContain("bubbleSort([64, 34, 25, 12, 22, 11, 90])");
+      expect(mediumSkeleton).toContain("// Example usage:");
+      expect(mediumSkeleton).toContain("Implement bubble sort algorithm");
     });
   });
 
@@ -126,7 +127,8 @@ describe("Array Templates", () => {
     });
 
     it("should contain example usage", () => {
-      expect(hardSkeleton).toContain("quickSort([10, 80, 30, 90, 40, 50, 70])");
+      expect(hardSkeleton).toContain("// Example usage:");
+      expect(hardSkeleton).toContain("Implement quick sort with partition");
     });
 
     it("should contain base case hint", () => {
