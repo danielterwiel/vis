@@ -3,6 +3,7 @@ import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { LinkedListVisualizer } from "../visualizers/LinkedListVisualizer";
 import { StackQueueVisualizer } from "../visualizers/StackQueueVisualizer";
 import { BinaryTreeVisualizer } from "../visualizers/BinaryTreeVisualizer";
+import GraphVisualizer from "../visualizers/GraphVisualizer";
 import type { DataStructureType, VisualizationStep } from "../../store/useAppStore";
 import type { LinkedListNode } from "../../lib/dataStructures/TrackedLinkedList";
 import type { BinaryTreeNode } from "../../lib/dataStructures/TrackedBinaryTree";
@@ -81,7 +82,27 @@ export function ComparisonView({
             isAnimating={isAnimating}
           />
         );
-      // TODO: Add other data structure visualizers (Graph, HashMap)
+      case "graph":
+        return (
+          <GraphVisualizer
+            data={
+              data as Array<{
+                id: string | number;
+                label?: string;
+                edges?: Array<{
+                  from: string | number;
+                  to: string | number;
+                  weight?: number;
+                  directed?: boolean;
+                }>;
+              }> | null
+            }
+            steps={steps}
+            currentStepIndex={stepIndex}
+            isAnimating={isAnimating}
+          />
+        );
+      // TODO: Add other data structure visualizers (HashMap)
       default:
         return (
           <ArrayVisualizer

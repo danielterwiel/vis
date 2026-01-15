@@ -11,7 +11,13 @@ import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { LinkedListVisualizer } from "../visualizers/LinkedListVisualizer";
 import { StackQueueVisualizer } from "../visualizers/StackQueueVisualizer";
 import { BinaryTreeVisualizer } from "../visualizers/BinaryTreeVisualizer";
-import { arrayTests, stackQueueTests, binaryTreeTests } from "../../lib/testing/testCases";
+import GraphVisualizer from "../visualizers/GraphVisualizer";
+import {
+  arrayTests,
+  stackQueueTests,
+  binaryTreeTests,
+  graphTests,
+} from "../../lib/testing/testCases";
 import type { BinaryTreeNode } from "../../lib/dataStructures/TrackedBinaryTree";
 import { ModeSelector } from "./ModeSelector";
 import { ComparisonView } from "./ComparisonView";
@@ -83,6 +89,8 @@ function VisualizationPanel() {
         );
       case "tree":
         return binaryTreeTests.find((t) => t.difficulty === selectedDifficulty);
+      case "graph":
+        return graphTests.find((t) => t.difficulty === selectedDifficulty);
       default:
         return arrayTests.find((t) => t.difficulty === selectedDifficulty);
     }
@@ -90,6 +98,35 @@ function VisualizationPanel() {
 
   const currentTestCase = getCurrentTestCase();
   const initialData = currentTestCase?.initialData || [];
+
+  // Helper function to convert TrackedGraph result to GraphVisualizer format
+  const convertGraphData = useCallback(
+    (
+      graphResult: Array<{ vertex: unknown; neighbors: unknown[] }> | null | undefined,
+    ): Array<{
+      id: string | number;
+      label?: string;
+      edges?: Array<{
+        from: string | number;
+        to: string | number;
+        weight?: number;
+        directed?: boolean;
+      }>;
+    }> | null => {
+      if (!graphResult || !Array.isArray(graphResult)) return null;
+      const graphInit = currentTestCase?.initialData as { directed?: boolean } | undefined;
+      return graphResult.map((node) => ({
+        id: node.vertex as string | number,
+        label: String(node.vertex),
+        edges: node.neighbors.map((neighbor) => ({
+          from: node.vertex as string | number,
+          to: neighbor as string | number,
+          directed: graphInit?.directed || false,
+        })),
+      }));
+    },
+    [currentTestCase],
+  );
 
   // Load expected output steps when mode is selected and not already loaded
   useEffect(() => {
@@ -171,6 +208,28 @@ function VisualizationPanel() {
   // Extract current array data from steps or use initial data
   const currentData = useMemo(() => {
     if (currentSteps.length === 0) {
+      // For graphs, convert initialData to graph format
+      if (selectedDataStructure === "graph" && initialData) {
+        const graphInit = initialData as {
+          vertices?: unknown[];
+          edges?: Array<{ from: unknown; to: unknown; weight?: number; directed?: boolean }>;
+          directed?: boolean;
+        };
+        if (graphInit.vertices && graphInit.edges) {
+          return graphInit.vertices.map((vertex) => ({
+            id: vertex as string | number,
+            label: String(vertex),
+            edges: graphInit.edges
+              ?.filter((e) => e.from === vertex)
+              .map((e) => ({
+                from: e.from as string | number,
+                to: e.to as string | number,
+                weight: e.weight,
+                directed: e.directed || graphInit.directed || false,
+              })),
+          }));
+        }
+      }
       return initialData;
     }
     if (currentStepIndex >= 0 && currentStepIndex < currentSteps.length) {
@@ -180,10 +239,14 @@ function VisualizationPanel() {
         const metadata = step.metadata as { treeStructure?: BinaryTreeNode<number> | null };
         return metadata.treeStructure || null;
       }
+      // For graphs, convert result to graph format
+      if (selectedDataStructure === "graph" && step?.result) {
+        return convertGraphData(step.result as Array<{ vertex: unknown; neighbors: unknown[] }>);
+      }
       return step?.result || initialData;
     }
     return initialData;
-  }, [currentSteps, currentStepIndex, initialData, selectedDataStructure]);
+  }, [currentSteps, currentStepIndex, initialData, selectedDataStructure, convertGraphData]);
 
   // Extract data for comparison view (left = user code, right = expected output)
   const comparisonLeftData = useMemo(() => {
@@ -195,10 +258,14 @@ function VisualizationPanel() {
         const metadata = step.metadata as { treeStructure?: BinaryTreeNode<number> | null };
         return metadata.treeStructure || null;
       }
+      // For graphs, convert result to graph format
+      if (selectedDataStructure === "graph" && step?.result) {
+        return convertGraphData(step.result as Array<{ vertex: unknown; neighbors: unknown[] }>);
+      }
       return step?.result || initialData;
     }
     return initialData;
-  }, [userCodeSteps, currentStepIndex, initialData, selectedDataStructure]);
+  }, [userCodeSteps, currentStepIndex, initialData, selectedDataStructure, convertGraphData]);
 
   const comparisonRightData = useMemo(() => {
     if (expectedOutputSteps.length === 0) return initialData;
@@ -209,10 +276,14 @@ function VisualizationPanel() {
         const metadata = step.metadata as { treeStructure?: BinaryTreeNode<number> | null };
         return metadata.treeStructure || null;
       }
+      // For graphs, convert result to graph format
+      if (selectedDataStructure === "graph" && step?.result) {
+        return convertGraphData(step.result as Array<{ vertex: unknown; neighbors: unknown[] }>);
+      }
       return step?.result || initialData;
     }
     return initialData;
-  }, [expectedOutputSteps, currentStepIndex, initialData, selectedDataStructure]);
+  }, [expectedOutputSteps, currentStepIndex, initialData, selectedDataStructure, convertGraphData]);
 
   // Render visualizer based on data structure and mode
   const renderVisualizer = () => {
@@ -282,7 +353,27 @@ function VisualizationPanel() {
             isAnimating={isAnimating}
           />
         );
-      // TODO: Add other data structure visualizers (Graph, HashMap)
+      case "graph":
+        return (
+          <GraphVisualizer
+            data={
+              currentData as Array<{
+                id: string | number;
+                label?: string;
+                edges?: Array<{
+                  from: string | number;
+                  to: string | number;
+                  weight?: number;
+                  directed?: boolean;
+                }>;
+              }> | null
+            }
+            steps={currentSteps}
+            currentStepIndex={currentStepIndex}
+            isAnimating={isAnimating}
+          />
+        );
+      // TODO: Add other data structure visualizers (HashMap)
       default:
         return (
           <ArrayVisualizer
