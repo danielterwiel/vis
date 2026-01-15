@@ -119,10 +119,7 @@
         "agent-browser snapshot -i",
         "Verify buttons and badge next to Editor title have consistent sizing"
       ],
-      "affectedFiles": [
-        "src/styles/global.css",
-        "src/components/EditorPanel/PresetSelector.css"
-      ],
+      "affectedFiles": ["src/styles/global.css", "src/components/EditorPanel/PresetSelector.css"],
       "passes": true
     },
     {
@@ -144,8 +141,8 @@
         "agent-browser snapshot -i",
         "Verify badge shows 'hard' not 'easy'"
       ],
-      "affectedFiles": ["src/components/EditorPanel/EditorPanel.tsx", "src/store/useAppStore.ts"],
-      "passes": false
+      "affectedFiles": ["src/components/TestPanel/TestPanel.tsx", "src/components/TestPanel/TestPanel.css"],
+      "passes": true
     },
     {
       "id": "UI-007",

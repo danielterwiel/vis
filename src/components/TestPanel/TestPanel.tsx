@@ -12,6 +12,8 @@ interface TestPanelProps {
 export function TestPanel({ testCases, onRunTest }: TestPanelProps) {
   const [isRunning, setIsRunning] = useState(false);
   const testResults = useAppStore((state) => state.testResults);
+  const selectedDifficulty = useAppStore((state) => state.selectedDifficulty);
+  const setSelectedDifficulty = useAppStore((state) => state.setSelectedDifficulty);
 
   const handleRunTest = async (testCase: TestCase) => {
     setIsRunning(true);
@@ -60,8 +62,20 @@ export function TestPanel({ testCases, onRunTest }: TestPanelProps) {
         ) : (
           testCases.map((testCase) => {
             const result = getTestResult(testCase.id);
+            const isSelected = testCase.difficulty === selectedDifficulty;
             return (
-              <div key={testCase.id} className={`test-item ${getStatusClass(testCase.id)}`}>
+              <div
+                key={testCase.id}
+                className={`test-item ${getStatusClass(testCase.id)}${isSelected ? " selected" : ""}`}
+                onClick={() => setSelectedDifficulty(testCase.difficulty)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    setSelectedDifficulty(testCase.difficulty);
+                  }
+                }}
+              >
                 <div className="test-item-header">
                   <span className="test-status">{getStatusIcon(testCase.id)}</span>
                   <span className="test-name">{testCase.name}</span>
@@ -99,7 +113,10 @@ export function TestPanel({ testCases, onRunTest }: TestPanelProps) {
                 <div className="test-item-actions">
                   <button
                     className="run-single-test"
-                    onClick={() => handleRunTest(testCase)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRunTest(testCase);
+                    }}
                     disabled={isRunning}
                     aria-label={`Run ${testCase.name}`}
                   >

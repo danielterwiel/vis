@@ -52,12 +52,27 @@ describe("TestPanel", () => {
   ];
 
   const mockOnRunTest = vi.fn();
+  const mockSetSelectedDifficulty = vi.fn();
+
+  const setupStoreMock = (
+    testResults: Map<string, TestResult> = new Map(),
+    selectedDifficulty: "easy" | "medium" | "hard" = "easy",
+  ) => {
+    vi.mocked(useAppStore).mockImplementation((selector) => {
+      const state = {
+        testResults,
+        selectedDifficulty,
+        setSelectedDifficulty: mockSetSelectedDifficulty,
+      };
+      return selector(state as any);
+    });
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Default mock: no test results
-    vi.mocked(useAppStore).mockReturnValue(new Map());
+    // Default mock: no test results, easy difficulty
+    setupStoreMock();
   });
 
   describe("Rendering", () => {
@@ -133,8 +148,8 @@ describe("TestPanel", () => {
 
       // Check for not-run CSS class instead of icon text
       const testItems = screen
-        .getAllByRole("generic", { hidden: true })
-        .filter((el) => el.className === "test-item not-run");
+        .getAllByRole("button")
+        .filter((el) => el.className.includes("test-item") && el.className.includes("not-run"));
       expect(testItems.length).toBe(3);
     });
 
@@ -160,14 +175,14 @@ describe("TestPanel", () => {
         ],
       ]);
 
-      vi.mocked(useAppStore).mockReturnValue(mockResults);
+      setupStoreMock(mockResults);
 
       render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       // Check for passed CSS class instead of icon text
       const testItems = screen
-        .getAllByRole("generic", { hidden: true })
-        .filter((el) => el.className === "test-item passed");
+        .getAllByRole("button")
+        .filter((el) => el.className.includes("test-item") && el.className.includes("passed"));
       expect(testItems.length).toBe(1);
       expect(screen.getByText("Passed in 42ms")).toBeInTheDocument();
       expect(screen.getByText("1 operations captured")).toBeInTheDocument();
@@ -188,14 +203,14 @@ describe("TestPanel", () => {
         ],
       ]);
 
-      vi.mocked(useAppStore).mockReturnValue(mockResults);
+      setupStoreMock(mockResults);
 
       render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       // Check for failed CSS class instead of icon text
       const testItems = screen
-        .getAllByRole("generic", { hidden: true })
-        .filter((el) => el.className === "test-item failed");
+        .getAllByRole("button")
+        .filter((el) => el.className.includes("test-item") && el.className.includes("failed"));
       expect(testItems.length).toBe(1);
       expect(screen.getByText("Expected [1,2,3] but got [3,2,1]")).toBeInTheDocument();
       expect(screen.getByText("Failed after 25ms")).toBeInTheDocument();
@@ -224,7 +239,7 @@ describe("TestPanel", () => {
         ],
       ]);
 
-      vi.mocked(useAppStore).mockReturnValue(mockResults);
+      setupStoreMock(mockResults);
 
       render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
@@ -252,7 +267,7 @@ describe("TestPanel", () => {
         ],
       ]);
 
-      vi.mocked(useAppStore).mockReturnValue(mockResults);
+      setupStoreMock(mockResults);
 
       render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
@@ -269,8 +284,8 @@ describe("TestPanel", () => {
 
       // Check for not-run CSS class instead of icon text
       let testItems = screen
-        .getAllByRole("generic", { hidden: true })
-        .filter((el) => el.className === "test-item not-run");
+        .getAllByRole("button")
+        .filter((el) => el.className.includes("test-item") && el.className.includes("not-run"));
       expect(testItems.length).toBe(3);
 
       // Simulate test results being added
@@ -280,14 +295,14 @@ describe("TestPanel", () => {
           { testId: "test-1", passed: true, executionTime: 10, steps: [], consoleLogs: [] },
         ],
       ]);
-      vi.mocked(useAppStore).mockReturnValue(mockResults2);
+      setupStoreMock(mockResults2);
 
       rerender(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       // Check for passed CSS class after re-render
       testItems = screen
-        .getAllByRole("generic", { hidden: true })
-        .filter((el) => el.className === "test-item passed");
+        .getAllByRole("button")
+        .filter((el) => el.className.includes("test-item") && el.className.includes("passed"));
       expect(testItems.length).toBe(1);
       expect(screen.getByText("1/1 passed")).toBeInTheDocument();
     });
@@ -297,6 +312,76 @@ describe("TestPanel", () => {
 
       const testNames = screen.getAllByText(/Test$/).map((el) => el.textContent);
       expect(testNames).toEqual(["Easy Test", "Medium Test", "Hard Test"]);
+    });
+  });
+
+  describe("Test Case Selection", () => {
+    it("should highlight the selected test case", () => {
+      setupStoreMock(new Map(), "medium");
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
+
+      // The medium test should have the selected class
+      const testItems = screen
+        .getAllByRole("button")
+        .filter((el) => el.className.includes("test-item"));
+
+      const mediumTest = testItems.find((el) => el.className.includes("selected"));
+      expect(mediumTest).toBeDefined();
+      expect(mediumTest?.textContent).toContain("Medium Test");
+    });
+
+    it("should call setSelectedDifficulty when clicking a test case", async () => {
+      const user = userEvent.setup();
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
+
+      // Find the hard test item and click it
+      const testItems = screen
+        .getAllByRole("button")
+        .filter((el) => el.className.includes("test-item"));
+      const hardTest = testItems.find((el) => el.textContent?.includes("Hard Test"));
+
+      if (hardTest) {
+        await user.click(hardTest);
+      }
+
+      expect(mockSetSelectedDifficulty).toHaveBeenCalledWith("hard");
+    });
+
+    it("should not trigger selection when clicking Run button", async () => {
+      const user = userEvent.setup();
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
+
+      // Click the Run button on the hard test
+      const runButtons = screen.getAllByText("Run");
+      // The third Run button should be for the hard test
+      const runButton = runButtons[2];
+      expect(runButton).toBeDefined();
+      if (runButton) {
+        await user.click(runButton);
+      }
+
+      // setSelectedDifficulty should not be called
+      expect(mockSetSelectedDifficulty).not.toHaveBeenCalled();
+      // But onRunTest should be called with the hard test case
+      expect(mockOnRunTest).toHaveBeenCalledWith(mockTestCases[2]);
+    });
+
+    it("should support keyboard navigation for test selection", async () => {
+      const user = userEvent.setup();
+      render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
+
+      // Find the medium test item
+      const testItems = screen
+        .getAllByRole("button")
+        .filter((el) => el.className.includes("test-item"));
+      const mediumTest = testItems.find((el) => el.textContent?.includes("Medium Test"));
+
+      if (mediumTest) {
+        mediumTest.focus();
+        await user.keyboard("{Enter}");
+      }
+
+      expect(mockSetSelectedDifficulty).toHaveBeenCalledWith("medium");
     });
   });
 });

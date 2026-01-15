@@ -431,3 +431,38 @@ All acceptance criteria met:
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1287 tests passing). Updated prd.json to mark UI-005 as passes=true.
 
+2026-01-15: Completed UI-006 (Fix difficulty badge not updating after Show Solution) - Fixed the issue where the difficulty badge in the Editor header didn't update when selecting different test cases in the TestPanel.
+
+Root cause: The TestPanel displayed test cases but didn't provide a way to select them. Users could only run tests but not switch between difficulty levels from the TestPanel. The `selectedDifficulty` state in the store was only updated when using the difficulty selector in the EditorPanel (which was removed), not when clicking on test cases.
+
+Solution implemented:
+
+1. **TestPanel.tsx**:
+   - Added click handler to test items that calls `setSelectedDifficulty(testCase.difficulty)` when clicking on a test case
+   - Added `selectedDifficulty` and `setSelectedDifficulty` from the store
+   - Added `isSelected` check to highlight the currently selected test case
+   - Added `role="button"`, `tabIndex={0}`, and keyboard handler for accessibility
+   - Added `e.stopPropagation()` on Run button click to prevent selecting when running
+
+2. **TestPanel.css**:
+   - Added `cursor: pointer` to `.test-item` to indicate clickability
+   - Added `.test-item.selected` styling with blue border and subtle background
+   - Added `:focus` styling for keyboard navigation accessibility
+
+3. **TestPanel.test.tsx**:
+   - Updated store mock to use `mockImplementation` with selector pattern
+   - Added `setupStoreMock()` helper function for cleaner test setup
+   - Added 4 new tests for test case selection functionality:
+     - "should highlight the selected test case"
+     - "should call setSelectedDifficulty when clicking a test case"
+     - "should not trigger selection when clicking Run button"
+     - "should support keyboard navigation for test selection"
+   - Updated existing tests to use the new mock pattern
+
+All acceptance criteria met:
+- When selecting a hard test case, badge shows 'hard' ✓
+- When clicking 'Show Solution', badge still reflects selected test difficulty ✓
+- Badge updates correctly when switching between test cases of different difficulties ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1291 tests passing, increased from 1287 due to 4 new tests). Updated prd.json to mark UI-006 as passes=true.
+
