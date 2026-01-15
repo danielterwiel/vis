@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "project": {
     "name": "Data Structure Visualizer",
-    "description": "CodePen-like application for visualizing data structures with real-time animated visualization",
+    "description": "CodePen-like application for visualizing data structures with real-time animated visualization. 100% client-side, no backend.",
     "repository": "https://github.com/user/vis"
   },
   "metadata": {
@@ -11,741 +11,464 @@
     "lastUpdated": "2026-01-15",
     "methodology": "Ralph Wiggum - Autonomous AI Agent Development",
     "validationCommand": "npm run validate",
-    "devServer": "npm run dev"
+    "devServer": "npm run dev",
+    "iteration": 1,
+    "testingTool": "agent-browser"
   },
   "userStories": [
     {
-      "id": "US-TEST-001",
-      "title": "Array Data Structure - Complete Functionality Test",
-      "description": "Verify that the Array data structure works correctly with all difficulty levels, showing proper visualization, running tests successfully, and displaying solutions.",
-      "priority": "high",
-      "dataStructure": "array",
-      "acceptanceCriteria": [
-        "Selecting 'Array' from the data structure dropdown loads the easy difficulty by default",
-        "Skeleton code for array operations is displayed in the editor",
-        "Clicking 'Show Solution' displays a confirmation dialog and loads the reference solution",
-        "Clicking 'Run All Tests' executes all three difficulty levels (easy, medium, hard)",
-        "All tests pass when reference solution is used",
-        "Visualization panel shows animated array operations",
-        "Test results show pass/fail status correctly"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser click @ref_to_data_structure_select",
-        "npx agent-browser select @ref_to_data_structure_select --value array",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser get text @ref_to_editor --json | jq '.text | contains(\"function\")'",
-        "npx agent-browser click @ref_to_show_solution_button",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser is visible @ref_to_confirm_dialog",
-        "npx agent-browser click @ref_to_confirm_button",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser get text @ref_to_editor --json | jq '.text | contains(\"referenceSolution\")'",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 5000",
-        "npx agent-browser is visible @ref_to_test_results",
-        "npx agent-browser is visible @ref_to_visualization",
-        "npx agent-browser get text @ref_to_test_status --json | jq '.text | contains(\"pass\")'",
-        "npx agent-browser snapshot -i -c"
-      ],
+      "id": "BUG-001",
+      "title": "Binary Tree Template Registration Mismatch - EditorPanel Crash",
+      "description": "The Binary Tree templates are registered with identifier 'binarytree' but the DataStructureType uses 'tree', causing complete page crash. EditorPanel component throws error and page displays blank. Console shows: 'An error occurred in the <EditorPanel> component'.",
+      "category": "critical",
+      "priority": "critical",
+      "status": "verified",
       "passes": true,
-      "notes": "Verified via automated test suite - 1248 tests passing. Array data structure fully implemented with TrackedArray (46 tests), ArrayVisualizer (20 tests), array test cases (25 tests), and array templates (29 tests). All validation checks pass: lint, format, typecheck, and test coverage."
+      "actualBehavior": "Navigating to http://localhost:5173/?ds=tree&difficulty=easy results in completely blank page. Console shows EditorPanel component error. No UI elements render.",
+      "expectedBehavior": "Binary Tree page loads successfully with skeleton code in editor and test cases visible.",
+      "acceptanceCriteria": [
+        "Binary Tree templates are registered with identifier 'tree' (not 'binarytree')",
+        "Navigating to ?ds=tree loads without errors",
+        "EditorPanel renders successfully with skeleton code",
+        "No console errors when Binary Tree is selected",
+        "All three difficulty levels (easy, medium, hard) load correctly for Binary Tree",
+        "Visualization panel displays tree structure placeholder",
+        "Test cases panel shows Binary Tree test cases"
+      ],
+      "verify": [
+        {
+          "step": 1,
+          "action": "Navigate to Binary Tree page",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=tree&difficulty=easy'",
+          "expected": "Page loads without blank screen"
+        },
+        {
+          "step": 2,
+          "action": "Check console for errors",
+          "command": "agent-browser console --json",
+          "expected": "No EditorPanel errors, no template registration errors"
+        },
+        {
+          "step": 3,
+          "action": "Verify page content renders",
+          "command": "agent-browser snapshot",
+          "expected": "Editor, test cases, and visualization panels all visible"
+        },
+        {
+          "step": 4,
+          "action": "Verify skeleton code loaded",
+          "command": "agent-browser snapshot -i | grep 'textbox'",
+          "expected": "Editor textbox present with content"
+        },
+        {
+          "step": 5,
+          "action": "Test Show Solution button",
+          "command": "agent-browser click @showSolutionButton",
+          "expected": "Reference solution loads without errors"
+        },
+        {
+          "step": 6,
+          "action": "Test all difficulty levels",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=tree&difficulty=medium' && agent-browser goto 'http://localhost:5173/?ds=tree&difficulty=hard'",
+          "expected": "All difficulty levels load successfully"
+        }
+      ],
+      "technicalDetails": {
+        "files": ["src/templates/binaryTree/index.ts"],
+        "rootCause": "Template registration uses 'binarytree' identifier but DataStructureType enum uses 'tree'",
+        "fix": "Change registration calls from registerTemplate('binarytree', ...) to registerTemplate('tree', ...)",
+        "location": "src/templates/binaryTree/index.ts lines 78-80"
+      }
     },
     {
-      "id": "US-TEST-002",
-      "title": "Linked List Data Structure - Complete Functionality Test",
-      "description": "Verify that the Linked List data structure works correctly with all difficulty levels, showing proper visualization of node traversal and pointer operations.",
+      "id": "BUG-002",
+      "title": "Loop Counter Variable Scoping Error in Code Instrumentation",
+      "description": "When instrumenting user code with loop counters for infinite loop detection, the __loopCount_N variables are not properly scoped. This causes 'is not defined' errors when running reference solutions with loops. Affects Stack (Balanced Parentheses), Queue (Basic Queue Operations, Reverse First K, Interleave), and HashMap (all tests). Different loop counter indexes fail: __loopCount_0, __loopCount_9.",
+      "category": "critical",
+      "priority": "critical",
+      "status": "verified",
+      "passes": false,
+      "actualBehavior": "Running tests with reference solutions containing loops throws errors: '__loopCount_0 is not defined' or '__loopCount_9 is not defined'. Tests fail immediately with this error.",
+      "expectedBehavior": "Loop counter variables are properly declared and scoped. All reference solutions with loops execute successfully without variable scoping errors.",
+      "acceptanceCriteria": [
+        "Stack easy test 'Balanced Parentheses Checker' reference solution runs without '__loopCount_0' error",
+        "Queue tests with loops execute without loop counter errors",
+        "HashMap tests execute without '__loopCount_9' error",
+        "All reference solutions with while, for, and do-while loops work correctly",
+        "Loop counter variables are declared at correct scope (function-level)",
+        "Counter declaration placement handles nested functions and arrow functions",
+        "SWC instrumentation properly handles all loop types"
+      ],
+      "verify": [
+        {
+          "step": 1,
+          "action": "Test Stack - Balanced Parentheses",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=stack&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep '__loopCount'",
+          "expected": "No __loopCount errors appear"
+        },
+        {
+          "step": 2,
+          "action": "Test Queue - Basic Queue Operations",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=queue&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep '__loopCount'",
+          "expected": "No __loopCount errors appear"
+        },
+        {
+          "step": 3,
+          "action": "Test HashMap - All difficulties",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=hashMap&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep '__loopCount'",
+          "expected": "No __loopCount errors appear"
+        },
+        {
+          "step": 4,
+          "action": "Verify test results show passed, not errors",
+          "command": "agent-browser snapshot | grep 'Passed\\|passed'",
+          "expected": "Tests show 'Passed' status, not loop counter errors"
+        },
+        {
+          "step": 5,
+          "action": "Check console for instrumentation errors",
+          "command": "agent-browser console",
+          "expected": "No errors related to loop counter variables"
+        }
+      ],
+      "technicalDetails": {
+        "files": ["src/lib/execution/instrumenter.ts"],
+        "rootCause": "Regex-based loop counter injection (lines 83-109) doesn't properly handle function scoping. The counter declaration is inserted before the loop keyword but may be in wrong scope when loop is inside a function.",
+        "investigation": "The regex `/(while\\s*\\(|for\\s*\\(|do\\s*\\{)/g` captures loop keywords but the replacement inserts counter declaration immediately before the keyword. This doesn't account for function boundaries.",
+        "potentialFix": [
+          "Use SWC AST transformation instead of regex to properly detect function boundaries",
+          "Declare all loop counters at function scope at the beginning of each function",
+          "Track function depth during transformation and insert declarations at correct level",
+          "Consider using function-scoped counter with loop-specific suffixes"
+        ]
+      }
+    },
+    {
+      "id": "BUG-003",
+      "title": "Array Reference Solutions Return Undefined - Missing Return Statements",
+      "description": "All Array reference solutions fail tests because they return undefined instead of the expected sorted array. Easy, medium, and hard difficulty all affected. Tests show: 'Expected undefined to equal [1,2,5,8,9]' type errors.",
+      "category": "critical",
       "priority": "high",
-      "dataStructure": "linkedList",
+      "status": "verified",
+      "passes": false,
+      "actualBehavior": "Array reference solutions execute but return undefined. Tests fail with: 'Sort Small Array: Expected undefined to equal [1,2,5,8,9]', 'Bubble Sort: Expected undefined to equal [11,12,22,25,34,64,90]', 'Quick Sort: Expected undefined to equal [10,30,40,50,70,80,90]'.",
+      "expectedBehavior": "Array reference solutions return the sorted array. Tests pass with correct output matching expected values.",
       "acceptanceCriteria": [
-        "Selecting 'Linked List' from the data structure dropdown loads the easy difficulty",
-        "Skeleton code for linked list operations is displayed",
-        "Clicking 'Show Solution' loads the reference solution after confirmation",
-        "Clicking 'Run All Tests' executes all test cases successfully",
-        "Visualization shows linked list nodes with arrows/pointers",
-        "Node traversal animations are visible during test execution",
-        "Test results correctly show pass/fail for each test case"
+        "Array easy reference solution returns sorted array",
+        "Array medium reference solution returns bubble-sorted array",
+        "Array hard reference solution returns quick-sorted array",
+        "All Array tests pass when using reference solutions",
+        "No 'Expected undefined to equal' errors occur"
       ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value linkedList",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser is visible @ref_to_editor",
-        "npx agent-browser get text @ref_to_editor --json | jq '.text | contains(\"TODO\")'",
-        "npx agent-browser click @ref_to_show_solution_button",
-        "npx agent-browser click @ref_to_confirm_button",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 5000",
-        "npx agent-browser is visible @ref_to_visualization_svg",
-        "npx agent-browser get text @ref_to_test_results --json"
+      "verify": [
+        {
+          "step": 1,
+          "action": "Navigate to Array easy",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=array&difficulty=easy'",
+          "expected": "Page loads successfully"
+        },
+        {
+          "step": 2,
+          "action": "Load reference solution and run tests",
+          "command": "agent-browser click @showSolutionButton && sleep 1 && agent-browser click @runAllTestsButton && sleep 2",
+          "expected": "Tests execute"
+        },
+        {
+          "step": 3,
+          "action": "Verify test passes",
+          "command": "agent-browser snapshot | grep 'Sort Small Array'",
+          "expected": "Test shows 'Passed' status, not 'Expected undefined'"
+        },
+        {
+          "step": 4,
+          "action": "Test medium difficulty",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=array&difficulty=medium' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Bubble Sort'",
+          "expected": "Bubble Sort test passes"
+        },
+        {
+          "step": 5,
+          "action": "Test hard difficulty",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=array&difficulty=hard' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Quick Sort'",
+          "expected": "Quick Sort test passes"
+        }
       ],
-      "passes": true,
-      "notes": "Verified via automated test suite - 1248 tests passing. Linked list data structure fully implemented with TrackedLinkedList (56 tests), LinkedListVisualizer (23 tests), linked list test cases (30 tests), and linked list templates (17 tests). All validation checks pass: lint, format, typecheck, and test coverage."
+      "technicalDetails": {
+        "files": ["src/lib/testing/testCases/arrayTests.ts"],
+        "rootCause": "Reference solutions in arrayTests.ts likely missing return statements or returning void",
+        "investigation": "Check referenceSolution fields for easy, medium, and hard tests - they probably mutate array in place but don't return it"
+      }
     },
     {
-      "id": "US-TEST-003",
-      "title": "Stack Data Structure - Complete Functionality Test",
-      "description": "Verify that the Stack data structure works correctly with LIFO operations visualized properly.",
+      "id": "BUG-004",
+      "title": "LinkedList Reference Solutions Return Null - Incorrect Implementation",
+      "description": "All LinkedList reference solutions fail tests because they return null instead of expected values. Easy test expects node value 30, medium expects reversed list [5,4,3,2,1], hard expects boolean false. All return null.",
+      "category": "critical",
       "priority": "high",
-      "dataStructure": "stack",
+      "status": "verified",
+      "passes": false,
+      "actualBehavior": "LinkedList reference solutions return null. Tests fail with: 'Find Element: Expected null to be 30', 'Reverse Linked List: Expected null to equal [5,4,3,2,1]', 'Detect Cycle: Expected null to be false'.",
+      "expectedBehavior": "LinkedList reference solutions return correct values: node value for find, reversed list array for reverse, boolean for cycle detection.",
       "acceptanceCriteria": [
-        "Selecting 'Stack' from the data structure dropdown loads the easy difficulty",
-        "Skeleton code for stack push/pop operations is displayed",
-        "Clicking 'Show Solution' loads the reference solution",
-        "Clicking 'Run All Tests' executes all stack test cases",
-        "Visualization shows vertical stack with LIFO behavior",
-        "Push and pop animations are visible",
-        "All tests pass with reference solution"
+        "LinkedList easy reference solution returns correct node value",
+        "LinkedList medium reference solution returns reversed list as array",
+        "LinkedList hard reference solution returns boolean for cycle detection",
+        "All LinkedList tests pass when using reference solutions",
+        "No 'Expected null' errors occur"
       ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value stack",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser click @ref_to_show_solution_button",
-        "npx agent-browser click @ref_to_confirm_button",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 5000",
-        "npx agent-browser is visible @ref_to_stack_visualization",
-        "npx agent-browser get text @ref_to_test_status --json | jq '.text | contains(\"pass\")'"
+      "verify": [
+        {
+          "step": 1,
+          "action": "Test LinkedList easy",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=linkedList&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2",
+          "expected": "Test passes"
+        },
+        {
+          "step": 2,
+          "action": "Verify find element test",
+          "command": "agent-browser snapshot | grep 'Find Element'",
+          "expected": "Shows 'Passed', not 'Expected null to be 30'"
+        },
+        {
+          "step": 3,
+          "action": "Test medium difficulty",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=linkedList&difficulty=medium' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Reverse'",
+          "expected": "Reverse test passes"
+        },
+        {
+          "step": 4,
+          "action": "Test hard difficulty",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=linkedList&difficulty=hard' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Cycle'",
+          "expected": "Cycle detection test passes"
+        }
       ],
-      "passes": true,
-      "notes": "Verified via automated test suite - 1248 tests passing. Stack data structure fully implemented with TrackedStack (41 tests), trackedStackBundle (16 tests), StackQueueVisualizer (28 tests including stack mode), stack test cases (39 tests in stackQueueTests), and stack templates (3 difficulty levels). All validation checks pass: lint, format, typecheck, and test coverage. Stack visualization uses vertical layout with LIFO behavior, showing push/pop operations with proper D3-based animations."
+      "technicalDetails": {
+        "files": ["src/lib/testing/testCases/linkedListTests.ts"],
+        "rootCause": "Reference solutions return null or don't return correct values",
+        "investigation": "Check referenceSolution implementations - they may have incorrect return statements or logic errors"
+      }
     },
     {
-      "id": "US-TEST-004",
-      "title": "Queue Data Structure - Complete Functionality Test",
-      "description": "Verify that the Queue data structure works correctly with FIFO operations visualized properly.",
+      "id": "BUG-005",
+      "title": "Graph Reference Solutions Return Undefined - BFS and Dijkstra Issues",
+      "description": "All Graph reference solutions fail tests because they return undefined instead of expected arrays. BFS should return vertex traversal array ['A','B','C','D','E'], Dijkstra should return path array.",
+      "category": "critical",
       "priority": "high",
-      "dataStructure": "queue",
+      "status": "verified",
+      "passes": false,
+      "actualBehavior": "Graph reference solutions return undefined. Tests fail with: 'BFS Traversal: Expected undefined to equal [\"A\",\"B\",\"C\",\"D\",\"E\"]', 'Detect Cycle: Expected undefined to be true', 'Dijkstra: Expected undefined to equal [\"A\",\"C\",\"B\",\"D\",\"E\"]'.",
+      "expectedBehavior": "Graph reference solutions return correct arrays/booleans. BFS returns traversal order, cycle detection returns boolean, Dijkstra returns shortest path.",
       "acceptanceCriteria": [
-        "Selecting 'Queue' from the data structure dropdown loads the easy difficulty",
-        "Skeleton code for queue enqueue/dequeue operations is displayed",
-        "Clicking 'Show Solution' loads the reference solution",
-        "Clicking 'Run All Tests' executes all queue test cases",
-        "Visualization shows horizontal queue with FIFO behavior",
-        "Enqueue and dequeue animations show elements moving",
-        "All tests pass with reference solution"
+        "Graph BFS test passes with correct vertex traversal array",
+        "Graph cycle detection returns boolean correctly",
+        "Graph Dijkstra's algorithm returns correct path array",
+        "TrackedGraph.bfs() method returns array in correct format",
+        "All Graph tests pass when using reference solutions",
+        "No 'Expected undefined' errors occur"
       ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value queue",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser click @ref_to_show_solution_button",
-        "npx agent-browser click @ref_to_confirm_button",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 5000",
-        "npx agent-browser is visible @ref_to_queue_visualization",
-        "npx agent-browser get text @ref_to_test_status --json"
+      "verify": [
+        {
+          "step": 1,
+          "action": "Test Graph BFS",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=graph&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2",
+          "expected": "BFS test passes"
+        },
+        {
+          "step": 2,
+          "action": "Verify BFS returns array",
+          "command": "agent-browser snapshot | grep 'BFS Traversal'",
+          "expected": "Shows 'Passed', not 'Expected undefined'"
+        },
+        {
+          "step": 3,
+          "action": "Test cycle detection",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=graph&difficulty=medium' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Cycle'",
+          "expected": "Cycle detection test passes"
+        },
+        {
+          "step": 4,
+          "action": "Test Dijkstra",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=graph&difficulty=hard' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'Dijkstra'",
+          "expected": "Dijkstra test passes"
+        },
+        {
+          "step": 5,
+          "action": "Verify TrackedGraph.bfs() method exists",
+          "command": "grep -n 'bfs' src/lib/dataStructures/TrackedGraph.ts",
+          "expected": "BFS method is defined and returns array"
+        }
       ],
-      "passes": true,
-      "notes": "Verified via automated test suite - 1248 tests passing. Queue data structure fully implemented with TrackedQueue (41 tests), trackedQueueBundle (16 tests), StackQueueVisualizer (28 tests supporting both stack and queue modes), queue test cases (3 tests in stackQueueTests: easy - Basic Queue Operations, medium - Reverse First K Elements, hard - Interleave Two Halves), and queue templates (3 difficulty levels). Queue uses horizontal layout with FIFO (First-In-First-Out) behavior. D3-based visualization renders left-to-right showing enqueue/dequeue operations with proper animations. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1248 tests passing)."
+      "technicalDetails": {
+        "files": [
+          "src/lib/testing/testCases/graphTests.ts",
+          "src/lib/dataStructures/TrackedGraph.ts"
+        ],
+        "rootCause": "Reference solution calls graph.bfs(start) but may not return the result, or TrackedGraph.bfs() doesn't return correctly",
+        "investigation": "Verify TrackedGraph has bfs() method that returns array. Check if reference solution returns the bfs() call result."
+      }
     },
     {
-      "id": "US-TEST-005",
-      "title": "Binary Tree Data Structure - Complete Functionality Test",
-      "description": "Verify that the Binary Tree data structure works correctly with tree traversal and manipulation operations.",
+      "id": "BUG-006",
+      "title": "Stack and Queue Test Cases Use createTracked* Functions Not Available in Sandbox",
+      "description": "Stack test cases reference createTrackedQueue function, and Queue test cases reference createTrackedStack function. These factory functions don't exist in the sandbox environment, causing 'is not defined' errors. The tests appear to be using the wrong tracked data structure constructors.",
+      "category": "critical",
       "priority": "high",
-      "dataStructure": "tree",
+      "status": "verified",
+      "passes": false,
+      "actualBehavior": "Stack tests fail with 'createTrackedQueue is not defined'. Queue tests fail with 'createTrackedStack is not defined'. Multiple tests affected across both data structures.",
+      "expectedBehavior": "Test cases use correct tracked data structure constructors available in sandbox. Stack tests use createTrackedStack or TrackedStack. Queue tests use createTrackedQueue or TrackedQueue.",
       "acceptanceCriteria": [
-        "Selecting 'Binary Tree' from the data structure dropdown loads the easy difficulty",
-        "Skeleton code for tree operations is displayed",
-        "Clicking 'Show Solution' loads the reference solution",
-        "Clicking 'Run All Tests' executes all tree test cases",
-        "Visualization shows hierarchical tree structure with nodes and edges",
-        "Tree traversal animations highlight visited nodes",
-        "All tests pass with reference solution"
+        "Stack test cases only reference createTrackedStack or TrackedStack",
+        "Queue test cases only reference createTrackedQueue or TrackedQueue",
+        "All createTracked* factory functions are properly bundled in test runner",
+        "No 'is not defined' errors for tracked data structure constructors",
+        "Stack tests execute successfully without Queue-related errors",
+        "Queue tests execute successfully without Stack-related errors"
       ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value tree",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser click @ref_to_show_solution_button",
-        "npx agent-browser click @ref_to_confirm_button",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 5000",
-        "npx agent-browser is visible @ref_to_tree_visualization",
-        "npx agent-browser get text @ref_to_test_status --json"
+      "verify": [
+        {
+          "step": 1,
+          "action": "Test Stack - Check for Queue references",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=stack&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'createTrackedQueue'",
+          "expected": "No 'createTrackedQueue is not defined' errors"
+        },
+        {
+          "step": 2,
+          "action": "Test Queue - Check for Stack references",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=queue&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep 'createTrackedStack'",
+          "expected": "No 'createTrackedStack is not defined' errors"
+        },
+        {
+          "step": 3,
+          "action": "Verify bundle includes correct factories",
+          "command": "grep -n 'createTrackedStack\\|createTrackedQueue' src/lib/testing/testRunner.ts",
+          "expected": "Both factory functions are imported and included in bundle"
+        },
+        {
+          "step": 4,
+          "action": "Review Stack test cases",
+          "command": "grep -n 'createTracked' src/lib/testing/testCases/stackQueueTests.ts | head -20",
+          "expected": "Stack tests use createTrackedStack, Queue tests use createTrackedQueue"
+        }
       ],
-      "passes": true,
-      "notes": "Verified via automated test suite - 1248 tests passing. Binary Tree data structure fully implemented with TrackedBinaryTree (39 tests), BinaryTreeVisualizer (24 tests), binary tree test cases (22 tests), and binary tree templates (3 difficulty levels: Easy - In-Order Traversal, Medium - Validate BST Property, Hard - Balance an Unbalanced BST). D3-based hierarchical tree visualization with proper node layout, animated edges, and color-coded operations (insert=green, search=purple, delete=red, path=orange). TrackedBinaryTree includes insert, search, delete (with 3 cases: leaf/one-child/two-children), three traversal methods (inorder/preorder/postorder), isValidBST validation, and utility methods (getHeight, getSize, toArray, toHierarchy). Sandboxed bundle (trackedBinaryTreeBundle) with 32 tests ensures user code execution in iframe. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1248 tests passing)."
+      "technicalDetails": {
+        "files": ["src/lib/testing/testCases/stackQueueTests.ts", "src/lib/testing/testRunner.ts"],
+        "rootCause": "Test cases in stackQueueTests.ts reference wrong tracked data structure constructors, OR factory functions aren't properly exported/bundled",
+        "investigation": "Check if test case setup code uses createTrackedQueue when it should use createTrackedStack and vice versa. Also verify testRunner.ts bundles these factory functions."
+      }
     },
     {
-      "id": "US-TEST-006",
-      "title": "Graph Data Structure - Complete Functionality Test",
-      "description": "Verify that the Graph data structure works correctly with graph traversal algorithms and visualization.",
+      "id": "BUG-007",
+      "title": "Stack Data Structure Shows Queue Test Cases (Test Case Mismatch)",
+      "description": "When Stack data structure is selected, the test cases displayed include Queue-specific tests like 'Basic Queue Operations', 'Reverse First K Elements', and 'Interleave Two Halves of Queue'. These should only appear for Queue data structure.",
+      "category": "high",
       "priority": "high",
-      "dataStructure": "graph",
+      "status": "verified",
+      "passes": false,
+      "actualBehavior": "Selecting Stack shows 5 test cases: 'Balanced Parentheses Checker' (correct), 'Basic Queue Operations' (wrong), 'Reverse First K Elements' (wrong), 'Interleave Two Halves of Queue' (wrong), 'Min Stack with O(1) getMin' (correct).",
+      "expectedBehavior": "Stack should only show Stack-specific test cases. Queue test cases should only appear when Queue data structure is selected.",
       "acceptanceCriteria": [
-        "Selecting 'Graph' from the data structure dropdown loads the easy difficulty",
-        "Skeleton code for graph operations is displayed",
-        "Clicking 'Show Solution' loads the reference solution",
-        "Clicking 'Run All Tests' executes all graph test cases",
-        "Visualization shows graph vertices and edges",
-        "Graph traversal (BFS/DFS) animations are visible",
-        "All tests pass with reference solution"
+        "Stack data structure shows only Stack test cases (no Queue tests)",
+        "Queue data structure shows only Queue test cases (no Stack tests)",
+        "Test case IDs correctly map to data structures (stack- prefix for stack tests, queue- prefix for queue tests)",
+        "Test case filtering in UI correctly separates Stack and Queue tests",
+        "Each data structure shows exactly 3 test cases (easy, medium, hard)"
       ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value graph",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser click @ref_to_show_solution_button",
-        "npx agent-browser click @ref_to_confirm_button",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 5000",
-        "npx agent-browser is visible @ref_to_graph_visualization",
-        "npx agent-browser get text @ref_to_test_status --json"
+      "verify": [
+        {
+          "step": 1,
+          "action": "Navigate to Stack and list test cases",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=stack&difficulty=easy' && agent-browser snapshot | grep 'Queue'",
+          "expected": "No Queue-related test names appear"
+        },
+        {
+          "step": 2,
+          "action": "Verify Stack test case count",
+          "command": "agent-browser snapshot | grep -E 'easy|medium|hard' | wc -l",
+          "expected": "Exactly 3 test cases shown"
+        },
+        {
+          "step": 3,
+          "action": "Navigate to Queue and verify no Stack tests",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=queue&difficulty=easy' && agent-browser snapshot | grep 'Stack'",
+          "expected": "No Stack-specific tests like 'Min Stack' appear"
+        },
+        {
+          "step": 4,
+          "action": "Review test case definitions",
+          "command": "grep -n 'id.*:.*stack\\|id.*:.*queue' src/lib/testing/testCases/stackQueueTests.ts | head -20",
+          "expected": "Test IDs properly use 'stack-' and 'queue-' prefixes"
+        }
       ],
-      "passes": true,
-      "notes": "Verified via automated test suite - 1248 tests passing. Graph data structure fully implemented with TrackedGraph (40 tests), GraphVisualizer (30 tests), graph test cases (26 tests), and graph templates (3 difficulty levels: Easy - BFS Traversal, Medium - Cycle Detection, Hard - Dijkstra's Shortest Path). D3-based force-directed graph visualization with proper vertex/edge layout, animated traversal highlighting, and color-coded operations (active=green, current=amber, visited=purple, default=blue). TrackedGraph includes addVertex, addEdge, removeVertex, removeEdge, BFS/DFS traversals with step-by-step emission, cycle detection for both directed/undirected graphs, and shortest path (unweighted BFS). Supports both directed and undirected graphs with optional edge weights. Sandboxed bundle (trackedGraphBundle) with 33 tests ensures user code execution in iframe. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1248 tests passing)."
+      "technicalDetails": {
+        "files": [
+          "src/lib/testing/testCases/stackQueueTests.ts",
+          "src/components/TestPanel/TestPanel.tsx"
+        ],
+        "rootCause": "Test case filtering logic doesn't properly separate Stack and Queue tests, OR test IDs are incorrect/inconsistent",
+        "investigation": "Check how TestPanel filters tests by data structure type. Verify test case IDs in stackQueueTests.ts use correct prefixes."
+      }
     },
     {
-      "id": "US-TEST-007",
-      "title": "Hash Map Data Structure - Complete Functionality Test",
-      "description": "Verify that the Hash Map data structure works correctly with hash table operations and collision handling visualization.",
+      "id": "BUG-008",
+      "title": "HashMap Tests All Fail with Loop Counter Error - Same as BUG-002",
+      "description": "All HashMap tests (easy, medium, hard) fail with '__loopCount_9 is not defined' error. This is manifestation of BUG-002 affecting HashMap specifically. Tests cannot execute because of instrumentation scoping issue.",
+      "category": "critical",
       "priority": "high",
-      "dataStructure": "hashMap",
-      "acceptanceCriteria": [
-        "Selecting 'Hash Map' from the data structure dropdown loads the easy difficulty",
-        "Skeleton code for hash map get/set operations is displayed",
-        "Clicking 'Show Solution' loads the reference solution",
-        "Clicking 'Run All Tests' executes all hash map test cases",
-        "Visualization shows hash table buckets and entries",
-        "Collision chains are visible when multiple keys hash to same bucket",
-        "All tests pass with reference solution"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value hashMap",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser click @ref_to_show_solution_button",
-        "npx agent-browser click @ref_to_confirm_button",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 5000",
-        "npx agent-browser is visible @ref_to_hashmap_visualization",
-        "npx agent-browser get text @ref_to_test_status --json"
-      ],
-      "passes": true,
-      "notes": "Verified via automated test suite - 1286 tests passing. Hash Map data structure fully implemented with TrackedHashMap (45 tests), HashMapVisualizer component, hash map test cases (17 tests in hashMapTests.test.ts), hash map templates (3 difficulty levels: Easy - Basic Get/Set Operations, Medium - Collision Handling with Chaining, Hard - Character Frequency Counter), and trackedHashMapBundle (14 tests). D3-based bucket grid visualization (8 columns × 2 rows) with color-coded operations (active=green, collision=orange, found=purple, deleted=red). TrackedHashMap uses djb2 hash function with separate chaining for collision resolution, automatic resizing when load factor exceeds threshold (default 0.75), and complete set/get/delete/has/clear/resize/keys/values/entries API. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1286 tests passing, up from 1248)."
-    },
-    {
-      "id": "US-TEST-008",
-      "title": "Difficulty Level Switching",
-      "description": "Verify that switching between difficulty levels (easy, medium, hard) works correctly for each data structure.",
-      "priority": "medium",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Difficulty selector shows three options: Easy, Medium, Hard",
-        "Switching difficulty updates the skeleton code in the editor",
-        "Switching difficulty loads the appropriate test cases",
-        "Previous code is saved when switching difficulties",
-        "URL parameters update to reflect current difficulty",
-        "Test results are cleared when switching difficulty"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value array",
-        "npx agent-browser click @ref_to_difficulty_easy",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser get text @ref_to_editor --json",
-        "npx agent-browser click @ref_to_difficulty_medium",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser get text @ref_to_editor --json",
-        "npx agent-browser click @ref_to_difficulty_hard",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser get text @ref_to_editor --json"
-      ],
+      "status": "verified",
       "passes": false,
-      "notes": "Verify code persistence when switching difficulties"
-    },
-    {
-      "id": "US-TEST-009",
-      "title": "Visualization Mode Switching",
-      "description": "Verify that all visualization modes (My Execution, Show Expected, Compare, Skeleton, Show Solution) work correctly.",
-      "priority": "high",
-      "dataStructure": "all",
+      "actualBehavior": "HashMap tests fail immediately with '__loopCount_9 is not defined'. All three difficulty levels affected: 'Basic Get/Set Operations', 'Collision Handling with Chaining', 'Character Frequency Counter'.",
+      "expectedBehavior": "HashMap tests execute successfully without loop counter errors. Reference solutions with loops work correctly.",
       "acceptanceCriteria": [
-        "Mode selector shows all five visualization modes",
-        "'My Execution' mode shows user's code execution steps",
-        "'Show Expected' mode shows expected output visualization",
-        "'Compare' mode shows side-by-side comparison",
-        "'Skeleton' mode shows initial data structure state",
-        "'Show Solution' mode displays reference solution and loads it into editor",
-        "Modes are properly disabled when no steps are available"
+        "HashMap easy test runs without '__loopCount_9' error",
+        "HashMap medium test runs without loop counter errors",
+        "HashMap hard test runs without loop counter errors",
+        "All HashMap reference solutions execute successfully"
       ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser is visible @ref_to_mode_selector",
-        "npx agent-browser click @ref_to_mode_skeleton",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser click @ref_to_mode_expected",
-        "npx agent-browser snapshot -i -c --wait 2000",
-        "npx agent-browser click @ref_to_mode_my_execution",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser click @ref_to_mode_compare",
-        "npx agent-browser snapshot -i -c"
+      "verify": [
+        {
+          "step": 1,
+          "action": "Test HashMap easy",
+          "command": "agent-browser goto 'http://localhost:5173/?ds=hashMap&difficulty=easy' && agent-browser click @showSolutionButton && agent-browser click @runAllTestsButton && sleep 2 && agent-browser snapshot | grep '__loopCount'",
+          "expected": "No __loopCount errors"
+        },
+        {
+          "step": 2,
+          "action": "Verify tests pass",
+          "command": "agent-browser snapshot | grep 'Passed\\|passed'",
+          "expected": "Tests show Passed status"
+        }
       ],
-      "passes": true,
-      "notes": "Verified via automated test suite - 1287 tests passing. Visualization mode switching fully implemented with five modes: 'user-code' (My Execution), 'expected-output' (Show Expected), 'comparison' (Compare), 'skeleton', and 'reference' (Show Solution). ModeSelector component (23 tests) renders all five mode buttons with proper enable/disable logic. Each mode has dedicated steps storage (userCodeSteps, expectedOutputSteps, referenceSteps) that persists when switching modes. ComparisonView component (16 tests) handles side-by-side visualization with synchronized step indices. EditorPanel (8 tests) properly loads reference solution when switching to reference mode and makes editor read-only. Mode switching resets currentStepIndex to 0 and preserves steps for each mode independently. Auto-switch safety ensures invalid modes default to skeleton. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1287 tests passing, increased from 1286)."
-    },
-    {
-      "id": "US-TEST-010",
-      "title": "Animation Controls",
-      "description": "Verify that animation playback controls (play, pause, previous, next, reset) work correctly.",
-      "priority": "medium",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Play button starts animation from current step",
-        "Pause button stops animation",
-        "Previous button moves to previous step",
-        "Next button moves to next step",
-        "Step counter shows current step / total steps",
-        "Animation auto-plays after test execution",
-        "Animation controls are disabled when no steps available"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value array",
-        "npx agent-browser click @ref_to_show_solution_button",
-        "npx agent-browser click @ref_to_confirm_button",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 3000",
-        "npx agent-browser is visible @ref_to_play_button",
-        "npx agent-browser click @ref_to_pause_button",
-        "npx agent-browser click @ref_to_next_button",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser get text @ref_to_step_counter --json",
-        "npx agent-browser click @ref_to_previous_button",
-        "npx agent-browser snapshot -i -c"
-      ],
-      "passes": false,
-      "notes": "Check if animation speed is appropriate (16ms per frame)"
-    },
-    {
-      "id": "US-TEST-011",
-      "title": "Console Output Display",
-      "description": "Verify that console logs from user code are captured and displayed correctly.",
-      "priority": "medium",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Console panel is visible at bottom of visualization panel",
-        "console.log() statements in user code appear in console panel",
-        "Different log levels (log, warn, error, info) are styled differently",
-        "Clear button clears all console logs",
-        "Console logs include timestamps",
-        "Console logs from test execution are captured"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser is visible @ref_to_console_panel",
-        "npx agent-browser click @ref_to_clear_console_button",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value array",
-        "npx agent-browser fill @ref_to_editor 'function sort(arr) { console.log(\"test\"); return arr; }'",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 2000",
-        "npx agent-browser is visible @ref_to_console_logs",
-        "npx agent-browser get text @ref_to_console_logs --json | jq '.text | contains(\"test\")'"
-      ],
-      "passes": false,
-      "notes": "Verify console capture works in sandboxed iframe"
-    },
-    {
-      "id": "US-TEST-012",
-      "title": "Hints System",
-      "description": "Verify that the hints system reveals hints progressively and persists hint state.",
-      "priority": "low",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Hint button is visible in editor panel",
-        "Clicking hint button reveals first hint",
-        "Clicking again reveals next hint",
-        "Hints are revealed progressively (not all at once)",
-        "Hint count is persisted in localStorage",
-        "Switching tests resets hint count",
-        "Maximum hints shown matches test case hint count"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser is visible @ref_to_hint_button",
-        "npx agent-browser click @ref_to_hint_button",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser is visible @ref_to_hint_display",
-        "npx agent-browser get text @ref_to_hint_display --json",
-        "npx agent-browser click @ref_to_hint_button",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser get text @ref_to_hint_display --json"
-      ],
-      "passes": false,
-      "notes": "Check hint persistence across page reloads"
-    },
-    {
-      "id": "US-TEST-013",
-      "title": "Code Persistence and LocalStorage",
-      "description": "Verify that user code is saved to localStorage and restored correctly.",
-      "priority": "medium",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "User code is automatically saved as they type",
-        "Code persists when switching between data structures",
-        "Code persists when switching difficulties",
-        "Code is restored on page reload",
-        "Storage key includes both data structure and difficulty",
-        "Clearing browser storage resets to skeleton code"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value array",
-        "npx agent-browser fill @ref_to_editor 'function test() { return 42; }'",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value linkedList",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser select @ref_to_data_structure_select --value array",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser get text @ref_to_editor --json | jq '.text | contains(\"test\")'",
-        "npx agent-browser execute 'window.location.reload()'",
-        "npx agent-browser snapshot -i -c --wait 2000",
-        "npx agent-browser get text @ref_to_editor --json | jq '.text | contains(\"test\")'"
-      ],
-      "passes": false,
-      "notes": "Verify localStorage quota is not exceeded"
-    },
-    {
-      "id": "US-TEST-014",
-      "title": "URL Parameter Synchronization",
-      "description": "Verify that URL parameters reflect and control the current state (data structure and difficulty).",
-      "priority": "low",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "URL includes dataStructure and difficulty parameters",
-        "Changing data structure updates URL",
-        "Changing difficulty updates URL",
-        "Loading page with URL parameters sets correct state",
-        "Invalid URL parameters default to array/easy",
-        "Browser back/forward buttons work correctly"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser execute 'window.location.href'",
-        "npx agent-browser select @ref_to_data_structure_select --value linkedList",
-        "npx agent-browser execute 'window.location.href' | jq '.href | contains(\"linkedList\")'",
-        "npx agent-browser click @ref_to_difficulty_medium",
-        "npx agent-browser execute 'window.location.href' | jq '.href | contains(\"medium\")'",
-        "npx agent-browser execute 'window.location.href = \"http://localhost:5173/?dataStructure=graph&difficulty=hard\"'",
-        "npx agent-browser snapshot -i -c --wait 1000",
-        "npx agent-browser get value @ref_to_data_structure_select --json | jq '.value == \"graph\"'"
-      ],
-      "passes": false,
-      "notes": "Verify URL updates without page reload"
-    },
-    {
-      "id": "US-TEST-015",
-      "title": "Test Results Panel",
-      "description": "Verify that test results are displayed correctly with pass/fail status and error messages.",
-      "priority": "high",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Test panel shows all test cases for current data structure",
-        "Each test case shows name and difficulty badge",
-        "Running a test shows pass/fail status with visual indicator",
-        "Failed tests show error messages",
-        "Execution time is displayed for each test",
-        "Individual test run button works for each test",
-        "'Run All Tests' button executes all tests sequentially"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser is visible @ref_to_test_panel",
-        "npx agent-browser click @ref_to_show_solution_button",
-        "npx agent-browser click @ref_to_confirm_button",
-        "npx agent-browser click @ref_to_individual_test_button",
-        "npx agent-browser snapshot -i -c --wait 2000",
-        "npx agent-browser is visible @ref_to_test_pass_indicator",
-        "npx agent-browser get text @ref_to_test_execution_time --json",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 5000",
-        "npx agent-browser get text @ref_to_test_results --json"
-      ],
-      "passes": true,
-      "notes": "Verified via automated test suite - 1287 tests passing. Test Results Panel fully implemented with comprehensive display of all test cases showing name, difficulty badge, and pass/fail status. TestPanel component (16 tests) includes visual indicators (green check for passed, red X for failed, gray circle for not run), error message display for failed tests, execution time display for both passed and failed tests, individual test run buttons for each test case, and 'Run All Tests' button that executes tests sequentially. Test results are stored in Zustand store and update reactively. Component properly disables buttons during execution to prevent race conditions. Execution time displayed as 'Passed in Xms' for successful tests and 'Failed after Xms' for failures. Error messages are shown in test-error div with clear formatting. Test summary shows X/Y passed count at top of panel. All acceptance criteria met. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1287 tests passing)."
-    },
-    {
-      "id": "US-TEST-016",
-      "title": "Error Handling - Infinite Loops",
-      "description": "Verify that infinite loops are detected and handled gracefully without freezing the application.",
-      "priority": "high",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "SWC transformation injects loop counters into while/for loops",
-        "Loop counter limit is 100,000 iterations",
-        "Infinite loops throw error with message 'Infinite loop detected'",
-        "Error is caught and displayed in test results",
-        "Application remains responsive after infinite loop",
-        "Error message is shown in console panel"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser fill @ref_to_editor 'function test(arr) { while(true) {} return arr; }'",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 2000",
-        "npx agent-browser is visible @ref_to_test_error",
-        "npx agent-browser get text @ref_to_test_error --json | jq '.text | contains(\"Infinite loop\")'",
-        "npx agent-browser is visible @ref_to_console_error",
-        "npx agent-browser click @ref_to_editor",
-        "npx agent-browser snapshot -i -c"
-      ],
-      "passes": true,
-      "notes": "Verified via automated test suite - 1290 tests passing. Infinite loop detection fully implemented with SWC regex-based transformation injecting loop counters into while/for/do-while loops. MAX_LOOP_ITERATIONS constant set to 100,000 in instrumenter.ts (line 12). Error messages are loop-type-specific: 'Infinite loop detected (while loop)', 'Infinite loop detected (for loop)', 'Infinite loop detected (do-while loop)'. Two-layer protection: (1) Loop injection throws errors after counter exceeds limit (primary defense), (2) External timeout kills execution after 5000ms (failsafe). Errors captured via sandbox postMessage with defense-in-depth validation (structure, type whitelist, schema, source). TestPanel displays error messages with execution time. ConsoleOutput captures console.error() logs. Application remains responsive via sandboxed iframe isolation. Added 3 new integration tests to testRunner.test.ts verifying error handling for all three loop types. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1290 tests passing, increased from 1287)."
-    },
-    {
-      "id": "US-TEST-017",
-      "title": "Error Handling - Syntax Errors",
-      "description": "Verify that syntax errors in user code are caught and displayed with helpful messages.",
-      "priority": "high",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "SWC transformation errors are caught",
-        "Syntax errors show clear error messages",
-        "Error messages indicate line and column numbers",
-        "Test execution stops gracefully on syntax error",
-        "Editor can still be edited after syntax error",
-        "Error is cleared when code is fixed"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser fill @ref_to_editor 'function test(arr) { return arr;'",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 1000",
-        "npx agent-browser is visible @ref_to_test_error",
-        "npx agent-browser get text @ref_to_test_error --json",
-        "npx agent-browser fill @ref_to_editor 'function test(arr) { return arr; }'",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 1000"
-      ],
-      "passes": false,
-      "notes": "Error messages should be beginner-friendly"
-    },
-    {
-      "id": "US-TEST-018",
-      "title": "Error Handling - Runtime Errors",
-      "description": "Verify that runtime errors (null pointer, undefined, etc.) are caught and displayed correctly.",
-      "priority": "high",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Runtime errors in sandboxed code are caught",
-        "Error messages show stack traces",
-        "Partial visualization steps are still shown before error",
-        "Test result shows failed status with error message",
-        "Console panel shows error with stack trace",
-        "Other tests can still run after one test errors"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser fill @ref_to_editor 'function test(arr) { arr.nonexistent(); return arr; }'",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 2000",
-        "npx agent-browser is visible @ref_to_test_failed",
-        "npx agent-browser get text @ref_to_test_error --json",
-        "npx agent-browser is visible @ref_to_console_error"
-      ],
-      "passes": false,
-      "notes": "Verify sandbox isolation prevents errors from crashing app"
-    },
-    {
-      "id": "US-TEST-019",
-      "title": "Performance - Bundle Size",
-      "description": "Verify that the application bundle size meets the performance target of under 4MB.",
-      "priority": "medium",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Total bundle size is under 4MB",
-        "CodeMirror bundle is approximately 300KB",
-        "D3.js is included but not bloated",
-        "SWC WASM file size is reasonable",
-        "Build process generates optimized bundles",
-        "Lazy loading is used where appropriate"
-      ],
-      "verificationSteps": [
-        "npm run build",
-        "ls -lh dist/assets/*.js | awk '{print $5, $9}'",
-        "du -sh dist",
-        "find dist -name '*.wasm' -exec ls -lh {} \\;",
-        "stat -f%z dist/assets/*.js | awk '{sum+=$1} END {print sum/1024/1024 \" MB\"}'"
-      ],
-      "passes": false,
-      "notes": "Bundle size impacts initial load time significantly"
-    },
-    {
-      "id": "US-TEST-020",
-      "title": "Performance - SWC Transformation Speed",
-      "description": "Verify that SWC code transformation completes in under 10ms for typical code.",
-      "priority": "medium",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "SWC initialization completes successfully",
-        "Code transformation takes less than 10ms",
-        "Multiple transformations don't cause memory leaks",
-        "Transformation is synchronous (no async overhead)",
-        "Loop injection doesn't significantly impact performance",
-        "Error messages from transformation are fast"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser execute 'console.time(\"swc\"); /* transform code */; console.timeEnd(\"swc\")'",
-        "npx agent-browser get text @ref_to_console --json | jq '.text | contains(\"swc\")'",
-        "npx agent-browser fill @ref_to_editor 'function test(arr) { for(let i=0; i<100; i++) { arr.push(i); } return arr; }'",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 100"
-      ],
-      "passes": false,
-      "notes": "SWC should be much faster than Babel"
-    },
-    {
-      "id": "US-TEST-021",
-      "title": "Performance - D3 Rendering",
-      "description": "Verify that D3 visualization rendering maintains 60fps (16ms per frame).",
-      "priority": "medium",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Initial render completes in under 16ms",
-        "Animation frame updates maintain 60fps",
-        "Large data structures (100+ elements) render smoothly",
-        "No jank or frame drops during animation",
-        "Memory usage stays constant during animation",
-        "SVG elements are efficiently updated"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser execute 'performance.mark(\"render-start\")'",
-        "npx agent-browser click @ref_to_run_all_tests_button",
-        "npx agent-browser snapshot -i -c --wait 1000",
-        "npx agent-browser execute 'performance.mark(\"render-end\"); performance.measure(\"render\", \"render-start\", \"render-end\")'",
-        "npx agent-browser execute 'performance.getEntriesByName(\"render\")[0].duration'",
-        "npx agent-browser snapshot -i -c"
-      ],
-      "passes": false,
-      "notes": "Frame rate impacts user experience significantly"
-    },
-    {
-      "id": "US-TEST-022",
-      "title": "Accessibility - Keyboard Navigation",
-      "description": "Verify that all interactive elements are keyboard accessible.",
-      "priority": "low",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "All buttons are focusable with Tab key",
-        "Enter/Space activates focused buttons",
-        "Dropdowns are navigable with arrow keys",
-        "Focus indicators are visible",
-        "Tab order is logical",
-        "No keyboard traps"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser press Tab",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser press Tab",
-        "npx agent-browser press Tab",
-        "npx agent-browser press Enter",
-        "npx agent-browser snapshot -i -c"
-      ],
-      "passes": false,
-      "notes": "WCAG 2.1 Level AA compliance target"
-    },
-    {
-      "id": "US-TEST-023",
-      "title": "Mobile Responsiveness",
-      "description": "Verify that the application works on mobile devices with appropriate layout adjustments.",
-      "priority": "medium",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Layout switches to vertical panels on mobile (width <= 768px)",
-        "Editor is still usable on mobile",
-        "Buttons are large enough for touch targets (44x44px minimum)",
-        "Visualization is visible and usable on small screens",
-        "No horizontal scrolling required",
-        "Touch gestures work for controls"
-      ],
-      "verificationSteps": [
-        "npx agent-browser viewport 375 667",
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser is visible @ref_to_editor",
-        "npx agent-browser is visible @ref_to_visualization",
-        "npx agent-browser get attribute @ref_to_run_button --attribute style | jq 'contains(\"44px\")'",
-        "npx agent-browser viewport 1920 1080",
-        "npx agent-browser snapshot -i -c"
-      ],
-      "passes": false,
-      "notes": "Test on actual mobile devices if possible"
-    },
-    {
-      "id": "US-TEST-024",
-      "title": "Dark Theme",
-      "description": "Verify that dark theme is applied correctly to all components.",
-      "priority": "low",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Dark theme is applied by default",
-        "All panels have dark backgrounds",
-        "Text has sufficient contrast for readability",
-        "CodeMirror editor uses dark theme",
-        "Visualization uses dark-friendly colors",
-        "No white/light flashes during loading"
-      ],
-      "verificationSteps": [
-        "npx agent-browser snapshot -i -c",
-        "npx agent-browser get attribute html --attribute data-theme",
-        "npx agent-browser get css @ref_to_body --property background-color",
-        "npx agent-browser get css @ref_to_editor --property background-color",
-        "npx agent-browser get css @ref_to_visualization --property background-color"
-      ],
-      "passes": false,
-      "notes": "Dark theme improves focus and reduces eye strain"
-    },
-    {
-      "id": "US-TEST-025",
-      "title": "Test Coverage Validation",
-      "description": "Verify that test coverage meets the 80% threshold requirement.",
-      "priority": "high",
-      "dataStructure": "all",
-      "acceptanceCriteria": [
-        "Statement coverage >= 80%",
-        "Branch coverage >= 75%",
-        "Function coverage >= 80%",
-        "Line coverage >= 80%",
-        "Coverage report is generated successfully",
-        "All critical paths have test coverage"
-      ],
-      "verificationSteps": [
-        "npm run test:coverage",
-        "cat coverage/coverage-summary.json | jq '.total.statements.pct'",
-        "cat coverage/coverage-summary.json | jq '.total.branches.pct'",
-        "cat coverage/coverage-summary.json | jq '.total.functions.pct'",
-        "cat coverage/coverage-summary.json | jq '.total.lines.pct'"
-      ],
-      "passes": false,
-      "notes": "Coverage threshold enforced in vitest.config.ts"
+      "technicalDetails": {
+        "files": ["src/lib/execution/instrumenter.ts", "src/lib/testing/testCases/hashMapTests.ts"],
+        "rootCause": "Same as BUG-002 - loop counter scoping issue in instrumenter.ts",
+        "note": "This will be resolved when BUG-002 is fixed. Tracking separately to verify HashMap specifically."
+      }
     }
   ],
   "completionCriteria": {
     "required": [
-      "All user stories with priority='high' must have passes=true",
+      "All critical user stories (BUG-001, BUG-002, BUG-003, BUG-004, BUG-005, BUG-006) must have passes=true",
+      "All high priority user stories (BUG-007, BUG-008) must have passes=true",
       "npm run validate must exit with code 0",
       "Test coverage must be >= 80%",
       "No TypeScript errors",
       "No linting errors",
-      "Application loads successfully at localhost:5173"
+      "Application loads successfully at localhost:5173 for all data structures",
+      "All data structures load without console errors or blank screens",
+      "All reference solutions execute successfully across all data structures and difficulty levels",
+      "Agent-browser verification confirms all acceptance criteria met"
     ],
     "recommended": [
-      "All user stories (including medium and low priority) have passes=true",
       "Bundle size is under 4MB",
       "All animations maintain 60fps",
-      "Accessibility audit passes WCAG 2.1 Level AA",
-      "Mobile experience is smooth on actual devices"
+      "Visualizations render correctly for all data structures",
+      "No D3/React conflicts or warnings in console",
+      "All test cases show correct pass/fail status (no 'undefined' or 'null' returns)"
     ]
   },
   "technicalNotes": {
     "testingApproach": "Use agent-browser for automated UI verification. Each user story includes specific agent-browser commands for validation.",
+    "testingMethodology": "Systematic testing performed 2026-01-15 using agent-browser. Each data structure tested with Show Solution + Run All Tests workflow across all difficulty levels.",
     "devServer": "npm run dev starts development server at http://localhost:5173",
     "validation": "npm run validate runs all checks: lint + format + typecheck + test",
     "browserRequirements": "Chrome/Chromium required for agent-browser testing",
@@ -755,6 +478,57 @@
       "swcTransform": "< 10ms",
       "d3Rendering": "16ms (60fps)",
       "testExecution": "< 1s per test case"
+    },
+    "bugDiscoverySession": {
+      "date": "2026-01-15",
+      "tool": "agent-browser",
+      "coverage": "All 7 data structures tested (Array, LinkedList, Stack, Queue, Binary Tree, Graph, HashMap)",
+      "testPattern": "Navigate to ?ds={structure}&difficulty=easy → Click Show Solution → Click Run All Tests → Check results and console",
+      "bugsVerified": [
+        "BUG-001: Binary Tree page completely blank with EditorPanel error",
+        "BUG-002: Loop counter scoping errors in Stack, Queue, HashMap",
+        "BUG-003: Array reference solutions return undefined",
+        "BUG-004: LinkedList reference solutions return null",
+        "BUG-005: Graph reference solutions return undefined",
+        "BUG-006: createTracked* functions not defined in sandbox",
+        "BUG-007: Stack shows Queue test cases",
+        "BUG-008: HashMap loop counter errors (duplicate of BUG-002)"
+      ]
+    },
+    "knownIssues": {
+      "criticalBlocking": [
+        "BUG-001: Binary Tree completely broken - must fix first",
+        "BUG-002: Loop counter issue blocks Stack, Queue, HashMap - high impact"
+      ],
+      "referenceImplementations": [
+        "BUG-003, BUG-004, BUG-005: All reference solutions need return statement fixes"
+      ],
+      "testInfrastructure": [
+        "BUG-006: Sandbox bundle missing factory functions",
+        "BUG-007: Test case filtering/organization issue"
+      ],
+      "fixPriority": [
+        "1. BUG-001 (Binary Tree template) - Blocks entire data structure",
+        "2. BUG-002 (Loop counter) - Blocks 3 data structures",
+        "3. BUG-003, BUG-004, BUG-005 (Return statements) - All reference solutions fail",
+        "4. BUG-006 (Factory functions) - Multiple tests fail",
+        "5. BUG-007 (Test organization) - UX issue"
+      ]
+    },
+    "ralphWiggumBestPractices": {
+      "source": "https://www.aihero.dev/tips-for-ai-coding-with-ralph-wiggum",
+      "appliedPractices": [
+        "Atomic user stories with clear acceptance criteria",
+        "Each bug is bite-sized and independently fixable",
+        "Auto-runnable verification steps using agent-browser",
+        "No human gut-checks - agent can verify itself",
+        "Progress tracking via passes: true/false field",
+        "Living TODO list (PRD is scope definition + progress tracker)",
+        "Explicit stop conditions (completionCriteria)",
+        "Technical details for implementation guidance",
+        "Session metadata tracking (iteration, date, tools used)"
+      ],
+      "iterationNotes": "Start with BUG-001, mark passes: true when complete. Move to BUG-002, repeat. Ralph loop continues until all passes: true."
     }
   }
 }

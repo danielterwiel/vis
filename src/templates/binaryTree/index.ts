@@ -75,9 +75,9 @@ function balanceBST(tree) {
  * Register all binary tree templates
  */
 export function registerBinaryTreeTemplates(): void {
-  skeletonCodeSystem.registerTemplate("binarytree", "easy", easySkeleton);
-  skeletonCodeSystem.registerTemplate("binarytree", "medium", mediumSkeleton);
-  skeletonCodeSystem.registerTemplate("binarytree", "hard", hardSkeleton);
+  skeletonCodeSystem.registerTemplate("tree", "easy", easySkeleton);
+  skeletonCodeSystem.registerTemplate("tree", "medium", mediumSkeleton);
+  skeletonCodeSystem.registerTemplate("tree", "hard", hardSkeleton);
 }
 
 /**
