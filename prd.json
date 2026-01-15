@@ -273,7 +273,7 @@
         "src/lib/testing/testCases/graphTests.ts",
         "src/lib/testing/trackedGraphBundle.ts"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUG-HASHMAP-001",

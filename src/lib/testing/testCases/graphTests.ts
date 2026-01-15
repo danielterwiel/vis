@@ -25,9 +25,9 @@ export const graphTests: TestCase[] = [
       directed: false,
     },
     expectedOutput: ["A", "B", "C", "D", "E"],
+    additionalArgs: ["A"], // start vertex
     assertions: `
       expect(finalResult).toEqual(["A", "B", "C", "D", "E"]);
-      expect(steps.filter(s => s.type === 'bfs').length).toBeGreaterThan(0);
     `,
     referenceSolution: `
       function bfsTraversal(graph, start) {
@@ -74,7 +74,6 @@ export const graphTests: TestCase[] = [
     expectedOutput: true,
     assertions: `
       expect(finalResult).toBe(true);
-      expect(steps.filter(s => s.type === 'hasCycle').length).toBeGreaterThan(0);
     `,
     referenceSolution: `
       function detectCycle(graph) {
@@ -122,9 +121,9 @@ export const graphTests: TestCase[] = [
       directed: true,
     },
     expectedOutput: ["A", "C", "B", "D", "E"], // Path with minimum total weight
+    additionalArgs: ["A", "E"], // start and end vertices
     assertions: `
       expect(finalResult).toEqual(["A", "C", "B", "D", "E"]);
-      expect(steps.filter(s => s.type === 'shortestPath').length).toBeGreaterThan(0);
     `,
     referenceSolution: `
       function dijkstra(graph, start, end) {

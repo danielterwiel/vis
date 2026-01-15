@@ -166,9 +166,29 @@ export async function runTest(
     const expectCode = bundleExpect();
     const dsBundle = getDataStructureBundle(testCase.id);
 
-    // Determine if input should be wrapped in a tracked data structure
-    // Stack and Queue tests receive raw input because they create their own data structures internally
-    const shouldWrapInput = !testCase.id.startsWith("stack-") && !testCase.id.startsWith("queue-");
+    // Determine how input should be prepared based on data structure type
+    const isStackOrQueue = testCase.id.startsWith("stack-") || testCase.id.startsWith("queue-");
+    const isGraph = testCase.id.startsWith("graph-");
+
+    // Build the input initialization code based on data structure type
+    let inputInitCode: string;
+    if (isStackOrQueue) {
+      // Stack/Queue tests receive raw input - they create their own tracked data structures
+      inputInitCode = `const input = initialData;`;
+    } else if (isGraph) {
+      // Graph tests need special handling - construct graph from vertices/edges/directed
+      inputInitCode = `const input = TrackedGraph.from(
+        initialData.vertices || [],
+        initialData.edges || [],
+        initialData.directed || false,
+        typeof __capture === 'function' ? __capture : undefined
+      );`;
+    } else {
+      // Other data structures (array, linkedlist, tree, hashmap) - wrap in tracked class
+      inputInitCode = `const input = Array.isArray(initialData)
+        ? new ${dsBundle.className}(initialData, typeof __capture === 'function' ? __capture : undefined)
+        : initialData;`;
+    }
 
     const sandboxCode = `
       ${expectCode}
@@ -180,15 +200,8 @@ export async function runTest(
       // Initialize with test data
       const initialData = ${JSON.stringify(testCase.initialData)};
       const additionalArgs = ${JSON.stringify(testCase.additionalArgs || [])};
-      ${
-        shouldWrapInput
-          ? `// Wrap in tracked data structure for visualization
-      const input = Array.isArray(initialData)
-        ? new ${dsBundle.className}(initialData, typeof __capture === 'function' ? __capture : undefined)
-        : initialData;`
-          : `// Stack/Queue tests receive raw input - they create their own tracked data structures
-      const input = initialData;`
-      }
+      // Prepare input based on data structure type
+      ${inputInitCode}
 
       // Execute user's function with input and any additional arguments
       const result = ${functionName}(input, ...additionalArgs);
