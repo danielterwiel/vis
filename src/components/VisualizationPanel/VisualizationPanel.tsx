@@ -226,6 +226,12 @@ function VisualizationPanel() {
     }
   };
 
+  // Handler for replay button - resets to beginning and starts animation
+  const handleReplay = useCallback(() => {
+    setCurrentStepIndex(0);
+    setIsAnimating(true);
+  }, [setCurrentStepIndex, setIsAnimating]);
+
   return (
     <div className="visualization-panel">
       <ModeSelector
@@ -237,27 +243,6 @@ function VisualizationPanel() {
       <div className="visualization-header">
         <h2>Visualization</h2>
         <div className="visualization-controls">
-          <button
-            onClick={previousStep}
-            disabled={currentStepIndex <= 0}
-            className="control-button"
-            aria-label="Previous step"
-          >
-            <IconChevronLeft size={20} />
-            Previous
-          </button>
-          <span className="step-counter">
-            Step {currentStepIndex + 1} / {currentSteps.length || 1}
-          </span>
-          <button
-            onClick={nextStep}
-            disabled={currentStepIndex >= currentSteps.length - 1}
-            className="control-button"
-            aria-label="Next step"
-          >
-            Next
-            <IconChevronRight size={20} />
-          </button>
           <button
             onClick={() => setIsAnimating(!isAnimating)}
             className={`control-button ${isAnimating ? "active" : ""}`}
@@ -275,15 +260,9 @@ function VisualizationPanel() {
               </>
             )}
           </button>
-          <button
-            onClick={() => setCurrentStepIndex(0)}
-            disabled={currentSteps.length === 0}
-            className="control-button"
-            aria-label="Reset to first step"
-          >
-            <IconReload size={20} />
-            Reset
-          </button>
+          <span className="step-counter">
+            Step {currentStepIndex + 1} / {currentSteps.length || 1}
+          </span>
         </div>
       </div>
       <div className="visualizer-container">
@@ -299,6 +278,38 @@ function VisualizationPanel() {
                   below the editor.
                 </p>
               </div>
+            </div>
+          )}
+
+          {/* Floating action buttons for replay and step controls */}
+          {currentSteps.length > 0 && visualizationMode !== "skeleton" && (
+            <div className="floating-controls">
+              <button
+                onClick={handleReplay}
+                className="floating-control-button"
+                aria-label="Replay animation from beginning"
+                title="Replay"
+              >
+                <IconReload size={24} />
+              </button>
+              <button
+                onClick={previousStep}
+                disabled={currentStepIndex <= 0}
+                className="floating-control-button"
+                aria-label="Step back"
+                title="Step Back"
+              >
+                <IconChevronLeft size={24} />
+              </button>
+              <button
+                onClick={nextStep}
+                disabled={currentStepIndex >= currentSteps.length - 1}
+                className="floating-control-button"
+                aria-label="Step forward"
+                title="Step Forward"
+              >
+                <IconChevronRight size={24} />
+              </button>
             </div>
           )}
         </div>

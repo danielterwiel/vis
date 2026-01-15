@@ -959,8 +959,8 @@ vis/
 - [x] Show all 3 test cases simultaneously (no filter)
 - [x] Add play button above editor for running all tests
 - [x] Implement auto-play visualization on code execution
-- [ ] Add replay button for visualization
-- [ ] Add floating step back/forward controls
+- [x] Add replay button for visualization
+- [x] Add floating step back/forward controls
 - [ ] Add horizontal slider for step navigation
 
 **Bug Fixes**:
