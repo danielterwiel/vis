@@ -297,9 +297,10 @@
       ],
       "affectedFiles": [
         "src/lib/testing/testCases/hashMapTests.ts",
-        "src/lib/testing/trackedHashMapBundle.ts"
+        "src/lib/testing/trackedHashMapBundle.ts",
+        "src/lib/testing/testRunner.ts"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ENH-001",

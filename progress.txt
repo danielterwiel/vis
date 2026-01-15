@@ -142,3 +142,23 @@ All acceptance criteria verified with agent-browser:
 - All 3 Graph tests show as passed (3/3 passed)
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1293 tests passing). Updated prd.json to mark BUG-GRAPH-001 as passes=true.
+
+2026-01-15: Completed BUG-HASHMAP-001 (HashMap solutions fail with property access errors) - Fixed critical bug where HashMap reference solutions failed with errors like "Cannot read properties of undefined (reading size)".
+
+Root causes identified and fixed:
+
+1. **testRunner wasn't handling HashMap input correctly**: The testRunner tried to wrap HashMap initialData in `new TrackedHashMap(initialData, ...)`, but HashMap's constructor expects `(capacity, loadFactor, onOperation)`, not data. HashMap tests (like Stack/Queue) create their own TrackedHashMap instances internally, so they should receive raw input.
+
+2. **createTrackedHashMap didn't auto-wire window.__capture**: Unlike Stack/Queue bundles, the HashMap bundle's `createTrackedHashMap()` function wasn't automatically using `window.__capture` when called without an onOperation callback. This meant operations weren't being captured for visualization.
+
+Files modified:
+- src/lib/testing/testRunner.ts: Added `isHashMap` check and included hashmap tests in the raw input handling path (alongside Stack/Queue)
+- src/lib/testing/trackedHashMapBundle.ts: Updated `createTrackedHashMap()` to auto-wire `window.__capture` if no callback is provided, similar to how Stack/Queue bundles work. Also added smart argument detection to handle various call signatures (e.g., just capacity, capacity+onOperation, etc.)
+
+All acceptance criteria verified with agent-browser:
+- Basic Get/Set Operations test passes with [3, 7, 11] - "Passed in 13ms"
+- Collision Handling with Chaining test passes - "Passed in 13ms"
+- Character Frequency Counter test passes with {char: "l", count: 3} - "Passed in 18ms"
+- All 3 HashMap tests show as passed (3/3 passed)
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1293 tests passing). Updated prd.json to mark BUG-HASHMAP-001 as passes=true.

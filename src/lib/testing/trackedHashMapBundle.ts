@@ -291,8 +291,31 @@ export function bundleTrackedHashMap(): string {
       }
     }
 
+    // Helper function to create TrackedHashMap
+    // Automatically uses window.__capture if available and no callback is provided
     function createTrackedHashMap(initialCapacity, loadFactorThreshold, onOperation) {
-      return new TrackedHashMap(initialCapacity, loadFactorThreshold, onOperation);
+      // If only one argument and it's a function, treat it as onOperation
+      if (typeof initialCapacity === 'function') {
+        onOperation = initialCapacity;
+        initialCapacity = 16;
+        loadFactorThreshold = 0.75;
+      }
+      // If only two arguments and second is a function, treat it as onOperation with custom capacity
+      else if (typeof loadFactorThreshold === 'function') {
+        onOperation = loadFactorThreshold;
+        loadFactorThreshold = 0.75;
+      }
+
+      // Auto-wire window.__capture if no callback provided
+      const callback = onOperation !== undefined
+        ? onOperation
+        : (typeof window !== 'undefined' && typeof window.__capture === 'function' ? window.__capture : undefined);
+
+      return new TrackedHashMap(
+        initialCapacity !== undefined ? initialCapacity : 16,
+        loadFactorThreshold !== undefined ? loadFactorThreshold : 0.75,
+        callback
+      );
     }
   `;
 }

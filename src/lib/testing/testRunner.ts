@@ -169,11 +169,12 @@ export async function runTest(
     // Determine how input should be prepared based on data structure type
     const isStackOrQueue = testCase.id.startsWith("stack-") || testCase.id.startsWith("queue-");
     const isGraph = testCase.id.startsWith("graph-");
+    const isHashMap = testCase.id.startsWith("hashmap-");
 
     // Build the input initialization code based on data structure type
     let inputInitCode: string;
-    if (isStackOrQueue) {
-      // Stack/Queue tests receive raw input - they create their own tracked data structures
+    if (isStackOrQueue || isHashMap) {
+      // Stack/Queue/HashMap tests receive raw input - they create their own tracked data structures
       inputInitCode = `const input = initialData;`;
     } else if (isGraph) {
       // Graph tests need special handling - construct graph from vertices/edges/directed
