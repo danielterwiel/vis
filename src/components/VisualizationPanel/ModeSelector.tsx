@@ -34,14 +34,6 @@ export function ModeSelector({ currentMode, onModeChange, hasSteps }: ModeSelect
         </button>
 
         <button
-          className={`mode-button ${currentMode === "expected-output" ? "active" : ""}`}
-          onClick={() => onModeChange("expected-output")}
-          title="Show what the result should look like"
-        >
-          Show Expected
-        </button>
-
-        <button
           className={`mode-button ${currentMode === "comparison" ? "active" : ""}`}
           onClick={() => onModeChange("comparison")}
           disabled={!hasSteps}
@@ -66,9 +58,6 @@ export function ModeSelector({ currentMode, onModeChange, hasSteps }: ModeSelect
       <div className="mode-description">
         {currentMode === "user-code" && !hasSteps && (
           <p className="hint-text">Run a test to see your code&apos;s execution visualized here.</p>
-        )}
-        {currentMode === "expected-output" && (
-          <p>Showing the expected output - what a correct solution produces.</p>
         )}
         {currentMode === "comparison" && !hasSteps && (
           <p className="hint-text">

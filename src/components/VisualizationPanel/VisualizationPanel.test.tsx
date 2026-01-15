@@ -33,7 +33,6 @@ describe("VisualizationPanel", () => {
     render(<VisualizationPanel />);
     expect(screen.getByText("Visualization Mode")).toBeInTheDocument();
     expect(screen.getByText("My Execution")).toBeInTheDocument();
-    expect(screen.getByText("Show Expected")).toBeInTheDocument();
     expect(screen.getByText("Compare")).toBeInTheDocument();
     expect(screen.getByText("Show Solution")).toBeInTheDocument();
   });
@@ -243,7 +242,7 @@ describe("VisualizationPanel", () => {
       render(<VisualizationPanel />);
 
       expect(
-        screen.getByText(/Try clicking "Show Expected" to understand what should happen/),
+        screen.getByText(/Try clicking "Compare" after running a test to see expected output/),
       ).toBeInTheDocument();
     });
 

@@ -425,8 +425,8 @@ function VisualizationPanel() {
                 <h3>Initial State</h3>
                 <p>Complete the function in the editor to see the animation.</p>
                 <p className="skeleton-hint">
-                  Try clicking "Show Expected" to understand what should happen, or use the hints
-                  below the editor.
+                  Try clicking &quot;Compare&quot; after running a test to see expected output, or
+                  use the hints below the editor.
                 </p>
               </div>
             </div>

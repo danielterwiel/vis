@@ -100,8 +100,8 @@
         "Verify no 'Show Expected' button in snapshot",
         "Verify 'Compare' button is present"
       ],
-      "affectedFiles": ["src/components/VisualizationPanel/VisualizationPanel.tsx"],
-      "passes": false
+      "affectedFiles": ["src/components/VisualizationPanel/ModeSelector.tsx"],
+      "passes": true
     },
     {
       "id": "UI-005",

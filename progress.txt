@@ -287,3 +287,20 @@ All acceptance criteria met:
 - All controls function correctly when clicked
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1289 tests passing). Updated prd.json to mark UI-003 as passes=true.
+
+2026-01-15: Completed UI-004 (Remove Show Expected button) - Removed the redundant "Show Expected" button from the visualization mode buttons in ModeSelector component. The "Compare" button already provides this functionality by showing expected output side-by-side with user execution.
+
+Changes made:
+1. **ModeSelector.tsx**: Removed the "Show Expected" button (lines 36-42) and its corresponding description text for expected-output mode
+2. **VisualizationPanel.tsx**: Updated the skeleton hint text from "Try clicking 'Show Expected'" to "Try clicking 'Compare' after running a test to see expected output"
+3. **ModeSelector.test.tsx**: Removed tests for "Show Expected" button, updated tests that used expected-output mode to use comparison mode instead
+4. **VisualizationPanel.test.tsx**: Updated test assertions to not expect "Show Expected" button, updated skeleton hint test to match new text
+
+Note: The expected-output mode still exists internally and is used by the Compare feature to show the right-side visualization. Only the standalone button to access it was removed since Compare provides a better UX (side-by-side comparison).
+
+All acceptance criteria met:
+- No 'Show Expected' button appears in visualization mode buttons
+- 'Compare' button still works correctly (shows user execution vs expected output side-by-side)
+- 'My Execution' button still works correctly
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1287 tests passing, decreased from 1289 due to removal of 2 tests for the removed button). Updated prd.json to mark UI-004 as passes=true.

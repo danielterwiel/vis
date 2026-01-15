@@ -16,22 +16,23 @@ describe("ModeSelector", () => {
     render(<ModeSelector {...defaultProps} />);
 
     expect(screen.getByText("My Execution")).toBeInTheDocument();
-    expect(screen.getByText("Show Expected")).toBeInTheDocument();
     expect(screen.getByText("Compare")).toBeInTheDocument();
     expect(screen.getByText("Show Solution")).toBeInTheDocument();
   });
 
   it("displays mode description for current mode", () => {
-    render(<ModeSelector {...defaultProps} currentMode="expected-output" />);
+    render(<ModeSelector {...defaultProps} currentMode="comparison" hasSteps />);
 
-    expect(screen.getByText(/Showing the expected output/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Comparing your execution .* with expected output/i),
+    ).toBeInTheDocument();
   });
 
   it("highlights active mode button", () => {
-    render(<ModeSelector {...defaultProps} currentMode="expected-output" />);
+    render(<ModeSelector {...defaultProps} currentMode="comparison" hasSteps />);
 
-    const expectedButton = screen.getByText("Show Expected");
-    expect(expectedButton).toHaveClass("active");
+    const compareButton = screen.getByText("Compare");
+    expect(compareButton).toHaveClass("active");
   });
 
   it("disables 'My Execution' when there are no steps (regardless of code status)", () => {
@@ -53,17 +54,6 @@ describe("ModeSelector", () => {
 
     const runButton = screen.getByText("My Execution");
     expect(runButton).not.toBeDisabled();
-  });
-
-  it("calls onModeChange when clicking 'Show Expected'", async () => {
-    const onModeChange = vi.fn();
-    const user = userEvent.setup();
-
-    render(<ModeSelector {...defaultProps} onModeChange={onModeChange} />);
-
-    await user.click(screen.getByText("Show Expected"));
-
-    expect(onModeChange).toHaveBeenCalledWith("expected-output");
   });
 
   it("shows confirmation dialog before switching to reference mode", async () => {
@@ -111,12 +101,6 @@ describe("ModeSelector", () => {
 
     // No description text is shown when user has steps - the visualization speaks for itself
     expect(screen.queryByText(/Visualizing your code execution/i)).not.toBeInTheDocument();
-  });
-
-  it("displays expected-output mode description", () => {
-    render(<ModeSelector {...defaultProps} currentMode="expected-output" />);
-
-    expect(screen.getByText(/Showing the expected output/i)).toBeInTheDocument();
   });
 
   it("displays reference mode description with warning", () => {
