@@ -145,7 +145,8 @@ export function CodeMirrorEditor({
   // Handle highlighted line changes
   useEffect(() => {
     highlightLine(highlightedLine ?? null);
-  }, [highlightedLine, highlightLine]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- highlightLine is stable (useCallback with [])
+  }, [highlightedLine]);
 
   return <div ref={editorRef} className="codemirror-wrapper" />;
 }

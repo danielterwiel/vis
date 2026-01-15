@@ -425,7 +425,7 @@
       ],
       "affectedFiles": ["src/components/EditorPanel/CodeMirrorEditor.tsx"],
       "technicalNotes": "Change `useEffect(() => { highlightLine(highlightedLine ?? null); }, [highlightedLine, highlightLine])` to `useEffect(() => { highlightLine(highlightedLine ?? null); }, [highlightedLine])`",
-      "passes": false
+      "passes": true
     }
   ],
   "knownIssues": {
