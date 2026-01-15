@@ -48,6 +48,7 @@ function App() {
     setVisualizationMode,
     setConsoleLogs,
     clearConsoleLogs,
+    setIsAnimating,
   } = useAppStore();
 
   // Apply dark theme to document root
@@ -108,6 +109,8 @@ function App() {
       if (result.steps.length > 0) {
         setCurrentSteps(result.steps);
         setVisualizationMode("user-code");
+        // Auto-play visualization immediately (PRD requirement)
+        setIsAnimating(true);
       }
     } catch (error) {
       console.error("Test execution failed:", error);

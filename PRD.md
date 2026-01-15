@@ -958,7 +958,7 @@ vis/
 - [x] Move "Example usage" comments to top of skeleton functions
 - [x] Show all 3 test cases simultaneously (no filter)
 - [x] Add play button above editor for running all tests
-- [ ] Implement auto-play visualization on code execution
+- [x] Implement auto-play visualization on code execution
 - [ ] Add replay button for visualization
 - [ ] Add floating step back/forward controls
 - [ ] Add horizontal slider for step navigation
