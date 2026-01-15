@@ -416,30 +416,6 @@ function VisualizationPanel() {
         codeStatus={codeStatus}
         hasSteps={userCodeSteps.length > 0}
       />
-      <div className="visualization-header">
-        <div className="visualization-controls">
-          <button
-            onClick={() => setIsAnimating(!isAnimating)}
-            className={`control-button ${isAnimating ? "active" : ""}`}
-            aria-label={isAnimating ? "Pause animation" : "Play animation"}
-          >
-            {isAnimating ? (
-              <>
-                <IconPlayerPause size={20} />
-                Pause
-              </>
-            ) : (
-              <>
-                <IconPlayerPlay size={20} />
-                Play
-              </>
-            )}
-          </button>
-          <span className="step-counter">
-            Step {currentStepIndex + 1} / {currentSteps.length || 1}
-          </span>
-        </div>
-      </div>
       <div className="visualizer-container">
         <div className="visualizer-inner">
           {renderVisualizer()}
@@ -455,39 +431,52 @@ function VisualizationPanel() {
               </div>
             </div>
           )}
+        </div>
 
-          {/* Floating action buttons for replay and step controls */}
-          {currentSteps.length > 0 && visualizationMode !== "skeleton" && (
-            <div className="floating-controls">
+        {/* Playback controls - shown below visualization when there are steps */}
+        {currentSteps.length > 0 && visualizationMode !== "skeleton" && (
+          <div className="playback-controls">
+            <button
+              onClick={() => setIsAnimating(!isAnimating)}
+              className={`playback-button playback-button-primary ${isAnimating ? "active" : ""}`}
+              aria-label={isAnimating ? "Pause animation" : "Play animation"}
+            >
+              {isAnimating ? <IconPlayerPause size={20} /> : <IconPlayerPlay size={20} />}
+              {isAnimating ? "Pause" : "Play"}
+            </button>
+            <span className="playback-step-counter">
+              Step {currentStepIndex + 1} / {currentSteps.length}
+            </span>
+            <div className="playback-nav-buttons">
               <button
                 onClick={handleReplay}
-                className="floating-control-button"
+                className="playback-button"
                 aria-label="Replay animation from beginning"
                 title="Replay"
               >
-                <IconReload size={24} />
+                <IconReload size={18} />
               </button>
               <button
                 onClick={previousStep}
                 disabled={currentStepIndex <= 0}
-                className="floating-control-button"
-                aria-label="Step back"
-                title="Step Back"
+                className="playback-button"
+                aria-label="Previous step"
+                title="Previous Step"
               >
-                <IconChevronLeft size={24} />
+                <IconChevronLeft size={18} />
               </button>
               <button
                 onClick={nextStep}
                 disabled={currentStepIndex >= currentSteps.length - 1}
-                className="floating-control-button"
-                aria-label="Step forward"
-                title="Step Forward"
+                className="playback-button"
+                aria-label="Next step"
+                title="Next Step"
               >
-                <IconChevronRight size={24} />
+                <IconChevronRight size={18} />
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Performance Metrics - show when we have execution data */}
         {currentSteps.length > 0 && visualizationMode !== "skeleton" && (

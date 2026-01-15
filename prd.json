@@ -79,9 +79,9 @@
       ],
       "affectedFiles": [
         "src/components/VisualizationPanel/VisualizationPanel.tsx",
-        "src/components/VisualizationPanel/VisualizationPanel.css"
+        "src/styles/global.css"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "UI-004",

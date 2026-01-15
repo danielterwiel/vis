@@ -38,18 +38,8 @@ describe("VisualizationPanel", () => {
     expect(screen.getByText("Show Solution")).toBeInTheDocument();
   });
 
-  it("renders visualization controls", () => {
-    render(<VisualizationPanel />);
-
-    // Check for Play button text (visible in header controls)
-    expect(screen.getByText("Play")).toBeDefined();
-
-    // Check for step counter
-    expect(screen.getByText(/Step \d+ \/ \d+/)).toBeDefined();
-  });
-
-  it("renders floating control buttons when steps are available", () => {
-    // Set up state with steps in non-skeleton mode so floating controls render
+  it("renders playback controls when steps are available", () => {
+    // Set up state with steps in non-skeleton mode so playback controls render
     // codeStatus must be "complete" to prevent automatic switch to skeleton mode
     useAppStore.setState({
       userCodeSteps: [
@@ -65,19 +55,34 @@ describe("VisualizationPanel", () => {
 
     render(<VisualizationPanel />);
 
-    // Check for floating control buttons by aria-label (they only show icons)
+    // Check for Play button text (visible in playback controls)
+    expect(screen.getByText("Play")).toBeDefined();
+
+    // Check for step counter
+    expect(screen.getByText(/Step \d+ \/ \d+/)).toBeDefined();
+
+    // Check for playback control buttons by aria-label
     expect(screen.getByLabelText("Replay animation from beginning")).toBeDefined();
-    expect(screen.getByLabelText("Step back")).toBeDefined();
-    expect(screen.getByLabelText("Step forward")).toBeDefined();
+    expect(screen.getByLabelText("Previous step")).toBeDefined();
+    expect(screen.getByLabelText("Next step")).toBeDefined();
+  });
+
+  it("does not render playback controls in skeleton mode", () => {
+    useAppStore.setState({
+      userCodeSteps: [],
+      visualizationMode: "skeleton",
+      codeStatus: "incomplete",
+    });
+
+    render(<VisualizationPanel />);
+
+    // No playback controls should be shown
+    expect(screen.queryByText("Play")).toBeNull();
+    expect(screen.queryByLabelText("Replay animation from beginning")).toBeNull();
   });
 
   // Animation speed control was removed as per PRD Phase 9
   // Test removed - no speed controls in UI
-
-  it("renders step counter", () => {
-    render(<VisualizationPanel />);
-    expect(screen.getByText(/Step \d+ \/ \d+/)).toBeDefined();
-  });
 
   it("renders ArrayVisualizer component", () => {
     const { container } = render(<VisualizationPanel />);
