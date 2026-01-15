@@ -9,7 +9,8 @@ import {
 import useAppStore from "../../store/useAppStore";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { LinkedListVisualizer } from "../visualizers/LinkedListVisualizer";
-import { arrayTests } from "../../lib/testing/testCases";
+import { StackQueueVisualizer } from "../visualizers/StackQueueVisualizer";
+import { arrayTests, stackQueueTests } from "../../lib/testing/testCases";
 import { ModeSelector } from "./ModeSelector";
 import { ComparisonView } from "./ComparisonView";
 import { PerformanceMetrics } from "./PerformanceMetrics";
@@ -70,6 +71,14 @@ function VisualizationPanel() {
     switch (selectedDataStructure) {
       case "array":
         return arrayTests.find((t) => t.difficulty === selectedDifficulty);
+      case "stack":
+        return stackQueueTests.find(
+          (t) => t.difficulty === selectedDifficulty && t.id.startsWith("stack-"),
+        );
+      case "queue":
+        return stackQueueTests.find(
+          (t) => t.difficulty === selectedDifficulty && t.id.startsWith("queue-"),
+        );
       default:
         return arrayTests.find((t) => t.difficulty === selectedDifficulty);
     }
@@ -223,7 +232,27 @@ function VisualizationPanel() {
             isAnimating={isAnimating}
           />
         );
-      // TODO: Add other data structure visualizers (Stack, Queue, Tree, Graph, HashMap)
+      case "stack":
+        return (
+          <StackQueueVisualizer
+            data={currentData}
+            steps={currentSteps}
+            currentStepIndex={currentStepIndex}
+            isAnimating={isAnimating}
+            mode="stack"
+          />
+        );
+      case "queue":
+        return (
+          <StackQueueVisualizer
+            data={currentData}
+            steps={currentSteps}
+            currentStepIndex={currentStepIndex}
+            isAnimating={isAnimating}
+            mode="queue"
+          />
+        );
+      // TODO: Add other data structure visualizers (Tree, Graph, HashMap)
       default:
         return (
           <ArrayVisualizer
