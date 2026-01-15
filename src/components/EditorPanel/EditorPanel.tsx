@@ -1,7 +1,8 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { CodeMirrorEditor } from "./CodeMirrorEditor";
 import { HintButton } from "./HintButton";
 import { PresetSelector } from "./PresetSelector";
+import { RunButton } from "./RunButton";
 import useAppStore, { DataStructureType } from "../../store/useAppStore";
 import { skeletonCodeSystem } from "../../templates";
 import { arrayTests } from "../../lib/testing/testCases";
@@ -16,7 +17,12 @@ const DATA_STRUCTURE_OPTIONS: { value: DataStructureType; label: string }[] = [
   { value: "hashMap", label: "Hash Map" },
 ];
 
-function EditorPanel() {
+interface EditorPanelProps {
+  onRunAllTests: () => Promise<void>;
+}
+
+function EditorPanel({ onRunAllTests }: EditorPanelProps) {
+  const [isRunning, setIsRunning] = useState(false);
   const {
     selectedDataStructure,
     selectedDifficulty,
@@ -92,6 +98,16 @@ function EditorPanel() {
     setCodeStatus("complete");
   };
 
+  // Handle run all tests
+  const handleRunTests = async () => {
+    setIsRunning(true);
+    try {
+      await onRunAllTests();
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
   return (
     <div className="editor-panel">
       <div className="editor-header">
@@ -120,6 +136,9 @@ function EditorPanel() {
             disabled={isReadOnly}
           />
         </div>
+      </div>
+      <div className="run-button-container">
+        <RunButton onRunTests={handleRunTests} disabled={isReadOnly} isRunning={isRunning} />
       </div>
       <div className="editor-content">
         <CodeMirrorEditor value={userCode} onChange={handleCodeChange} readOnly={isReadOnly} />

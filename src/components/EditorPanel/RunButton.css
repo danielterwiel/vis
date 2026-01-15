@@ -1,0 +1,44 @@
+.run-tests-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background-color: #646cff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  justify-content: center;
+}
+
+.run-tests-button:hover:not(:disabled) {
+  background-color: #535ac8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(100, 108, 255, 0.3);
+}
+
+.run-tests-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.run-tests-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.run-tests-button svg {
+  flex-shrink: 0;
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .run-tests-button {
+  background-color: #646cff;
+}
+
+[data-theme="light"] .run-tests-button:hover:not(:disabled) {
+  background-color: #535ac8;
+}

@@ -163,7 +163,7 @@ function App() {
         <Panel defaultSize={50} minSize={isMobile ? 20 : 30}>
           <PanelGroup direction="vertical">
             <Panel defaultSize={60} minSize={30}>
-              <EditorPanel />
+              <EditorPanel onRunAllTests={handleRunAllTests} />
             </Panel>
             <PanelResizeHandle className="resize-handle" />
             <Panel defaultSize={40} minSize={20}>

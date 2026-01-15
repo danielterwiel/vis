@@ -199,6 +199,17 @@ body {
   border: 1px solid #a78bfa;
 }
 
+.run-button-container {
+  padding: 0.75rem 1rem;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333;
+}
+
+[data-theme="light"] .run-button-container {
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #d0d0d0;
+}
+
 .editor-content {
   flex: 1;
   overflow: hidden;
