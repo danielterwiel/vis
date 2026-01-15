@@ -185,3 +185,19 @@ US-007: Implement Hash Map Visualization - COMPLETE
 - Same pre-existing test failure unrelated to hash map visualization
 - All linting and formatting checks passed
 
+US-008: Fix Difficulty Badge Text Alignment - COMPLETE
+- Updated .difficulty-badge in src/styles/global.css (lines 171-181)
+- Added display: inline-flex for proper flex container behavior
+- Added align-items: center to vertically center text within badge
+- Added line-height: 1 to prevent extra space from default line-height
+- Updated .editor-info container (line 122-126) to add align-items: center
+- This ensures all flex items (select dropdown, badge, etc.) are vertically aligned
+- Badge text now properly vertically centered in all difficulty levels (Easy, Medium, Hard)
+- Badge aligns properly with adjacent select dropdown
+- Badge height consistent across all difficulty levels
+- No visual regressions in light/dark themes
+- TypeScript type checking passed
+- 1246 tests passed (same as US-007, no regressions)
+- Same pre-existing test failure unrelated to CSS changes
+- All linting and formatting checks passed
+

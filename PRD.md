@@ -385,19 +385,19 @@ Uncaught Error: No skeleton template found for stack (easy)
 
 **Acceptance Criteria**:
 
-- [ ] Badge text vertically centered in all difficulty levels
-- [ ] Badge aligns properly with adjacent select dropdown
-- [ ] Badge height consistent across difficulty levels
-- [ ] No visual regression in light/dark themes
-- [ ] Works across Chrome, Firefox, and Safari
+- [x] Badge text vertically centered in all difficulty levels
+- [x] Badge aligns properly with adjacent select dropdown
+- [x] Badge height consistent across difficulty levels
+- [x] No visual regression in light/dark themes
+- [x] Works across Chrome, Firefox, and Safari
 
 **Dependencies**: None
 
 **Priority**: P2 (Medium)
 
-**Status**: `pending`
+**Status**: `complete`
 
-**Passes**: `false`
+**Passes**: `true`
 
 ---
 
