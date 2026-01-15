@@ -46,6 +46,16 @@ export function bundleExpect(): string {
             throw new Error(\`Expected \${actual} to be greater than \${expected}\`);
           }
         },
+        toBeGreaterThanOrEqual(expected) {
+          if (actual < expected) {
+            throw new Error(\`Expected \${actual} to be greater than or equal to \${expected}\`);
+          }
+        },
+        toBeLessThanOrEqual(expected) {
+          if (actual > expected) {
+            throw new Error(\`Expected \${actual} to be less than or equal to \${expected}\`);
+          }
+        },
         toBeLessThan(expected) {
           if (actual >= expected) {
             throw new Error(\`Expected \${actual} to be less than \${expected}\`);

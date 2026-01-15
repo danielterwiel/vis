@@ -112,8 +112,10 @@ class TrackedStack {
 }
 
 // Helper function to create TrackedStack
+// Automatically uses window.__capture if available and no callback is provided
 function createTrackedStack(onOperation) {
-  return new TrackedStack(onOperation);
+  const callback = onOperation !== undefined ? onOperation : (typeof window !== 'undefined' && typeof window.__capture === 'function' ? window.__capture : undefined);
+  return new TrackedStack(callback);
 }
 `;
 }

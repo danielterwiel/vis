@@ -194,7 +194,7 @@
         "src/lib/execution/sandboxExecutor.ts",
         "src/lib/testing/trackedStackBundle.ts"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUG-QUEUE-001",
@@ -219,7 +219,7 @@
         "src/lib/execution/sandboxExecutor.ts",
         "src/lib/testing/trackedQueueBundle.ts"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUG-BINARYTREE-001",

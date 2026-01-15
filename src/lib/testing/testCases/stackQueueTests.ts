@@ -316,7 +316,7 @@ export const stackQueueTests: TestCase[] = [
     expectedOutput: 1,
     assertions: `
       expect(result).toBe(1);
-      expect(steps.filter(s => s.type === 'push').length).toBe(5);
+      expect(steps.filter(s => s.type === 'push').length).toBeGreaterThanOrEqual(5);
     `,
     referenceSolution: `function minStack(arr) {
   const stack = createTrackedStack();

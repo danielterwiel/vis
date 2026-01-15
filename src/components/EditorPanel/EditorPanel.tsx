@@ -52,8 +52,15 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
       case "linkedList":
         return linkedListTests.find((t) => t.difficulty === selectedDifficulty);
       case "stack":
+        // Filter by both difficulty AND test ID prefix to get correct stack test
+        return stackQueueTests.find(
+          (t) => t.difficulty === selectedDifficulty && t.id.startsWith("stack-"),
+        );
       case "queue":
-        return stackQueueTests.find((t) => t.difficulty === selectedDifficulty);
+        // Filter by both difficulty AND test ID prefix to get correct queue test
+        return stackQueueTests.find(
+          (t) => t.difficulty === selectedDifficulty && t.id.startsWith("queue-"),
+        );
       case "tree":
         return binaryTreeTests.find((t) => t.difficulty === selectedDifficulty);
       case "graph":

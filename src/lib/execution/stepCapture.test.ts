@@ -23,7 +23,7 @@ describe("stepCapture", () => {
       expect(result.valid).toBe(true);
       expect(result.error).toBeUndefined();
       expect(instrumenter.instrumentCode).toHaveBeenCalledWith("const x = 1;", {
-        captureOperations: true,
+        captureOperations: false, // Disabled - tracked data structures handle their own capture
         addErrorBoundaries: false,
       });
     });
@@ -62,7 +62,7 @@ describe("stepCapture", () => {
       expect(result.result).toBe(42);
       expect(result.executionTime).toBe(100);
       expect(instrumenter.instrumentCode).toHaveBeenCalledWith("const x = 1;", {
-        captureOperations: true,
+        captureOperations: false, // Disabled - tracked data structures handle their own capture
         addErrorBoundaries: true,
       });
       expect(sandbox.executeSandboxedCode).toHaveBeenCalled();

@@ -33,8 +33,12 @@ export async function captureSteps(options: StepCaptureOptions): Promise<StepCap
   const { code, timeout, onStepCaptured, onConsoleLog } = options;
 
   // Step 1: Instrument the code
+  // Note: captureOperations is disabled because TrackedArray, TrackedStack, TrackedQueue,
+  // etc. already emit steps via their onOperation callback. The injectOperationCapture
+  // function was designed for bare arrays but breaks tracked data structure methods
+  // by inserting spurious arguments.
   const instrumented = instrumentCode(code, {
-    captureOperations: true,
+    captureOperations: false,
     addErrorBoundaries: true,
   });
 
@@ -144,7 +148,7 @@ export async function captureStepsBatch(
  */
 export function validateCodeForCapture(code: string): { valid: boolean; error?: string } {
   const instrumented = instrumentCode(code, {
-    captureOperations: true,
+    captureOperations: false, // Disabled - tracked data structures handle their own capture
     addErrorBoundaries: false, // Skip error boundaries for validation
   });
 

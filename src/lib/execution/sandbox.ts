@@ -142,7 +142,8 @@ function buildSandboxHTML(code: string, correlationId: string): string {
   // Capture function for operation tracking
   window.__capture = function(operation, target, args, result) {
     steps.push({
-      operation,
+      type: operation,  // Use 'type' field to match test assertions (e.g., s.type === 'push')
+      operation,        // Keep 'operation' for backward compatibility
       target: String(target),
       args: Array.from(args || []),
       result,

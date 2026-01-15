@@ -112,8 +112,10 @@ class TrackedQueue {
 }
 
 // Helper function to create TrackedQueue
+// Automatically uses window.__capture if available and no callback is provided
 function createTrackedQueue(onOperation) {
-  return new TrackedQueue(onOperation);
+  const callback = onOperation !== undefined ? onOperation : (typeof window !== 'undefined' && typeof window.__capture === 'function' ? window.__capture : undefined);
+  return new TrackedQueue(callback);
 }
 `;
 }

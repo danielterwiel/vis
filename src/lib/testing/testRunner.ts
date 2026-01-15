@@ -77,14 +77,16 @@ function getDataStructureBundle(testId: string): {
       createFunction: "createTrackedLinkedList",
     };
   } else if (testId.startsWith("stack-")) {
+    // Include both Stack and Queue bundles since Stack tests may use queues (e.g., queue-using-stacks)
     return {
-      bundleCode: bundleTrackedStack(),
+      bundleCode: bundleTrackedStack() + "\n" + bundleTrackedQueue(),
       className: "TrackedStack",
       createFunction: "createTrackedStack",
     };
   } else if (testId.startsWith("queue-")) {
+    // Include both Stack and Queue bundles since Queue tests may use stacks (e.g., reverse-first-k)
     return {
-      bundleCode: bundleTrackedQueue(),
+      bundleCode: bundleTrackedQueue() + "\n" + bundleTrackedStack(),
       className: "TrackedQueue",
       createFunction: "createTrackedQueue",
     };
@@ -149,6 +151,11 @@ export async function runTest(
     // Step 2: Build the complete sandbox code with appropriate data structure bundle
     const expectCode = bundleExpect();
     const dsBundle = getDataStructureBundle(testCase.id);
+
+    // Determine if input should be wrapped in a tracked data structure
+    // Stack and Queue tests receive raw input because they create their own data structures internally
+    const shouldWrapInput = !testCase.id.startsWith("stack-") && !testCase.id.startsWith("queue-");
+
     const sandboxCode = `
       ${expectCode}
       ${dsBundle.bundleCode}
@@ -156,11 +163,17 @@ export async function runTest(
       // User's code
       ${userCode}
 
-      // Initialize with test data - wrap in appropriate data structure
+      // Initialize with test data
       const initialData = ${JSON.stringify(testCase.initialData)};
+      ${
+        shouldWrapInput
+          ? `// Wrap in tracked data structure for visualization
       const input = Array.isArray(initialData)
         ? new ${dsBundle.className}(initialData, typeof __capture === 'function' ? __capture : undefined)
-        : initialData;
+        : initialData;`
+          : `// Stack/Queue tests receive raw input - they create their own tracked data structures
+      const input = initialData;`
+      }
 
       // Execute user's function
       const result = ${functionName}(input);
