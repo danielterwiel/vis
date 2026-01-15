@@ -80,3 +80,38 @@ US-004: Implement Queue Visualization - COMPLETE
 - 1246 tests passed (up from 1237, added 9 new queue tests)
 - Same pre-existing test failure unrelated to queue visualization
 - All linting and formatting checks passed
+US-005: Implement Binary Tree Visualization - COMPLETE
+- BinaryTreeVisualizer component already existed with D3 hierarchical tree layout
+- Modified TrackedBinaryTree.emitStep() to include treeStructure in metadata (line 399)
+- Added treeStructure field containing toHierarchy() output for visualization
+- Integrated BinaryTreeVisualizer into VisualizationPanel:
+  - Added import for BinaryTreeVisualizer and binaryTreeTests (line 13-14)
+  - Added import for BinaryTreeNode type (line 15)
+  - Added "tree" case to getCurrentTestCase() to load binaryTreeTests (line 84-85)
+  - Modified currentData extraction to use metadata.treeStructure for binary trees (line 179-181)
+  - Modified comparisonLeftData extraction to use metadata.treeStructure (line 194-196)
+  - Modified comparisonRightData extraction to use metadata.treeStructure (line 208-210)
+  - Added "tree" case to renderVisualizer() switch statement (line 276-284)
+- Integrated BinaryTreeVisualizer into ComparisonView:
+  - Added import for BinaryTreeVisualizer and BinaryTreeNode type (line 5, 8)
+  - Added "tree" case to renderVisualizer() for side-by-side comparison (line 75-83)
+- BinaryTreeVisualizer features:
+  - Uses D3 tree layout algorithm with 800x600 SVG viewBox
+  - Nodes arranged hierarchically by depth/level with proper spacing
+  - Edges connect parent nodes to children with animated transitions
+  - Root node at top, leaf nodes clearly identifiable at bottom
+  - Left and right children positioned correctly (left = left subtree, right = right subtree)
+  - Node colors: blue (default), green (inserted), purple (found), red (deleted), orange (path)
+  - All operations (insert, search, delete, traversal) highlight nodes correctly
+  - Step indicator shows operation descriptions at bottom
+  - Smooth 500ms transitions for 60fps animation performance
+- Works with TrackedBinaryTree data structure and all 3 difficulty levels:
+  - binarytree-traversal-easy: In-order traversal (sorted output)
+  - binarytree-validate-medium: BST validation
+  - binarytree-balance-hard: Balance unbalanced BST
+- D3Adapter pattern maintained (React renders once, D3 owns SVG node)
+- BinaryTreeVisualizer.css provides proper styling with hover effects
+- TypeScript type checking passed
+- 1246 tests passed (same as US-004, no regressions)
+- Same pre-existing test failure unrelated to binary tree visualization
+- All linting and formatting checks passed

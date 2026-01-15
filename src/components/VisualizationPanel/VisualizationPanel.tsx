@@ -10,7 +10,9 @@ import useAppStore from "../../store/useAppStore";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { LinkedListVisualizer } from "../visualizers/LinkedListVisualizer";
 import { StackQueueVisualizer } from "../visualizers/StackQueueVisualizer";
-import { arrayTests, stackQueueTests } from "../../lib/testing/testCases";
+import { BinaryTreeVisualizer } from "../visualizers/BinaryTreeVisualizer";
+import { arrayTests, stackQueueTests, binaryTreeTests } from "../../lib/testing/testCases";
+import type { BinaryTreeNode } from "../../lib/dataStructures/TrackedBinaryTree";
 import { ModeSelector } from "./ModeSelector";
 import { ComparisonView } from "./ComparisonView";
 import { PerformanceMetrics } from "./PerformanceMetrics";
@@ -79,6 +81,8 @@ function VisualizationPanel() {
         return stackQueueTests.find(
           (t) => t.difficulty === selectedDifficulty && t.id.startsWith("queue-"),
         );
+      case "tree":
+        return binaryTreeTests.find((t) => t.difficulty === selectedDifficulty);
       default:
         return arrayTests.find((t) => t.difficulty === selectedDifficulty);
     }
@@ -171,27 +175,44 @@ function VisualizationPanel() {
     }
     if (currentStepIndex >= 0 && currentStepIndex < currentSteps.length) {
       const step = currentSteps[currentStepIndex];
+      // For binary trees, extract the tree structure from metadata
+      if (selectedDataStructure === "tree" && step?.metadata) {
+        const metadata = step.metadata as { treeStructure?: BinaryTreeNode<number> | null };
+        return metadata.treeStructure || null;
+      }
       return step?.result || initialData;
     }
     return initialData;
-  }, [currentSteps, currentStepIndex, initialData]);
+  }, [currentSteps, currentStepIndex, initialData, selectedDataStructure]);
 
   // Extract data for comparison view (left = user code, right = expected output)
   const comparisonLeftData = useMemo(() => {
     if (userCodeSteps.length === 0) return initialData;
     if (currentStepIndex >= 0 && currentStepIndex < userCodeSteps.length) {
-      return userCodeSteps[currentStepIndex]?.result || initialData;
+      const step = userCodeSteps[currentStepIndex];
+      // For binary trees, extract the tree structure from metadata
+      if (selectedDataStructure === "tree" && step?.metadata) {
+        const metadata = step.metadata as { treeStructure?: BinaryTreeNode<number> | null };
+        return metadata.treeStructure || null;
+      }
+      return step?.result || initialData;
     }
     return initialData;
-  }, [userCodeSteps, currentStepIndex, initialData]);
+  }, [userCodeSteps, currentStepIndex, initialData, selectedDataStructure]);
 
   const comparisonRightData = useMemo(() => {
     if (expectedOutputSteps.length === 0) return initialData;
     if (currentStepIndex >= 0 && currentStepIndex < expectedOutputSteps.length) {
-      return expectedOutputSteps[currentStepIndex]?.result || initialData;
+      const step = expectedOutputSteps[currentStepIndex];
+      // For binary trees, extract the tree structure from metadata
+      if (selectedDataStructure === "tree" && step?.metadata) {
+        const metadata = step.metadata as { treeStructure?: BinaryTreeNode<number> | null };
+        return metadata.treeStructure || null;
+      }
+      return step?.result || initialData;
     }
     return initialData;
-  }, [expectedOutputSteps, currentStepIndex, initialData]);
+  }, [expectedOutputSteps, currentStepIndex, initialData, selectedDataStructure]);
 
   // Render visualizer based on data structure and mode
   const renderVisualizer = () => {
@@ -252,7 +273,16 @@ function VisualizationPanel() {
             mode="queue"
           />
         );
-      // TODO: Add other data structure visualizers (Tree, Graph, HashMap)
+      case "tree":
+        return (
+          <BinaryTreeVisualizer
+            data={currentData as BinaryTreeNode<number> | null}
+            steps={currentSteps}
+            currentStepIndex={currentStepIndex}
+            isAnimating={isAnimating}
+          />
+        );
+      // TODO: Add other data structure visualizers (Graph, HashMap)
       default:
         return (
           <ArrayVisualizer

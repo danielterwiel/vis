@@ -2,8 +2,10 @@ import { useMemo } from "react";
 import { ArrayVisualizer } from "../visualizers/ArrayVisualizer";
 import { LinkedListVisualizer } from "../visualizers/LinkedListVisualizer";
 import { StackQueueVisualizer } from "../visualizers/StackQueueVisualizer";
+import { BinaryTreeVisualizer } from "../visualizers/BinaryTreeVisualizer";
 import type { DataStructureType, VisualizationStep } from "../../store/useAppStore";
 import type { LinkedListNode } from "../../lib/dataStructures/TrackedLinkedList";
+import type { BinaryTreeNode } from "../../lib/dataStructures/TrackedBinaryTree";
 import "./ComparisonView.css";
 
 interface ComparisonViewProps {
@@ -70,7 +72,16 @@ export function ComparisonView({
             mode="queue"
           />
         );
-      // TODO: Add other data structure visualizers (Tree, Graph, HashMap)
+      case "tree":
+        return (
+          <BinaryTreeVisualizer
+            data={data as BinaryTreeNode<number> | null}
+            steps={steps}
+            currentStepIndex={stepIndex}
+            isAnimating={isAnimating}
+          />
+        );
+      // TODO: Add other data structure visualizers (Graph, HashMap)
       default:
         return (
           <ArrayVisualizer

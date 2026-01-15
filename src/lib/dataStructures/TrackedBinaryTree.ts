@@ -394,7 +394,10 @@ export class TrackedBinaryTree<T = number> {
         args,
         result,
         timestamp: Date.now(),
-        metadata,
+        metadata: {
+          ...metadata,
+          treeStructure: this.toHierarchy(), // Include hierarchical structure for visualization
+        },
       });
     }
   }
