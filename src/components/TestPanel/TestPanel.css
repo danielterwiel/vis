@@ -218,6 +218,9 @@
 }
 
 .run-single-test {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   padding: 0.25rem 0.75rem;
   background-color: #0e639c;
   color: white;

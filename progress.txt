@@ -522,3 +522,18 @@ All acceptance criteria met:
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1297 tests passing, increased from 1291 due to 6 new dataset consistency tests). Updated prd.json to mark DATA-002 as passes=true.
 
+
+2026-01-15: Completed UI-007 (Fix Run icon alignment in test case items) - Fixed the icon alignment issue in the "Run" button of test case items by adding proper flexbox styling.
+
+Root cause: The `.run-single-test` button class in TestPanel.css only had basic styling without explicit flexbox layout for aligning the icon (IconPlayerPlay) with the "Run" text.
+
+Solution: Added `display: inline-flex`, `align-items: center`, and `gap: 0.25rem` to the `.run-single-test` class in src/components/TestPanel/TestPanel.css. This ensures:
+1. The icon is vertically centered with the text
+2. Consistent 4px spacing between icon and text
+3. Proper alignment across all test case items
+
+All acceptance criteria met:
+- Run icon is vertically centered with 'Run' text ✓
+- Icon spacing is consistent across all test case items ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1297 tests passing). Updated prd.json to mark UI-007 as passes=true and corrected affectedFiles to TestPanel.css.

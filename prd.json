@@ -162,8 +162,8 @@
         "agent-browser snapshot -i",
         "Verify Run icons are properly aligned in test case items"
       ],
-      "affectedFiles": ["src/components/TestPanel/TestPanel.tsx"],
-      "passes": false
+      "affectedFiles": ["src/components/TestPanel/TestPanel.css"],
+      "passes": true
     },
     {
       "id": "DATA-001",
