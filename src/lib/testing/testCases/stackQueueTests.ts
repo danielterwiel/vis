@@ -136,6 +136,11 @@ export const stackQueueTests: TestCase[] = [
       expect(steps.filter(s => s.type === 'enqueue').length).toBeGreaterThan(0);
       expect(steps.filter(s => s.type === 'dequeue').length).toBeGreaterThan(0);
     `,
+    patternRequirement: {
+      anyOf: ["stackUsage", "queueUsage"],
+      errorMessage:
+        "Medium difficulty requires using a stack to reverse elements or queue operations. Use createTrackedStack() and/or createTrackedQueue().",
+    },
     referenceSolution: `function reverseFirstK(arr) {
   const queue = createTrackedQueue();
   const stack = createTrackedStack();
@@ -211,6 +216,11 @@ export const stackQueueTests: TestCase[] = [
       expect(steps.filter(s => s.type === 'enqueue').length).toBeGreaterThan(0);
       expect(steps.filter(s => s.type === 'dequeue').length).toBeGreaterThan(0);
     `,
+    patternRequirement: {
+      anyOf: ["queueUsage"],
+      errorMessage:
+        "Hard difficulty requires using queue operations to interleave elements. Use createTrackedQueue() to create queues.",
+    },
     referenceSolution: `function interleaveQueue(arr) {
   const queue = createTrackedQueue();
   const tempQueue = createTrackedQueue();
@@ -274,6 +284,11 @@ export const stackQueueTests: TestCase[] = [
       expect(steps.filter(s => s.type === 'push').length).toBeGreaterThan(0);
       expect(steps.filter(s => s.type === 'pop').length).toBeGreaterThan(0);
     `,
+    patternRequirement: {
+      anyOf: ["twoStacks"],
+      errorMessage:
+        "Medium difficulty requires using two stacks to simulate queue behavior. Use createTrackedStack() twice to create two separate stacks.",
+    },
     referenceSolution: `function queueUsingStacks(arr) {
   const stack1 = createTrackedStack();
   const stack2 = createTrackedStack();
@@ -334,6 +349,11 @@ export const stackQueueTests: TestCase[] = [
       expect(result).toBe(1);
       expect(steps.filter(s => s.type === 'push').length).toBeGreaterThanOrEqual(5);
     `,
+    patternRequirement: {
+      anyOf: ["twoStacks"],
+      errorMessage:
+        "Hard difficulty requires using two stacks: one for values and one for tracking minimums. Use createTrackedStack() twice.",
+    },
     referenceSolution: `function minStack(arr) {
   const stack = createTrackedStack();
   const minStack = createTrackedStack();

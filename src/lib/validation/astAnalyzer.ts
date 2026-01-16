@@ -1405,6 +1405,256 @@ export function hasDivideAndConquer(ast: Program): boolean {
 }
 
 /**
+ * Detect stack usage pattern.
+ * Detects createTrackedStack() calls or stack-like operations (push/pop on a stack variable).
+ */
+export function hasStackUsage(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  function checkExpr(expr: Expression): boolean {
+    if (expr.type === "CallExpression") {
+      const callee = expr.callee;
+      // Check for createTrackedStack() call
+      if (callee.type === "Identifier" && callee.value === "createTrackedStack") {
+        return true;
+      }
+      // Check arguments
+      for (const arg of expr.arguments) {
+        if (checkExpr(arg.expression)) return true;
+      }
+    }
+
+    if (expr.type === "AssignmentExpression") {
+      return checkExpr(expr.right);
+    }
+
+    if (expr.type === "ArrowFunctionExpression" && expr.body.type === "BlockStatement") {
+      return checkStmts(expr.body.stmts);
+    }
+
+    if (expr.type === "FunctionExpression" && expr.body) {
+      return checkStmts(expr.body.stmts);
+    }
+
+    return false;
+  }
+
+  function checkStmts(stmts: Statement[]): boolean {
+    for (const stmt of stmts) {
+      if (stmt.type === "VariableDeclaration") {
+        for (const decl of stmt.declarations) {
+          // Check for stack variable with createTrackedStack
+          if (decl.init && checkExpr(decl.init)) return true;
+        }
+      }
+
+      if (stmt.type === "ExpressionStatement") {
+        if (checkExpr(stmt.expression)) return true;
+      }
+
+      if (stmt.type === "ReturnStatement" && stmt.argument) {
+        if (checkExpr(stmt.argument)) return true;
+      }
+
+      if (stmt.type === "BlockStatement") {
+        if (checkStmts(stmt.stmts)) return true;
+      }
+
+      if (stmt.type === "IfStatement") {
+        if (checkStmts([stmt.consequent])) return true;
+        if (stmt.alternate && checkStmts([stmt.alternate])) return true;
+      }
+
+      if (
+        stmt.type === "ForStatement" ||
+        stmt.type === "WhileStatement" ||
+        stmt.type === "DoWhileStatement"
+      ) {
+        if (checkStmts([stmt.body])) return true;
+      }
+
+      if (stmt.type === "FunctionDeclaration" && stmt.body) {
+        if (checkStmts(stmt.body.stmts)) return true;
+      }
+    }
+    return false;
+  }
+
+  const statements = body.filter(
+    (item): item is Statement => !("source" in item && item.type.includes("Export")),
+  ) as Statement[];
+
+  return checkStmts(statements);
+}
+
+/**
+ * Detect queue usage pattern.
+ * Detects createTrackedQueue() calls or queue-like operations (enqueue/dequeue on a queue variable).
+ */
+export function hasQueueUsage(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  function checkExpr(expr: Expression): boolean {
+    if (expr.type === "CallExpression") {
+      const callee = expr.callee;
+      // Check for createTrackedQueue() call
+      if (callee.type === "Identifier" && callee.value === "createTrackedQueue") {
+        return true;
+      }
+      // Check arguments
+      for (const arg of expr.arguments) {
+        if (checkExpr(arg.expression)) return true;
+      }
+    }
+
+    if (expr.type === "AssignmentExpression") {
+      return checkExpr(expr.right);
+    }
+
+    if (expr.type === "ArrowFunctionExpression" && expr.body.type === "BlockStatement") {
+      return checkStmts(expr.body.stmts);
+    }
+
+    if (expr.type === "FunctionExpression" && expr.body) {
+      return checkStmts(expr.body.stmts);
+    }
+
+    return false;
+  }
+
+  function checkStmts(stmts: Statement[]): boolean {
+    for (const stmt of stmts) {
+      if (stmt.type === "VariableDeclaration") {
+        for (const decl of stmt.declarations) {
+          if (decl.init && checkExpr(decl.init)) return true;
+        }
+      }
+
+      if (stmt.type === "ExpressionStatement") {
+        if (checkExpr(stmt.expression)) return true;
+      }
+
+      if (stmt.type === "ReturnStatement" && stmt.argument) {
+        if (checkExpr(stmt.argument)) return true;
+      }
+
+      if (stmt.type === "BlockStatement") {
+        if (checkStmts(stmt.stmts)) return true;
+      }
+
+      if (stmt.type === "IfStatement") {
+        if (checkStmts([stmt.consequent])) return true;
+        if (stmt.alternate && checkStmts([stmt.alternate])) return true;
+      }
+
+      if (
+        stmt.type === "ForStatement" ||
+        stmt.type === "WhileStatement" ||
+        stmt.type === "DoWhileStatement"
+      ) {
+        if (checkStmts([stmt.body])) return true;
+      }
+
+      if (stmt.type === "FunctionDeclaration" && stmt.body) {
+        if (checkStmts(stmt.body.stmts)) return true;
+      }
+    }
+    return false;
+  }
+
+  const statements = body.filter(
+    (item): item is Statement => !("source" in item && item.type.includes("Export")),
+  ) as Statement[];
+
+  return checkStmts(statements);
+}
+
+/**
+ * Detect two stacks usage pattern.
+ * Detects when code uses two separate stack instances (e.g., stack1 and stack2, or stack and minStack).
+ */
+export function hasTwoStacks(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  function countStackCreations(stmts: Statement[]): number {
+    let count = 0;
+
+    function checkExpr(expr: Expression): number {
+      let localCount = 0;
+      if (expr.type === "CallExpression") {
+        const callee = expr.callee;
+        if (callee.type === "Identifier" && callee.value === "createTrackedStack") {
+          localCount++;
+        }
+        for (const arg of expr.arguments) {
+          localCount += checkExpr(arg.expression);
+        }
+      }
+
+      if (expr.type === "AssignmentExpression") {
+        localCount += checkExpr(expr.right);
+      }
+
+      if (expr.type === "ArrowFunctionExpression" && expr.body.type === "BlockStatement") {
+        localCount += countInStmts(expr.body.stmts);
+      }
+
+      if (expr.type === "FunctionExpression" && expr.body) {
+        localCount += countInStmts(expr.body.stmts);
+      }
+
+      return localCount;
+    }
+
+    function countInStmts(statements: Statement[]): number {
+      let localCount = 0;
+      for (const stmt of statements) {
+        if (stmt.type === "VariableDeclaration") {
+          for (const decl of stmt.declarations) {
+            if (decl.init) localCount += checkExpr(decl.init);
+          }
+        }
+
+        if (stmt.type === "ExpressionStatement") {
+          localCount += checkExpr(stmt.expression);
+        }
+
+        if (stmt.type === "BlockStatement") {
+          localCount += countInStmts(stmt.stmts);
+        }
+
+        if (stmt.type === "IfStatement") {
+          localCount += countInStmts([stmt.consequent]);
+          if (stmt.alternate) localCount += countInStmts([stmt.alternate]);
+        }
+
+        if (
+          stmt.type === "ForStatement" ||
+          stmt.type === "WhileStatement" ||
+          stmt.type === "DoWhileStatement"
+        ) {
+          localCount += countInStmts([stmt.body]);
+        }
+
+        if (stmt.type === "FunctionDeclaration" && stmt.body) {
+          localCount += countInStmts(stmt.body.stmts);
+        }
+      }
+      return localCount;
+    }
+
+    count = countInStmts(stmts);
+    return count;
+  }
+
+  const statements = body.filter(
+    (item): item is Statement => !("source" in item && item.type.includes("Export")),
+  ) as Statement[];
+
+  return countStackCreations(statements) >= 2;
+}
+
+/**
  * Mapping of pattern IDs to their detection functions.
  */
 const patternDetectors: Record<string, (ast: Program) => boolean> = {
@@ -1417,6 +1667,9 @@ const patternDetectors: Record<string, (ast: Program) => boolean> = {
   dfs: hasDFS,
   bfs: hasBFS,
   divideAndConquer: hasDivideAndConquer,
+  stackUsage: hasStackUsage,
+  queueUsage: hasQueueUsage,
+  twoStacks: hasTwoStacks,
 };
 
 /**

@@ -1161,3 +1161,32 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All 26 graphTests tests pass. Updated prd.json to mark VIS-009 as passes=true.
+
+2026-01-16: Completed VIS-010 (Add pattern requirements to stackQueueTests) - Added patternRequirement field to medium and hard stack/queue test cases to enforce algorithmic pattern validation.
+
+Changes made:
+
+1. **types.ts**: Extended PatternId type to include 'stackUsage', 'queueUsage', 'twoStacks'
+
+2. **astAnalyzer.ts**: Added three new pattern detection functions:
+   - `hasStackUsage(ast)`: Detects createTrackedStack() calls
+   - `hasQueueUsage(ast)`: Detects createTrackedQueue() calls
+   - `hasTwoStacks(ast)`: Detects when code creates two separate stack instances
+
+3. **index.ts**: Exported hasStackUsage, hasQueueUsage, hasTwoStacks from validation module
+
+4. **stackQueueTests.ts**: Added patternRequirement to 4 test cases:
+   - queue-reverse-first-k-medium: `anyOf: ["stackUsage", "queueUsage"]` - requires using stack or queue operations
+   - stack-queue-using-stacks-medium: `anyOf: ["twoStacks"]` - requires using two stacks to simulate queue
+   - queue-interleave-halves-hard: `anyOf: ["queueUsage"]` - requires using queue operations
+   - stack-min-stack-hard: `anyOf: ["twoStacks"]` - requires using two stacks (one for values, one for tracking minimums)
+
+All acceptance criteria met:
+- queue-reverse-first-k-medium has patternRequirement ✓
+- stack-queue-using-stacks-medium has patternRequirement ✓
+- queue-interleave-halves-hard has patternRequirement ✓
+- stack-min-stack-hard has patternRequirement ✓
+- error messages explain expected algorithm ✓
+- typecheck passes ✓
+
+All 114 tests pass (69 astAnalyzer tests + 45 stackQueueTests tests). Updated prd.json to mark VIS-010 as passes=true.

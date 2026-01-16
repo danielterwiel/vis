@@ -18,5 +18,8 @@ export {
   hasDFS,
   hasBFS,
   hasDivideAndConquer,
+  hasStackUsage,
+  hasQueueUsage,
+  hasTwoStacks,
   validatePatterns,
 } from "./astAnalyzer";

@@ -11,7 +11,10 @@ export type PatternId =
   | "pointerManipulation"
   | "dfs"
   | "bfs"
-  | "divideAndConquer";
+  | "divideAndConquer"
+  | "stackUsage"
+  | "queueUsage"
+  | "twoStacks";
 
 /**
  * Defines a pattern requirement for a test case.
