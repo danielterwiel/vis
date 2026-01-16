@@ -68,7 +68,7 @@
         "patternRequirement field added to TestCase interface",
         "typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "AST-006",

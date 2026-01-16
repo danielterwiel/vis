@@ -6,6 +6,7 @@
  */
 
 import type { VisualizationStep } from "../../store/useAppStore";
+import type { PatternRequirement } from "../validation/types";
 
 /**
  * Difficulty level for test cases
@@ -51,6 +52,9 @@ export interface TestCase {
 
   /** Acceptance criteria for objective pass/fail conditions */
   acceptanceCriteria: string[];
+
+  /** Optional pattern requirement for AST-based validation */
+  patternRequirement?: PatternRequirement;
 }
 
 /**

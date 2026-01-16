@@ -741,3 +741,18 @@ All acceptance criteria met:
 - All 37 tests pass ✓
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors). Updated prd.json to mark AST-004 as passes=true.
+
+2026-01-16: Completed AST-005 (Add patternRequirement to TestCase interface) - Modified src/lib/testing/types.ts to support AST-based pattern validation for test cases.
+
+Changes made:
+1. Added import for PatternRequirement type from ../validation/types
+2. Added optional `patternRequirement?: PatternRequirement` field to TestCase interface
+
+This enables test cases to specify required algorithmic patterns (nestedLoops, swapCalls, recursion, partitionCalls) that user code must implement. The validation system can now check if user code matches the expected patterns before running tests.
+
+All acceptance criteria met:
+- PatternRequirement imported in types.ts ✓
+- patternRequirement field added to TestCase interface ✓
+- typecheck passes ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1308 tests passing). Updated prd.json to mark AST-005 as passes=true.
