@@ -115,7 +115,7 @@
         "typecheck passes",
         "StackQueueVisualizer.test.tsx passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "VIS-005",

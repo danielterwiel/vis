@@ -31,11 +31,11 @@ export function StackQueueVisualizer({
     const spacing = 10;
     const duration = isAnimating ? 500 : 0;
 
-    // Clear previous content
-    svg.selectAll("*").remove();
-
-    // Create main group
-    const mainGroup = svg.append("g");
+    // Use persistent main group (create only if it doesn't exist)
+    let mainGroup = svg.select<SVGGElement>("g.main-group");
+    if (mainGroup.empty()) {
+      mainGroup = svg.append("g").attr("class", "main-group");
+    }
 
     // Get current step if available
     const currentStep =
@@ -157,59 +157,92 @@ export function StackQueueVisualizer({
         return "element-rect";
       });
 
-    // Add step indicator
-    if (currentStep) {
-      const stepText = formatStepDescription(currentStep, mode);
+    // Update step indicator using data join
+    const stepData = currentStep ? [formatStepDescription(currentStep, mode)] : [];
+    mainGroup
+      .selectAll<SVGTextElement, string>("text.step-indicator")
+      .data(stepData)
+      .join(
+        (enter) =>
+          enter
+            .append("text")
+            .attr("class", "step-indicator")
+            .attr("x", width / 2)
+            .attr("y", 30)
+            .attr("text-anchor", "middle"),
+        (update) => update,
+        (exit) => exit.remove(),
+      )
+      .text((d) => d);
 
-      mainGroup
-        .append("text")
-        .attr("class", "step-indicator")
-        .attr("x", width / 2)
-        .attr("y", 30)
-        .attr("text-anchor", "middle")
-        .text(stepText);
+    // Update pointer indicators using data join
+    interface PointerData {
+      id: string;
+      x: number;
+      y: number;
+      anchor: string;
+      text: string;
     }
+    const pointerData: PointerData[] = [];
 
-    // Add pointer indicators for stack (top) and queue (front/rear)
     if (arrayData.length > 0 && positions.length > 0) {
       if (mode === "stack") {
-        // Top pointer
         const topPos = positions[positions.length - 1];
         if (topPos) {
-          mainGroup
-            .append("text")
-            .attr("class", "pointer-label")
-            .attr("x", topPos.x - 20)
-            .attr("y", topPos.y + elementHeight / 2)
-            .attr("text-anchor", "end")
-            .text("← TOP");
+          pointerData.push({
+            id: "top",
+            x: topPos.x - 20,
+            y: topPos.y + elementHeight / 2,
+            anchor: "end",
+            text: "← TOP",
+          });
         }
       } else {
-        // Queue: Front and Rear pointers
         const frontPos = positions[0];
         const rearPos = positions[positions.length - 1];
 
         if (frontPos) {
-          mainGroup
-            .append("text")
-            .attr("class", "pointer-label")
-            .attr("x", frontPos.x + elementWidth / 2)
-            .attr("y", frontPos.y - 30)
-            .attr("text-anchor", "middle")
-            .text("FRONT ↓");
+          pointerData.push({
+            id: "front",
+            x: frontPos.x + elementWidth / 2,
+            y: frontPos.y - 30,
+            anchor: "middle",
+            text: "FRONT ↓",
+          });
         }
 
         if (rearPos) {
-          mainGroup
-            .append("text")
-            .attr("class", "pointer-label")
-            .attr("x", rearPos.x + elementWidth / 2)
-            .attr("y", rearPos.y + elementHeight + 45)
-            .attr("text-anchor", "middle")
-            .text("REAR ↑");
+          pointerData.push({
+            id: "rear",
+            x: rearPos.x + elementWidth / 2,
+            y: rearPos.y + elementHeight + 45,
+            anchor: "middle",
+            text: "REAR ↑",
+          });
         }
       }
     }
+
+    mainGroup
+      .selectAll<SVGTextElement, PointerData>("text.pointer-label")
+      .data(pointerData, (d) => d.id)
+      .join(
+        (enter) =>
+          enter
+            .append("text")
+            .attr("class", "pointer-label")
+            .attr("x", (d) => d.x)
+            .attr("y", (d) => d.y)
+            .attr("text-anchor", (d) => d.anchor)
+            .text((d) => d.text),
+        (update) =>
+          update
+            .attr("x", (d) => d.x)
+            .attr("y", (d) => d.y)
+            .attr("text-anchor", (d) => d.anchor)
+            .text((d) => d.text),
+        (exit) => exit.remove(),
+      );
 
     // Cleanup on unmount
     return () => {
