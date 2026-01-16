@@ -512,6 +512,213 @@ export function hasPartitionCalls(ast: Program): boolean {
 }
 
 /**
+ * Detect two-pointer pattern (slow/fast or similar variable pairs).
+ * Common in linked list algorithms like cycle detection, finding middle element.
+ * Detects patterns like: let slow = head; let fast = head;
+ */
+export function hasTwoPointers(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  // Track declared variable names that could be pointers
+  const pointerPairs = [
+    ["slow", "fast"],
+    ["p1", "p2"],
+    ["left", "right"],
+    ["first", "second"],
+    ["prev", "curr"],
+    ["current", "next"],
+  ];
+
+  function findDeclaredVariables(inputStmts: Statement[]): Set<string> {
+    const vars = new Set<string>();
+
+    function checkStmts(statements: Statement[]) {
+      for (const stmt of statements) {
+        if (stmt.type === "VariableDeclaration") {
+          for (const decl of stmt.declarations) {
+            if (decl.id.type === "Identifier") {
+              vars.add(decl.id.value);
+            }
+          }
+        }
+
+        if (stmt.type === "BlockStatement") {
+          checkStmts(stmt.stmts);
+        }
+
+        if (stmt.type === "IfStatement") {
+          checkStmts([stmt.consequent]);
+          if (stmt.alternate) checkStmts([stmt.alternate]);
+        }
+
+        if (stmt.type === "ForStatement" || stmt.type === "WhileStatement" || stmt.type === "DoWhileStatement") {
+          checkStmts([stmt.body]);
+        }
+
+        if (stmt.type === "FunctionDeclaration" && stmt.body) {
+          checkStmts(stmt.body.stmts);
+        }
+      }
+    }
+
+    checkStmts(inputStmts);
+    return vars;
+  }
+
+  function checkFunction(stmts: Statement[]): boolean {
+    const declaredVars = findDeclaredVariables(stmts);
+
+    // Check if any pointer pair is declared
+    for (const pair of pointerPairs) {
+      const p1 = pair[0];
+      const p2 = pair[1];
+      if (p1 && p2 && declaredVars.has(p1) && declaredVars.has(p2)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  for (const item of body) {
+    if (item.type === "FunctionDeclaration" && item.body) {
+      if (checkFunction(item.body.stmts)) return true;
+    }
+
+    if (item.type === "VariableDeclaration") {
+      for (const decl of item.declarations) {
+        if (decl.init?.type === "ArrowFunctionExpression" && decl.init.body.type === "BlockStatement") {
+          if (checkFunction(decl.init.body.stmts)) return true;
+        }
+        if (decl.init?.type === "FunctionExpression" && decl.init.body) {
+          if (checkFunction(decl.init.body.stmts)) return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Detect pointer manipulation pattern (.next assignment).
+ * Common in linked list operations like reversing, inserting, deleting.
+ * Detects patterns like: node.next = something; prev.next = curr.next;
+ */
+export function hasPointerManipulation(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  function checkExpression(expr: Expression): boolean {
+    // Check for assignment to .next property
+    if (expr.type === "AssignmentExpression") {
+      const left = expr.left;
+      if (
+        left.type === "MemberExpression" &&
+        left.property.type === "Identifier" &&
+        left.property.value === "next"
+      ) {
+        return true;
+      }
+      // Also check the right side for nested assignments
+      return checkExpression(expr.right);
+    }
+
+    if (expr.type === "CallExpression") {
+      for (const arg of expr.arguments) {
+        if (checkExpression(arg.expression)) return true;
+      }
+    }
+
+    if (expr.type === "ConditionalExpression") {
+      return (
+        checkExpression(expr.test) ||
+        checkExpression(expr.consequent) ||
+        checkExpression(expr.alternate)
+      );
+    }
+
+    if (expr.type === "BinaryExpression") {
+      return checkExpression(expr.left) || checkExpression(expr.right);
+    }
+
+    if (expr.type === "SequenceExpression") {
+      return expr.expressions.some(checkExpression);
+    }
+
+    if (expr.type === "ArrowFunctionExpression") {
+      if (expr.body.type === "BlockStatement") {
+        return checkStatements(expr.body.stmts);
+      } else {
+        return checkExpression(expr.body);
+      }
+    }
+
+    if (expr.type === "FunctionExpression" && expr.body) {
+      return checkStatements(expr.body.stmts);
+    }
+
+    return false;
+  }
+
+  function checkStatements(stmts: Statement[]): boolean {
+    for (const stmt of stmts) {
+      if (stmt.type === "ExpressionStatement") {
+        if (checkExpression(stmt.expression)) return true;
+      }
+
+      if (stmt.type === "VariableDeclaration") {
+        for (const decl of stmt.declarations) {
+          if (decl.init && checkExpression(decl.init)) return true;
+        }
+      }
+
+      if (stmt.type === "ReturnStatement" && stmt.argument) {
+        if (checkExpression(stmt.argument)) return true;
+      }
+
+      if (stmt.type === "BlockStatement") {
+        if (checkStatements(stmt.stmts)) return true;
+      }
+
+      if (stmt.type === "IfStatement") {
+        if (checkExpression(stmt.test)) return true;
+        if (checkStatements([stmt.consequent])) return true;
+        if (stmt.alternate && checkStatements([stmt.alternate])) return true;
+      }
+
+      if (stmt.type === "ForStatement") {
+        if (stmt.init && stmt.init.type !== "VariableDeclaration" && checkExpression(stmt.init))
+          return true;
+        if (stmt.test && checkExpression(stmt.test)) return true;
+        if (stmt.update && checkExpression(stmt.update)) return true;
+        if (checkStatements([stmt.body])) return true;
+      }
+
+      if (stmt.type === "WhileStatement" || stmt.type === "DoWhileStatement") {
+        if (checkExpression(stmt.test)) return true;
+        if (checkStatements([stmt.body])) return true;
+      }
+
+      if (stmt.type === "FunctionDeclaration" && stmt.body) {
+        if (checkStatements(stmt.body.stmts)) return true;
+      }
+
+      if (stmt.type === "TryStatement") {
+        if (checkStatements(stmt.block.stmts)) return true;
+        if (stmt.handler && checkStatements(stmt.handler.body.stmts)) return true;
+        if (stmt.finalizer && checkStatements(stmt.finalizer.stmts)) return true;
+      }
+    }
+    return false;
+  }
+
+  const statements = body.filter(
+    (item): item is Statement => !("source" in item && item.type.includes("Export")),
+  ) as Statement[];
+
+  return checkStatements(statements);
+}
+
+/**
  * Mapping of pattern IDs to their detection functions.
  */
 const patternDetectors: Record<string, (ast: Program) => boolean> = {
@@ -519,6 +726,8 @@ const patternDetectors: Record<string, (ast: Program) => boolean> = {
   swapCalls: hasSwapCalls,
   recursion: hasRecursion,
   partitionCalls: hasPartitionCalls,
+  twoPointers: hasTwoPointers,
+  pointerManipulation: hasPointerManipulation,
 };
 
 /**

@@ -989,3 +989,33 @@ All acceptance criteria met:
 - LinkedListVisualizer.test.tsx passes ✓ (25 tests)
 
 Note: Pre-existing test failures in ModeSelector.test.tsx, VisualizationPanel.test.tsx, EditorPanel.test.tsx, and array/index.test.ts are unrelated to this change. Updated prd.json to mark VIS-006 as passes=true.
+
+2026-01-16: Completed VIS-012 (Add new pattern detectors for linked list patterns) - Added two new pattern detection functions to astAnalyzer.ts for validating linked list algorithm implementations.
+
+Changes made:
+
+1. **types.ts**: Extended PatternId type to include 'twoPointers' and 'pointerManipulation'
+
+2. **astAnalyzer.ts**: Added hasTwoPointers(ast) function (lines 519-598):
+   - Detects two-pointer pattern common in linked list algorithms (cycle detection, finding middle)
+   - Checks for variable pairs: slow/fast, p1/p2, left/right, first/second, prev/curr, current/next
+   - Recursively searches function declarations, arrow functions, and function expressions
+   - Returns true if any recognized pointer pair is declared in the function
+
+3. **astAnalyzer.ts**: Added hasPointerManipulation(ast) function (lines 605-717):
+   - Detects .next assignment patterns common in linked list operations (reverse, insert, delete)
+   - Looks for AssignmentExpression where left side is MemberExpression with property "next"
+   - Recursively checks all statement types including loops, conditionals, try/catch
+   - Returns true if any assignment to a .next property is found
+
+4. **astAnalyzer.ts**: Updated patternDetectors mapping to include new functions
+
+5. **index.ts**: Exported hasTwoPointers and hasPointerManipulation from validation module
+
+All acceptance criteria met:
+- PatternId includes 'twoPointers' and 'pointerManipulation' ✓
+- hasTwoPointers function exported ✓
+- hasPointerManipulation function exported ✓
+- typecheck passes ✓
+
+All 37 astAnalyzer tests pass. Updated prd.json to mark VIS-012 as passes=true.

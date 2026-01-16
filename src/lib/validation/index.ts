@@ -13,5 +13,7 @@ export {
   hasSwapCalls,
   hasRecursion,
   hasPartitionCalls,
+  hasTwoPointers,
+  hasPointerManipulation,
   validatePatterns,
 } from "./astAnalyzer";
