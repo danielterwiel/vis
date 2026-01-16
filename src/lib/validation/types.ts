@@ -14,7 +14,9 @@ export type PatternId =
   | "divideAndConquer"
   | "stackUsage"
   | "queueUsage"
-  | "twoStacks";
+  | "twoStacks"
+  | "hashMapUsage"
+  | "iteration";
 
 /**
  * Defines a pattern requirement for a test case.

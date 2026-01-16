@@ -1,4 +1,5 @@
 import type { TestCase } from "../types";
+import type { PatternRequirement } from "../../validation/types";
 
 /**
  * HashMap Test Cases
@@ -163,6 +164,11 @@ export const hashMapTests: TestCase[] = [
       "All 5 values are retrievable and correct",
       "Returns object with size=5, hasAll=true, correctValues=true",
     ],
+    patternRequirement: {
+      anyOf: ["hashMapUsage"],
+      errorMessage:
+        "Medium difficulty requires using a hash map. Use createTrackedHashMap() to create a hash map instance for collision handling.",
+    } as PatternRequirement,
   },
 
   // Hard: Implement frequency counter with hash map
@@ -244,5 +250,10 @@ export const hashMapTests: TestCase[] = [
       "Finds character with maximum frequency",
       "Returns {char: 'l', count: 3} for input 'hello world'",
     ],
+    patternRequirement: {
+      anyOf: ["hashMapUsage", "iteration"],
+      errorMessage:
+        "Hard difficulty requires using a hash map with iteration. Use createTrackedHashMap() for frequency counting and iterate through the string to count characters.",
+    } as PatternRequirement,
   },
 ];

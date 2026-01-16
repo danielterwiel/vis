@@ -1655,6 +1655,184 @@ export function hasTwoStacks(ast: Program): boolean {
 }
 
 /**
+ * Detect hash map usage pattern.
+ * Detects createTrackedHashMap() calls.
+ */
+export function hasHashMapUsage(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  function checkExpr(expr: Expression): boolean {
+    if (expr.type === "CallExpression") {
+      const callee = expr.callee;
+      // Check for createTrackedHashMap() call
+      if (callee.type === "Identifier" && callee.value === "createTrackedHashMap") {
+        return true;
+      }
+      // Check arguments
+      for (const arg of expr.arguments) {
+        if (checkExpr(arg.expression)) return true;
+      }
+    }
+
+    if (expr.type === "AssignmentExpression") {
+      return checkExpr(expr.right);
+    }
+
+    if (expr.type === "ArrowFunctionExpression" && expr.body.type === "BlockStatement") {
+      return checkStmts(expr.body.stmts);
+    }
+
+    if (expr.type === "FunctionExpression" && expr.body) {
+      return checkStmts(expr.body.stmts);
+    }
+
+    return false;
+  }
+
+  function checkStmts(stmts: Statement[]): boolean {
+    for (const stmt of stmts) {
+      if (stmt.type === "VariableDeclaration") {
+        for (const decl of stmt.declarations) {
+          if (decl.init && checkExpr(decl.init)) return true;
+        }
+      }
+
+      if (stmt.type === "ExpressionStatement") {
+        if (checkExpr(stmt.expression)) return true;
+      }
+
+      if (stmt.type === "ReturnStatement" && stmt.argument) {
+        if (checkExpr(stmt.argument)) return true;
+      }
+
+      if (stmt.type === "BlockStatement") {
+        if (checkStmts(stmt.stmts)) return true;
+      }
+
+      if (stmt.type === "IfStatement") {
+        if (checkStmts([stmt.consequent])) return true;
+        if (stmt.alternate && checkStmts([stmt.alternate])) return true;
+      }
+
+      if (
+        stmt.type === "ForStatement" ||
+        stmt.type === "WhileStatement" ||
+        stmt.type === "DoWhileStatement"
+      ) {
+        if (checkStmts([stmt.body])) return true;
+      }
+
+      if (stmt.type === "FunctionDeclaration" && stmt.body) {
+        if (checkStmts(stmt.body.stmts)) return true;
+      }
+    }
+    return false;
+  }
+
+  const statements = body.filter(
+    (item): item is Statement => !("source" in item && item.type.includes("Export")),
+  ) as Statement[];
+
+  return checkStmts(statements);
+}
+
+/**
+ * Detect iteration pattern.
+ * Detects for loops, for-of loops, or forEach calls used for iterating over data.
+ */
+export function hasIteration(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  function checkExpr(expr: Expression): boolean {
+    // Check for .forEach() call
+    if (expr.type === "CallExpression") {
+      const callee = expr.callee;
+      if (
+        callee.type === "MemberExpression" &&
+        callee.property.type === "Identifier" &&
+        callee.property.value === "forEach"
+      ) {
+        return true;
+      }
+      // Check for .entries() or .keys() or .values() iteration
+      if (
+        callee.type === "MemberExpression" &&
+        callee.property.type === "Identifier" &&
+        (callee.property.value === "entries" ||
+          callee.property.value === "keys" ||
+          callee.property.value === "values")
+      ) {
+        return true;
+      }
+    }
+
+    if (expr.type === "ArrowFunctionExpression" && expr.body.type === "BlockStatement") {
+      return checkStmts(expr.body.stmts);
+    }
+
+    if (expr.type === "FunctionExpression" && expr.body) {
+      return checkStmts(expr.body.stmts);
+    }
+
+    return false;
+  }
+
+  function checkStmts(stmts: Statement[]): boolean {
+    for (const stmt of stmts) {
+      // Check for for loop
+      if (stmt.type === "ForStatement") {
+        return true;
+      }
+
+      // Check for for-of loop
+      if (stmt.type === "ForOfStatement") {
+        return true;
+      }
+
+      // Check for for-in loop
+      if (stmt.type === "ForInStatement") {
+        return true;
+      }
+
+      // Check for while loop used as iteration
+      if (stmt.type === "WhileStatement" || stmt.type === "DoWhileStatement") {
+        return true;
+      }
+
+      if (stmt.type === "ExpressionStatement") {
+        if (checkExpr(stmt.expression)) return true;
+      }
+
+      if (stmt.type === "VariableDeclaration") {
+        for (const decl of stmt.declarations) {
+          if (decl.init && checkExpr(decl.init)) return true;
+        }
+      }
+
+      if (stmt.type === "BlockStatement") {
+        if (checkStmts(stmt.stmts)) return true;
+      }
+
+      if (stmt.type === "IfStatement") {
+        if (checkStmts([stmt.consequent])) return true;
+        if (stmt.alternate && checkStmts([stmt.alternate])) return true;
+      }
+
+      if (stmt.type === "FunctionDeclaration" && stmt.body) {
+        if (checkStmts(stmt.body.stmts)) return true;
+      }
+    }
+    return false;
+  }
+
+  const statements = body.filter(
+    (item): item is Statement => !("source" in item && item.type.includes("Export")),
+  ) as Statement[];
+
+  return checkStmts(statements);
+}
+
+/**
  * Mapping of pattern IDs to their detection functions.
  */
 const patternDetectors: Record<string, (ast: Program) => boolean> = {
@@ -1670,6 +1848,8 @@ const patternDetectors: Record<string, (ast: Program) => boolean> = {
   stackUsage: hasStackUsage,
   queueUsage: hasQueueUsage,
   twoStacks: hasTwoStacks,
+  hashMapUsage: hasHashMapUsage,
+  iteration: hasIteration,
 };
 
 /**

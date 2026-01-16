@@ -21,5 +21,7 @@ export {
   hasStackUsage,
   hasQueueUsage,
   hasTwoStacks,
+  hasHashMapUsage,
+  hasIteration,
   validatePatterns,
 } from "./astAnalyzer";

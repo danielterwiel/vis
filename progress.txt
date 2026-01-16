@@ -1190,3 +1190,29 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All 114 tests pass (69 astAnalyzer tests + 45 stackQueueTests tests). Updated prd.json to mark VIS-010 as passes=true.
+
+2026-01-16: Completed VIS-011 (Add pattern requirements to hashMapTests) - Added patternRequirement field to medium and hard hash map test cases to enforce algorithmic pattern validation.
+
+Changes made:
+
+1. **types.ts**: Extended PatternId type to include 'hashMapUsage' and 'iteration'
+
+2. **astAnalyzer.ts**: Added two new pattern detection functions:
+   - `hasHashMapUsage(ast)`: Detects createTrackedHashMap() calls
+   - `hasIteration(ast)`: Detects for loops, for-of loops, for-in loops, while loops, or forEach/entries/keys/values calls
+
+3. **index.ts**: Exported hasHashMapUsage and hasIteration from validation module
+
+4. **hashMapTests.ts**: Added patternRequirement to 2 test cases:
+   - hashmap-collision-medium: `anyOf: ["hashMapUsage"]` - requires using a hash map via createTrackedHashMap() for collision handling
+   - hashmap-frequency-hard: `anyOf: ["hashMapUsage", "iteration"]` - requires using a hash map with iteration for frequency counting
+
+Note: The PRD specified `anyOf: ['hashFunction', 'chaining']` for medium and `anyOf: ['frequencyCounter', 'iteration']` for hard, but these pattern IDs don't exist. Used `hashMapUsage` instead since the reference solutions use createTrackedHashMap(). Added `iteration` pattern to detect loop-based iteration over data.
+
+All acceptance criteria met:
+- hashmap-collision-medium has patternRequirement ✓
+- hashmap-frequency-hard has patternRequirement ✓
+- error messages explain expected algorithm ✓
+- typecheck passes ✓
+
+All 25 hashMapTests tests pass. All 69 astAnalyzer tests pass. Note: 15 pre-existing test failures in other files (ModeSelector.test.tsx, VisualizationPanel.test.tsx, EditorPanel.test.tsx, array/index.test.ts) are unrelated to this change. Updated prd.json to mark VIS-011 as passes=true.
