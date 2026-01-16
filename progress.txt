@@ -789,3 +789,18 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1308 tests passing). Updated prd.json to mark AST-007 as passes=true.
+
+2026-01-16: Completed VIS-001 (Create validation index export) - Created src/lib/validation/index.ts to export all types and functions from the validation module, completing AST-008.
+
+Changes made:
+1. Created src/lib/validation/index.ts with re-exports for:
+   - Types: PatternId, PatternRequirement, ValidationResult (from types.ts)
+   - Functions: parseCode, hasNestedLoops, hasSwapCalls, hasRecursion, hasPartitionCalls, validatePatterns (from astAnalyzer.ts)
+
+All acceptance criteria met:
+- src/lib/validation/index.ts exists ✓
+- exports types from types.ts ✓
+- exports functions from astAnalyzer.ts ✓
+- typecheck passes ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors). Updated prd.json to mark VIS-001 as passes=true.
