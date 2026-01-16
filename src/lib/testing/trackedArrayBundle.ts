@@ -216,17 +216,25 @@ class TrackedArray {
           // Parse stack to find caller line number
           // Stack format: "at method (file:line:col)" or "method@file:line:col"
           const lines = stack.split('\\n');
-          // Skip first 2 lines (Error + emitStep), look for user code line
-          for (let i = 2; i < lines.length; i++) {
-            const match = lines[i].match(/:(\\d+):\\d+/);
+          const offset = typeof window !== 'undefined' && window.__userCodeLineOffset ? window.__userCodeLineOffset : 0;
+          // Skip internal TrackedArray frames - find user code frame
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            // Skip internal TrackedArray methods
+            if (line.includes('TrackedArray')) continue;
+            // Skip Error line
+            if (line.trim() === 'Error') continue;
+
+            const match = line.match(/:(\\d+):\\d+/);
             if (match && match[1]) {
               const rawLine = parseInt(match[1], 10);
-              // Adjust for user code offset if available
-              const offset = typeof window !== 'undefined' && window.__userCodeLineOffset ? window.__userCodeLineOffset : 0;
-              lineNumber = rawLine - offset;
-              // Only use positive line numbers
-              if (lineNumber < 1) lineNumber = null;
-              break;
+              // Calculate line in user code
+              const userLine = rawLine - offset;
+              // Only use if it's a valid user code line (positive and reasonable)
+              if (userLine >= 1 && userLine <= 1000) {
+                lineNumber = userLine;
+                break;
+              }
             }
           }
         }

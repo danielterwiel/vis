@@ -34,14 +34,12 @@ const highlightField = StateField.define<DecorationSet>({
   provide: (f) => EditorView.decorations.from(f),
 });
 
-// Theme for highlighted line
+// Theme for highlighted line - bright yellow highlight visible on dark theme
 const highlightTheme = EditorView.baseTheme({
   ".cm-highlighted-line": {
-    backgroundColor: "rgba(255, 193, 7, 0.3) !important",
-    transition: "background-color 0.15s ease-in",
-  },
-  ".cm-highlighted-line.fading": {
-    backgroundColor: "transparent !important",
+    backgroundColor: "rgba(255, 213, 0, 0.4) !important", // Brighter yellow, more opaque
+    borderLeft: "3px solid #ffd500 !important", // Left border for extra visibility
+    transition: "background-color 0.2s ease-out",
   },
 });
 
@@ -78,14 +76,15 @@ export function CodeMirrorEditor({
       effects: setHighlightedLineEffect.of(lineNumber),
     });
 
-    // Set up fade after 400ms
+    // Keep highlight visible for the step duration (animation interval is 800ms)
+    // Fade after 700ms so highlight is visible almost the entire step
     if (lineNumber !== null) {
       fadeTimeoutRef.current = window.setTimeout(() => {
         view.dispatch({
           effects: setHighlightedLineEffect.of(null),
         });
         fadeTimeoutRef.current = null;
-      }, 400);
+      }, 700);
     }
   }, []);
 

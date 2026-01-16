@@ -148,6 +148,8 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
       if (solution) {
         setUserCode(solution);
         setCodeStatus("complete");
+        // Auto-run tests after loading solution so visualization updates
+        onRunAllTests();
       }
     }
   }, [
@@ -156,6 +158,7 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
     getCurrentTestCase,
     setUserCode,
     setCodeStatus,
+    onRunAllTests,
   ]);
 
   // Update code status when user edits code

@@ -46,6 +46,7 @@ See `src/components/visualizers/D3Adapter.tsx`. Wrap in error boundaries.
 ### Sandboxed Execution
 
 User code runs in iframe `sandbox="allow-scripts"`:
+
 - Loop protection via SWC-injected counters (NOT setTimeout)
 - postMessage validation: type whitelist + schema + source check
 - Sandboxed iframes have null origin - cannot rely on origin alone

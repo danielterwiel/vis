@@ -192,9 +192,18 @@ export async function runTest(
     }
 
     // Calculate line offset for user code (for line highlighting)
-    // Count lines before user code in the sandbox
+    // Must account for:
+    // 1. Sandbox HTML boilerplate (buildSandboxHTML template before ${code})
+    // 2. expectCode lines
+    // 3. bundleCode lines
+    // 4. Template spacing lines between bundleCode and userCode
+    const SANDBOX_HTML_BOILERPLATE_LINES = 78; // Lines in sandbox.ts buildSandboxHTML before ${code}
+    const SANDBOX_TEMPLATE_SPACING = 6; // Lines between bundleCode and userCode in sandboxCode template
     const preUserCodeLines =
-      expectCode.split("\n").length + dsBundle.bundleCode.split("\n").length + 3; // +3 for template spacing
+      SANDBOX_HTML_BOILERPLATE_LINES +
+      expectCode.split("\n").length +
+      dsBundle.bundleCode.split("\n").length +
+      SANDBOX_TEMPLATE_SPACING;
 
     const sandboxCode = `
       ${expectCode}
