@@ -43,7 +43,6 @@ function VisualizationPanel() {
     setVisualizationMode,
     setExpectedOutputSteps,
     setReferenceSteps,
-    setHighlightedLine,
   } = useAppStore();
 
   // Track if we're loading expected/reference steps
@@ -209,33 +208,6 @@ function VisualizationPanel() {
 
     return () => clearInterval(timer);
   }, [isAnimating, currentSteps.length, nextStep, setIsAnimating]);
-
-  // Update highlighted line when step changes (only for user-code mode)
-  useEffect(() => {
-    // Only highlight lines when viewing user's code execution
-    if (visualizationMode !== "user-code") {
-      setHighlightedLine(null);
-      return;
-    }
-
-    if (
-      currentSteps.length === 0 ||
-      currentStepIndex < 0 ||
-      currentStepIndex >= currentSteps.length
-    ) {
-      setHighlightedLine(null);
-      return;
-    }
-
-    const currentStep = currentSteps[currentStepIndex];
-    const lineNumber = currentStep?.metadata?.lineNumber as number | undefined;
-
-    if (typeof lineNumber === "number" && lineNumber > 0) {
-      setHighlightedLine(lineNumber);
-    } else {
-      setHighlightedLine(null);
-    }
-  }, [currentStepIndex, currentSteps, visualizationMode, setHighlightedLine]);
 
   // Extract current array data from steps or use initial data
   const currentData = useMemo(() => {
@@ -443,9 +415,7 @@ function VisualizationPanel() {
       <div className="visualizer-container">
         <div className="visualizer-inner">
           {renderVisualizer()}
-          {visualizationMode === "skeleton" && (
-            <div className="skeleton-badge">Initial State</div>
-          )}
+          {visualizationMode === "skeleton" && <div className="skeleton-badge">Initial State</div>}
         </div>
 
         {/* Playback controls - shown below visualization when there are steps */}

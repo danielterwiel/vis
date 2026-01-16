@@ -272,7 +272,7 @@
         "typecheck passes",
         "CodeMirrorEditor.test.tsx passes"
       ],
-      "passes": false
+      "passes": true
     }
   ],
   "priorityOrder": [

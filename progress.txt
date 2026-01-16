@@ -804,3 +804,43 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors). Updated prd.json to mark VIS-001 as passes=true.
+
+2026-01-16: Completed VIS-016 (Remove broken editor line highlighting) - Removed the non-working editor line highlighting feature that was causing issues during animation playback.
+
+Changes made:
+
+1. **CodeMirrorEditor.tsx**: Removed all highlight-related code:
+   - Removed imports: `useCallback`, `Decoration`, `DecorationSet`, `StateField`, `StateEffect`
+   - Removed `setHighlightedLineEffect` StateEffect definition
+   - Removed `lineHighlightMark` Decoration.line
+   - Removed `highlightField` StateField for tracking decorations
+   - Removed `highlightTheme` with `.cm-highlighted-line` styling
+   - Removed `highlightedLine` prop from interface
+   - Removed `fadeTimeoutRef` and `highlightLine` callback
+   - Removed useEffect that handled highlighted line changes
+
+2. **EditorPanel.tsx**: Removed highlightedLine usage:
+   - Removed `highlightedLine` from store destructuring
+   - Removed `highlightedLine={highlightedLine}` prop from CodeMirrorEditor
+
+3. **useAppStore.ts**: Removed highlightedLine state and actions:
+   - Removed `highlightedLine: number | null` from state
+   - Removed `setHighlightedLine: (line: number | null) => void` action
+   - Removed `highlightedLine: null` from initial state
+   - Removed `setHighlightedLine` implementation
+   - Removed `highlightedLine: null` from resetVisualization
+
+4. **VisualizationPanel.tsx**: Removed highlighting integration:
+   - Removed `setHighlightedLine` from store destructuring
+   - Removed useEffect that updated highlighted line when step changes
+
+All acceptance criteria met:
+- CodeMirrorEditor.tsx has no highlight-related code ✓
+- EditorPanel.tsx does not pass highlightedLine prop ✓
+- useAppStore.ts has no highlightedLine state or setHighlightedLine action ✓
+- typecheck passes ✓
+- CodeMirrorEditor.test.tsx passes (3 tests) ✓
+
+Note: Pre-existing test failures in EditorPanel.test.tsx (about difficulty badge and reference mode badge) and other test files are unrelated to this change and existed before VIS-016 implementation.
+
+All VIS-016 validation checks pass: typecheck (0 errors), CodeMirrorEditor.test.tsx (3 tests passing), useAppStore.test.ts (25 tests passing). Updated prd.json to mark VIS-016 as passes=true.
