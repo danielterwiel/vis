@@ -56,7 +56,7 @@
         "tests for hasPartitionCalls exist",
         "npm run test:run passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "AST-005",

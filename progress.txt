@@ -719,3 +719,25 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors). Updated prd.json to mark AST-003 as passes=true.
+
+2026-01-16: Completed AST-004 (Create AST analyzer unit tests) - Created src/lib/validation/astAnalyzer.test.ts with comprehensive unit tests for all pattern detection functions.
+
+Test coverage:
+1. **parseCode tests** (3 tests): valid code parsing, invalid code returns null, function declaration parsing
+2. **hasNestedLoops tests** (9 tests): for-for, while-for, for-while, do-while-for nested loops; single loop rejection; sequential loop rejection; nested loops inside function declarations and arrow functions
+3. **hasRecursion tests** (7 tests): direct recursion, arrow function recursion, function expression recursion, quicksort-like patterns, non-recursive rejection, different function calls, conditional expression recursion
+4. **hasSwapCalls tests** (6 tests): arr.swap() detection, swap inside loops/if/functions, other method call rejection, variable name rejection
+5. **hasPartitionCalls tests** (5 tests): arr.partition() detection, partition in quicksort, partition inside while loop, other method call rejection, variable name rejection
+6. **validatePatterns tests** (7 tests): valid pattern match, multiple pattern matching, no match error, parse error handling, recursion validation, partition validation, non-recursive sort rejection
+
+Test approach: Uses mock AST structures via helper functions (id, block, forLoop, whileLoop, doWhileLoop, funcDecl, varDeclArrow, call, member, etc.) instead of actual SWC parsing. This avoids WASM initialization issues in the jsdom test environment while still testing the actual pattern detection logic.
+
+All acceptance criteria met:
+- src/lib/validation/astAnalyzer.test.ts exists ✓
+- tests for hasNestedLoops exist (9 tests) ✓
+- tests for hasRecursion exist (7 tests) ✓
+- tests for hasSwapCalls exist (6 tests) ✓
+- tests for hasPartitionCalls exist (5 tests) ✓
+- All 37 tests pass ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors). Updated prd.json to mark AST-004 as passes=true.
