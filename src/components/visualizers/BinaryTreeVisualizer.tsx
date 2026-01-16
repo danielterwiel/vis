@@ -32,19 +32,33 @@ export function BinaryTreeVisualizer({
     const height = 600;
     const duration = isAnimating ? 500 : 0;
 
-    // Clear previous content
-    svg.selectAll("*").remove();
+    // Create or select persistent main group for tree
+    let g = svg.select<SVGGElement>("g.tree-group");
+    if (g.empty()) {
+      g = svg.append("g").attr("class", "tree-group");
+    }
 
-    // Create main group for tree
-    const g = svg.append("g").attr("class", "tree-group");
+    // Handle empty tree case with data join pattern
+    const emptyData = data ? [] : [{ x: width / 2, y: height / 2, text: "Empty tree" }];
+    g.selectAll<SVGTextElement, { x: number; y: number; text: string }>("text.empty-message")
+      .data(emptyData, (d) => d.text)
+      .join(
+        (enter) =>
+          enter
+            .append("text")
+            .attr("x", (d) => d.x)
+            .attr("y", (d) => d.y)
+            .attr("text-anchor", "middle")
+            .attr("class", "empty-message")
+            .text((d) => d.text),
+        (update) => update,
+        (exit) => exit.remove(),
+      );
 
     if (!data) {
-      g.append("text")
-        .attr("x", width / 2)
-        .attr("y", height / 2)
-        .attr("text-anchor", "middle")
-        .attr("class", "empty-message")
-        .text("Empty tree");
+      // Clear nodes and links when tree is empty
+      g.selectAll(".link").data([]).join("line");
+      g.selectAll(".node-group").data([]).join("g");
       return;
     }
 

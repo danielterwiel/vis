@@ -844,3 +844,24 @@ All acceptance criteria met:
 Note: Pre-existing test failures in EditorPanel.test.tsx (about difficulty badge and reference mode badge) and other test files are unrelated to this change and existed before VIS-016 implementation.
 
 All VIS-016 validation checks pass: typecheck (0 errors), CodeMirrorEditor.test.tsx (3 tests passing), useAppStore.test.ts (25 tests passing). Updated prd.json to mark VIS-016 as passes=true.
+
+2026-01-16: Completed VIS-003 (Refactor BinaryTreeVisualizer to use D3 data join) - Refactored the BinaryTreeVisualizer component to use the proper D3 data join pattern instead of clearing and recreating all elements on each render.
+
+Changes made:
+
+1. **BinaryTreeVisualizer.tsx**:
+   - Removed `svg.selectAll("*").remove()` line that was clearing the entire SVG on each render
+   - Changed from `svg.append("g")` to `svg.select<SVGGElement>("g.tree-group")` with fallback to create only if empty (persistent main group pattern)
+   - Added data join pattern for empty tree message using `selectAll.data().join()` instead of direct append
+   - Added explicit cleanup of nodes and links when tree becomes empty using empty data arrays
+
+The component already used `selectAll.data().join()` for nodes (lines 127-185) and links (lines 90-119) - the issue was that the `svg.selectAll("*").remove()` at line 36 was defeating this pattern by clearing everything before the data join could work.
+
+All acceptance criteria met:
+- BinaryTreeVisualizer.tsx does not call svg.selectAll('*').remove() ✓
+- Uses selectAll.data().join() pattern ✓ (for links, nodes, and empty message)
+- Tree renders with all nodes visible ✓ (24 tests pass including multi-level trees)
+- typecheck passes ✓
+- BinaryTreeVisualizer.test.tsx passes ✓ (24 tests)
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), BinaryTreeVisualizer.test.tsx (24 tests passing). Updated prd.json to mark VIS-003 as passes=true.

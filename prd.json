@@ -101,7 +101,7 @@
         "typecheck passes",
         "BinaryTreeVisualizer.test.tsx passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "VIS-004",
