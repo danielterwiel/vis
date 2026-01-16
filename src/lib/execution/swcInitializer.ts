@@ -3,7 +3,7 @@
  * Must be called once before code transformation
  */
 
-import initSwc, { transformSync } from "@swc/wasm-web";
+import initSwc, { transformSync, parseSync } from "@swc/wasm-web";
 
 let swcInitialized = false;
 let initPromise: Promise<void> | null = null;
@@ -48,11 +48,12 @@ export function isSWCInitialized(): boolean {
  * Transform JavaScript code using SWC
  * Throws if SWC not initialized - call initializeSWC() first
  */
-export function transformCode(code: string, options?: any): string {
+export function transformCode(code: string, options?: unknown): string {
   if (!swcInitialized) {
     throw new Error("SWC not initialized. Call initializeSWC() first.");
   }
 
+  const opts = options as Record<string, unknown> | undefined;
   const result = transformSync(code, {
     jsc: {
       parser: {
@@ -60,10 +61,13 @@ export function transformCode(code: string, options?: any): string {
         jsx: false,
       },
       target: "es2022",
-      ...options?.jsc,
+      ...(opts?.jsc as Record<string, unknown>),
     },
-    ...options,
+    ...opts,
   });
 
   return result.code;
 }
+
+// Re-export parseSync for AST analysis
+export { parseSync };

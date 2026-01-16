@@ -678,3 +678,17 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 Updated prd.json to mark AST-001 as passes=true.
+
+2026-01-16: Completed AST-002 (Export parseSync from SWC initializer) - Modified src/lib/execution/swcInitializer.ts to import and re-export `parseSync` from @swc/wasm-web alongside existing `transformSync`.
+
+Changes made:
+1. Added `parseSync` to the import statement from @swc/wasm-web
+2. Added `export { parseSync }` at the end of the file to re-export the function
+3. Fixed `any` type in `transformCode` function to use `unknown` with proper type casting
+
+All acceptance criteria met:
+- parseSync imported from @swc/wasm-web ✓
+- parseSync exported from swcInitializer.ts ✓
+- typecheck passes ✓
+
+All validation checks pass: typecheck (0 errors), test suite (1271 tests passing). Updated prd.json to mark AST-002 as passes=true.

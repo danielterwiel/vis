@@ -24,7 +24,7 @@
         "parseSync exported from swcInitializer.ts",
         "typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "AST-003",
