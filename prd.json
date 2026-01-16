@@ -87,7 +87,7 @@
         "typecheck passes",
         "GraphVisualizer.test.tsx passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "VIS-003",

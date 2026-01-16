@@ -865,3 +865,33 @@ All acceptance criteria met:
 - BinaryTreeVisualizer.test.tsx passes ✓ (24 tests)
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), BinaryTreeVisualizer.test.tsx (24 tests passing). Updated prd.json to mark VIS-003 as passes=true.
+
+2026-01-16: Completed VIS-002 (Refactor GraphVisualizer to use D3 data join) - Refactored the GraphVisualizer component to use the proper D3 data join pattern instead of clearing and recreating all elements on each render.
+
+Changes made:
+
+1. **GraphVisualizer.tsx**:
+   - Removed `svg.selectAll("*").remove()` line that was clearing the entire SVG on each render
+   - Changed from `svg.append("g")` to `svg.select<SVGGElement>("g.main-group")` with fallback to create only if empty (persistent main group pattern)
+   - Added data join pattern for empty message using `selectAll.data().join()` instead of direct append
+   - Implemented `selectAll.data().join()` pattern for links with enter/update/exit transitions
+   - Implemented `selectAll.data().join()` pattern for nodes with enter/update/exit transitions
+   - Added node position persistence using module-level Map to preserve positions across renders
+   - Optimized simulation to only recreate when nodes actually change (by comparing node IDs)
+   - Force simulation now persists across step changes - only highlighting updates without recreating simulation
+
+2. **Key improvements**:
+   - Links and nodes now smoothly animate enter/exit transitions
+   - Node positions are remembered and restored across re-renders
+   - Simulation only restarts when graph structure changes, not on every step change
+   - Clean separation of enter (new elements), update (existing elements), and exit (removed elements)
+
+All acceptance criteria met:
+- GraphVisualizer.tsx does not call svg.selectAll('*').remove() ✓
+- Uses selectAll.data().join() pattern for nodes ✓
+- Uses selectAll.data().join() pattern for links ✓
+- Force simulation persists across step changes ✓
+- typecheck passes ✓
+- GraphVisualizer.test.tsx passes ✓ (30 tests)
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), GraphVisualizer.test.tsx (30 tests passing). Updated prd.json to mark VIS-002 as passes=true.
