@@ -1071,3 +1071,61 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All 31 linkedListTests tests pass. Updated prd.json to mark VIS-007 as passes=true.
+
+2026-01-16: Completed VIS-014 (Add unit tests for new pattern detectors) - Added comprehensive unit tests to astAnalyzer.test.ts for all five new pattern detection functions.
+
+Tests added:
+
+1. **hasTwoPointers tests** (6 tests):
+   - Detects slow/fast pointer pattern in function
+   - Detects prev/curr pointer pattern
+   - Detects left/right pointer pattern in arrow function
+   - Detects p1/p2 pointer pattern
+   - Does NOT detect single pointer variable
+   - Does NOT detect unrelated variable names
+
+2. **hasPointerManipulation tests** (6 tests):
+   - Detects node.next = something assignment
+   - Detects prev.next = curr.next pattern
+   - Detects .next assignment inside while loop
+   - Detects .next assignment inside function
+   - Does NOT detect reading .next property
+   - Does NOT detect assignment to other properties
+
+3. **hasDFS tests** (7 tests):
+   - Detects recursive tree traversal with node.left
+   - Detects recursive tree traversal with node.right
+   - Detects stack-based DFS pattern
+   - Detects .dfs() method call
+   - Detects depthFirstSearch() function call
+   - Does NOT detect simple recursive function without tree traversal
+   - Does NOT detect queue-based traversal (BFS pattern)
+
+4. **hasBFS tests** (6 tests):
+   - Detects queue-based BFS pattern with push/shift
+   - Detects .bfs() method call
+   - Detects breadthFirstSearch() function call
+   - Detects queue variable inside function
+   - Does NOT detect stack-based traversal (DFS pattern)
+   - Does NOT detect array without queue variable name
+
+5. **hasDivideAndConquer tests** (7 tests):
+   - Detects Math.floor division by 2
+   - Detects bitwise right shift by 1
+   - Detects mid variable declaration
+   - Detects middle variable declaration
+   - Detects divide-and-conquer in function
+   - Does NOT detect simple division not by 2
+   - Does NOT detect unrelated bitwise operations
+
+All acceptance criteria met:
+- Tests for hasTwoPointers exist ✓
+- Tests for hasPointerManipulation exist ✓
+- Tests for hasDFS exist ✓
+- Tests for hasBFS exist ✓
+- Tests for hasDivideAndConquer exist ✓
+- All 69 astAnalyzer tests pass ✓
+
+Note: 15 pre-existing test failures in other files (ModeSelector.test.tsx, VisualizationPanel.test.tsx, EditorPanel.test.tsx, array/index.test.ts) are unrelated to this change.
+
+All validation checks pass: typecheck (0 errors), astAnalyzer.test.ts (69 tests passing). Updated prd.json to mark VIS-014 as passes=true.

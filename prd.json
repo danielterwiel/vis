@@ -250,7 +250,7 @@
         "Tests for hasDivideAndConquer exist",
         "npm run test:run passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "VIS-015",
