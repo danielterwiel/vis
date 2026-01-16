@@ -1,4 +1,5 @@
 import type { TestCase } from "../types";
+import type { PatternRequirement } from "../../validation/types";
 
 /**
  * Binary Tree test cases with 3 difficulty levels (Easy, Medium, Hard)
@@ -90,6 +91,11 @@ export const binaryTreeTests: TestCase[] = [
     description: "Validate whether a binary tree satisfies the BST property (left < root < right)",
     initialData: BINARYTREE_INPUT_DATA,
     expectedOutput: true,
+    patternRequirement: {
+      anyOf: ["recursion"],
+      errorMessage:
+        "Medium difficulty requires recursive validation. Implement a recursive function that checks the BST property at each node.",
+    } as PatternRequirement,
     assertions: `
       expect(result).toBe(true);
       expect(typeof result).toBe('boolean');
@@ -125,6 +131,11 @@ export const binaryTreeTests: TestCase[] = [
       "Given an unbalanced BST (created by inserting values in sorted order), create a balanced BST with the same values",
     initialData: BINARYTREE_SORTED_OUTPUT, // Inserting in sorted order creates a right-skewed tree
     expectedOutput: BINARYTREE_SORTED_OUTPUT, // Balanced tree still contains same values
+    patternRequirement: {
+      anyOf: ["recursion", "divideAndConquer"],
+      errorMessage:
+        "Hard difficulty requires divide-and-conquer approach. Use recursion to build a balanced tree by selecting the middle element as root and recursively building left and right subtrees.",
+    } as PatternRequirement,
     assertions: `
       expect(result.sort((a, b) => a - b)).toEqual([20, 30, 40, 50, 60, 70, 80]);
       expect(result.length).toBe(7);

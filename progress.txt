@@ -1129,3 +1129,18 @@ All acceptance criteria met:
 Note: 15 pre-existing test failures in other files (ModeSelector.test.tsx, VisualizationPanel.test.tsx, EditorPanel.test.tsx, array/index.test.ts) are unrelated to this change.
 
 All validation checks pass: typecheck (0 errors), astAnalyzer.test.ts (69 tests passing). Updated prd.json to mark VIS-014 as passes=true.
+
+2026-01-16: Completed VIS-008 (Add pattern requirements to binaryTreeTests) - Added patternRequirement field to medium and hard binary tree test cases to enforce algorithmic pattern validation.
+
+Changes made:
+1. **binaryTreeTests.ts**: Added import for PatternRequirement type from validation/types
+2. **binarytree-validate-medium**: Added patternRequirement with `anyOf: ["recursion"]` and error message explaining that medium difficulty requires recursive validation to check the BST property at each node
+3. **binarytree-balance-hard**: Added patternRequirement with `anyOf: ["recursion", "divideAndConquer"]` and error message explaining that hard difficulty requires divide-and-conquer approach using recursion to build a balanced tree
+
+All acceptance criteria met:
+- binarytree-validate-medium has patternRequirement ✓
+- binarytree-balance-hard has patternRequirement ✓
+- error messages explain expected algorithm ✓
+- typecheck passes ✓
+
+All 24 binaryTreeTests tests pass. Updated prd.json to mark VIS-008 as passes=true.
