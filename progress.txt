@@ -948,3 +948,44 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 Note: No dedicated HashMapVisualizer.test.tsx file exists. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors). Pre-existing test failures in ModeSelector.test.tsx, VisualizationPanel.test.tsx, EditorPanel.test.tsx, and array/index.test.ts are unrelated to this change. Updated prd.json to mark VIS-005 as passes=true.
+
+2026-01-16: Completed VIS-006 (Fix LinkedListVisualizer value display) - Fixed the bug where node values were not visible inside the linked list rectangles by adding inline SVG attributes for text styling.
+
+Root cause: The LinkedListVisualizer relied on CSS classes (.node-value with fill: white) for text styling, but SVG text elements often don't inherit CSS properly in all browsers. Other visualizers (BinaryTreeVisualizer, HashMapVisualizer) use inline D3 .attr() calls to set fill, font-size, and other properties directly.
+
+Changes made:
+
+1. **Node value text** (lines 270-282): Added inline attributes:
+   - `.attr("dominant-baseline", "middle")` for vertical centering
+   - `.attr("fill", "#fff")` for white text color
+   - `.attr("font-size", "14px")` for consistent sizing
+   - `.attr("font-weight", "500")` for readability
+
+2. **Node index text** (lines 284-295): Added inline attributes:
+   - `.attr("fill", "#888")` for gray color
+   - `.attr("font-size", "12px")` for smaller text
+
+3. **HEAD label** (lines 297-311): Added inline attributes:
+   - `.attr("fill", "#4ade80")` for green color
+   - `.attr("font-size", "11px")` and `.attr("font-weight", "600")`
+
+4. **TAIL label** (lines 313-327): Added inline attributes:
+   - `.attr("fill", "#fb923c")` for orange color
+   - `.attr("font-size", "11px")` and `.attr("font-weight", "600")`
+
+5. **Null pointer text** (lines 188-200): Added inline attributes:
+   - `.attr("dominant-baseline", "middle")` for vertical centering
+   - `.attr("fill", "#888")` for gray color
+   - `.attr("font-size", "14px")` and `.attr("font-style", "italic")`
+
+6. **Tests**: Added 2 new tests to LinkedListVisualizer.test.tsx:
+   - "should display node values inside rectangles" - verifies values 10, 20, 30 are visible
+   - "should display node values with correct font size and fill" - verifies single node value display
+
+All acceptance criteria met:
+- Node values visible in visualization ✓ (via inline fill="#fff" attribute)
+- Values use correct font-size and fill color ✓ (14px, white)
+- typecheck passes ✓
+- LinkedListVisualizer.test.tsx passes ✓ (25 tests)
+
+Note: Pre-existing test failures in ModeSelector.test.tsx, VisualizationPanel.test.tsx, EditorPanel.test.tsx, and array/index.test.ts are unrelated to this change. Updated prd.json to mark VIS-006 as passes=true.
