@@ -128,7 +128,7 @@
         "Uses selectAll.data().join() pattern for entries",
         "typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "VIS-006",

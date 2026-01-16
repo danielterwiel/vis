@@ -920,3 +920,31 @@ All acceptance criteria met:
 - StackQueueVisualizer.test.tsx passes ✓ (28 tests)
 
 All validation checks pass: typecheck (0 errors), StackQueueVisualizer.test.tsx (28 tests passing). Updated prd.json to mark VIS-004 as passes=true.
+
+2026-01-16: Completed VIS-005 (Refactor HashMapVisualizer to use D3 data join) - Refactored the HashMapVisualizer component to use the proper D3 data join pattern instead of clearing and recreating all elements on each render.
+
+Changes made:
+
+1. **HashMapVisualizer.tsx**:
+   - Removed `svg.selectAll("g.main-group").remove()` line that was clearing the main group on each render
+   - Changed from `svg.append("g")` to `svg.select<SVGGElement>("g.main-group")` with fallback to create only if empty (persistent main group pattern)
+   - Refactored bucket rendering to use `selectAll.data().join()` with enter/update/exit callbacks
+   - Added `getBucketFill` helper function for determining bucket colors based on state
+   - Refactored entry (collision chain) rendering to use `selectAll.data().join()` within each bucket group
+   - Refactored connector lines to use `selectAll.data().join()` pattern
+   - Refactored step indicator to use `selectAll.data().join()` pattern
+
+2. **Key improvements**:
+   - Buckets now update highlighting without recreating DOM elements
+   - Entry groups (collision chains) animate smoothly when added/removed
+   - Connector lines update dynamically
+   - Step indicator updates text content without DOM recreation
+   - Clean separation of enter (new elements), update (existing elements), and exit (removed elements)
+
+All acceptance criteria met:
+- HashMapVisualizer.tsx does not remove main-group on each render ✓
+- Uses selectAll.data().join() pattern for buckets ✓
+- Uses selectAll.data().join() pattern for entries ✓
+- typecheck passes ✓
+
+Note: No dedicated HashMapVisualizer.test.tsx file exists. All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors). Pre-existing test failures in ModeSelector.test.tsx, VisualizationPanel.test.tsx, EditorPanel.test.tsx, and array/index.test.ts are unrelated to this change. Updated prd.json to mark VIS-005 as passes=true.
