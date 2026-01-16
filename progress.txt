@@ -692,3 +692,30 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All validation checks pass: typecheck (0 errors), test suite (1271 tests passing). Updated prd.json to mark AST-002 as passes=true.
+
+2026-01-16: Completed AST-003 (Create AST analyzer with pattern detection) - Created src/lib/validation/astAnalyzer.ts with comprehensive pattern detection functions for validating user code implements required algorithmic patterns.
+
+Implementation details:
+1. **parseCode(code)**: Wraps SWC's parseSync to parse JavaScript code into an AST. Returns null on parse failure.
+
+2. **hasNestedLoops(ast)**: Detects nested loop patterns (for/while/do-while inside another loop). Recursively checks function declarations, arrow functions, and blocks. Used to validate bubble sort implementations.
+
+3. **hasSwapCalls(ast)**: Detects .swap() method calls on any object. Traverses all expressions including inside loops, conditionals, and functions.
+
+4. **hasRecursion(ast)**: Detects when a function calls itself by name. Handles both function declarations and arrow functions assigned to variables.
+
+5. **hasPartitionCalls(ast)**: Detects .partition() method calls, similar to hasSwapCalls. Used for quick sort validation.
+
+6. **validatePatterns(code, requirement)**: Main entry point that parses code and checks if any pattern in the requirement's `anyOf` array is detected. Returns ValidationResult with valid/error.
+
+All acceptance criteria met:
+- src/lib/validation/astAnalyzer.ts exists ✓
+- parseCode function exported ✓
+- hasNestedLoops function exported ✓
+- hasSwapCalls function exported ✓
+- hasRecursion function exported ✓
+- hasPartitionCalls function exported ✓
+- validatePatterns function exported ✓
+- typecheck passes ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors). Updated prd.json to mark AST-003 as passes=true.

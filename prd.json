@@ -41,7 +41,7 @@
         "validatePatterns function exported",
         "typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "AST-004",
@@ -114,9 +114,7 @@
       "title": "Full validation passes",
       "category": "verification",
       "description": "Run npm run validate to ensure lint, format, typecheck, and all tests pass.",
-      "stepsToVerify": [
-        "npm run validate passes with no errors"
-      ],
+      "stepsToVerify": ["npm run validate passes with no errors"],
       "passes": false
     }
   ]
