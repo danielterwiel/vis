@@ -1,4 +1,5 @@
 import type { TestCase } from "../types";
+import type { PatternRequirement } from "../../validation/types";
 
 /**
  * LinkedList test cases with 3 difficulty levels (Easy, Medium, Hard)
@@ -81,6 +82,11 @@ export const linkedListTests: TestCase[] = [
       "List is reversed in place (head becomes tail)",
       "At least one reverse operation is captured for visualization",
     ],
+    patternRequirement: {
+      anyOf: ["pointerManipulation", "recursion"],
+      errorMessage:
+        "Medium difficulty requires implementing pointer manipulation (e.g., reassigning .next pointers) or using recursion to reverse the list.",
+    } satisfies PatternRequirement,
   },
   {
     id: "linkedlist-cycle-hard",
@@ -115,5 +121,10 @@ export const linkedListTests: TestCase[] = [
       "Function returns false when no cycle exists",
       "At least one hasCycle operation is captured for visualization",
     ],
+    patternRequirement: {
+      anyOf: ["twoPointers", "recursion"],
+      errorMessage:
+        "Hard difficulty requires implementing Floyd's cycle detection with two pointers (slow/fast) or using recursion to detect cycles.",
+    } satisfies PatternRequirement,
   },
 ];

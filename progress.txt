@@ -1056,3 +1056,18 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All 37 astAnalyzer tests pass. Updated prd.json to mark VIS-013 as passes=true.
+
+2026-01-16: Completed VIS-007 (Add pattern requirements to linkedListTests) - Added patternRequirement field to medium and hard linked list test cases to enforce algorithmic pattern validation.
+
+Changes made:
+1. **linkedListTests.ts**: Added import for PatternRequirement type from validation/types
+2. **linkedlist-reverse-medium**: Added patternRequirement with `anyOf: ["pointerManipulation", "recursion"]` and error message explaining that medium difficulty requires pointer manipulation (reassigning .next pointers) or recursion
+3. **linkedlist-cycle-hard**: Added patternRequirement with `anyOf: ["twoPointers", "recursion"]` and error message explaining that hard difficulty requires Floyd's cycle detection with two pointers (slow/fast) or recursion
+
+All acceptance criteria met:
+- linkedlist-reverse-medium has patternRequirement ✓
+- linkedlist-cycle-hard has patternRequirement ✓
+- error messages explain expected algorithm ✓
+- typecheck passes ✓
+
+All 31 linkedListTests tests pass. Updated prd.json to mark VIS-007 as passes=true.
