@@ -663,3 +663,18 @@ All acceptance criteria met:
 - Highlighting still works correctly ✓
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1271 tests passing). Updated prd.json to mark PERF-005 as passes=true.
+
+2026-01-16: Completed AST-001 (Create validation types) - Created src/lib/validation/types.ts with three type definitions for AST-based code validation:
+
+1. **PatternId**: Union type of four pattern identifiers: 'nestedLoops' | 'swapCalls' | 'recursion' | 'partitionCalls'
+2. **PatternRequirement**: Interface with `anyOf: PatternId[]` (acceptable patterns) and `errorMessage: string` (failure message)
+3. **ValidationResult**: Interface with `valid: boolean` and optional `error?: string`
+
+All acceptance criteria met:
+- src/lib/validation/types.ts exists ✓
+- PatternId type exported ✓
+- PatternRequirement interface exported ✓
+- ValidationResult interface exported ✓
+- typecheck passes ✓
+
+Updated prd.json to mark AST-001 as passes=true.

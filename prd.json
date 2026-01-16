@@ -1,509 +1,123 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema#",
-  "version": "3.0.0",
-  "project": {
-    "name": "Data Structure Visualizer",
-    "description": "CodePen-like application for visualizing data structures with real-time animated visualization. 100% client-side, no backend.",
-    "repository": "https://github.com/user/vis"
-  },
-  "metadata": {
-    "createdAt": "2026-01-15",
-    "lastUpdated": "2026-01-15",
-    "methodology": "Ralph Wiggum - Autonomous AI Agent Development",
-    "validationCommand": "npm run validate",
-    "devServer": "npm run dev",
-    "devServerPort": 5175,
-    "iteration": 3,
-    "testingTool": "agent-browser"
-  },
   "userStories": [
     {
-      "id": "UI-001",
-      "category": "UI Cleanup",
-      "priority": "high",
-      "title": "Remove visualization helper text",
-      "description": "Remove the text 'Visualizing your code execution with captured operations.' and its container from the visualization panel. This text adds clutter without providing value.",
-      "acceptanceCriteria": [
-        "No 'Visualizing your code execution with captured operations.' text appears anywhere in the UI",
-        "The container element that held this text is also removed",
-        "Visualization panel still functions correctly"
-      ],
+      "id": "AST-001",
+      "title": "Create validation types",
+      "category": "validation",
+      "description": "Create src/lib/validation/types.ts with PatternId type ('nestedLoops' | 'swapCalls' | 'recursion' | 'partitionCalls'), PatternRequirement interface (anyOf: PatternId[], errorMessage: string), and ValidationResult interface (valid: boolean, error?: string).",
       "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175",
-        "agent-browser snapshot -c -d 6",
-        "Verify no 'Visualizing your code execution' text in snapshot"
-      ],
-      "affectedFiles": ["src/components/VisualizationPanel/ModeSelector.tsx"],
-      "passes": true
-    },
-    {
-      "id": "UI-002",
-      "category": "UI Cleanup",
-      "priority": "high",
-      "title": "Remove Visualization title",
-      "description": "Remove the 'Visualization' title heading and its container from the visualization panel. The panel's purpose is self-evident from its content.",
-      "acceptanceCriteria": [
-        "No 'Visualization' heading appears in the visualization panel",
-        "The container element for the title is removed",
-        "Visualization panel layout adjusts appropriately"
-      ],
-      "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175",
-        "agent-browser snapshot -c -d 6",
-        "Verify no 'Visualization' title heading in snapshot"
-      ],
-      "affectedFiles": ["src/components/VisualizationPanel/VisualizationPanel.tsx"],
-      "passes": true
-    },
-    {
-      "id": "UI-003",
-      "category": "UI Enhancement",
-      "priority": "high",
-      "title": "Reorganize playback controls below visualization",
-      "description": "Position all playback controls in a logical order below the visualization area. Controls should include: Play button, step indicator (e.g., 'Step 8 / 20'), replay button, previous step button, and next step button. Style these controls clearly as belonging to the visualization, without overlapping the visualization content.",
-      "acceptanceCriteria": [
-        "Play button is visible below visualization",
-        "Step indicator shows current step and total (e.g., 'Step 8 / 20') next to play button",
-        "Replay, previous step, and next step buttons are visible and logically ordered",
-        "Controls have consistent styling that visually groups them together",
-        "Controls do not overlap with the visualization content",
-        "All controls function correctly when clicked"
-      ],
-      "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=array",
-        "agent-browser click on Show Solution button",
-        "agent-browser click on Run all tests button",
-        "sleep 1",
-        "agent-browser snapshot -i",
-        "Verify playback controls are below visualization and properly styled"
-      ],
-      "affectedFiles": [
-        "src/components/VisualizationPanel/VisualizationPanel.tsx",
-        "src/styles/global.css"
+        "src/lib/validation/types.ts exists",
+        "PatternId type exported",
+        "PatternRequirement interface exported",
+        "ValidationResult interface exported",
+        "typecheck passes"
       ],
       "passes": true
     },
     {
-      "id": "UI-004",
-      "category": "UI Cleanup",
-      "priority": "medium",
-      "title": "Remove Show Expected button",
-      "description": "Remove the 'Show Expected' button from the visualization mode buttons. The 'Compare' button already provides this functionality and having both is redundant.",
-      "acceptanceCriteria": [
-        "No 'Show Expected' button appears in visualization mode buttons",
-        "'Compare' button still works correctly",
-        "'My Execution' button still works correctly"
-      ],
+      "id": "AST-002",
+      "title": "Export parseSync from SWC initializer",
+      "category": "validation",
+      "description": "Modify src/lib/execution/swcInitializer.ts to import and export parseSync from @swc/wasm-web alongside existing transformSync.",
       "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175",
-        "agent-browser snapshot -i",
-        "Verify no 'Show Expected' button in snapshot",
-        "Verify 'Compare' button is present"
+        "parseSync imported from @swc/wasm-web",
+        "parseSync exported from swcInitializer.ts",
+        "typecheck passes"
       ],
-      "affectedFiles": ["src/components/VisualizationPanel/ModeSelector.tsx"],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "UI-005",
-      "category": "UI Consistency",
-      "priority": "medium",
-      "title": "Fix inconsistent button and badge sizes in Editor header",
-      "description": "The buttons and badge next to the Editor title all have different sizes. They should have consistent sizing for a polished appearance.",
-      "acceptanceCriteria": [
-        "All buttons in Editor header have consistent height",
-        "Badge has consistent sizing relative to buttons",
-        "Visual alignment is clean and professional"
-      ],
+      "id": "AST-003",
+      "title": "Create AST analyzer with pattern detection",
+      "category": "validation",
+      "description": "Create src/lib/validation/astAnalyzer.ts with: parseCode(code) wrapping SWC parseSync, hasNestedLoops(ast) detecting for/while inside for/while, hasSwapCalls(ast) detecting .swap() method calls, hasRecursion(ast) detecting function calling itself, hasPartitionCalls(ast) detecting .partition() calls, validatePatterns(code, requirement) as main entry point.",
       "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175",
-        "agent-browser snapshot -i",
-        "Verify buttons and badge next to Editor title have consistent sizing"
+        "src/lib/validation/astAnalyzer.ts exists",
+        "parseCode function exported",
+        "hasNestedLoops function exported",
+        "hasSwapCalls function exported",
+        "hasRecursion function exported",
+        "hasPartitionCalls function exported",
+        "validatePatterns function exported",
+        "typecheck passes"
       ],
-      "affectedFiles": ["src/styles/global.css", "src/components/EditorPanel/PresetSelector.css"],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "UI-006",
-      "category": "UI Bug",
-      "priority": "medium",
-      "title": "Fix difficulty badge not updating after Show Solution",
-      "description": "The difficulty badge remains on 'easy' even after clicking 'Show Solution' which loads the solution for the currently selected test (which could be hard). The badge should reflect the actual difficulty of the active test case.",
-      "acceptanceCriteria": [
-        "When selecting a hard test case, badge shows 'hard'",
-        "When clicking 'Show Solution', badge still reflects selected test difficulty",
-        "Badge updates correctly when switching between test cases of different difficulties"
-      ],
+      "id": "AST-004",
+      "title": "Create AST analyzer unit tests",
+      "category": "validation",
+      "description": "Create src/lib/validation/astAnalyzer.test.ts with tests for: hasNestedLoops detecting for-for, while-for, for-while loops and rejecting single loops; hasRecursion detecting direct recursion and arrow function recursion; hasSwapCalls detecting arr.swap() calls; hasPartitionCalls detecting arr.partition() calls; validatePatterns returning valid/invalid correctly.",
       "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=array",
-        "agent-browser snapshot -i",
-        "Select hard test case",
-        "agent-browser click on Show Solution button",
-        "agent-browser snapshot -i",
-        "Verify badge shows 'hard' not 'easy'"
+        "src/lib/validation/astAnalyzer.test.ts exists",
+        "tests for hasNestedLoops exist",
+        "tests for hasRecursion exist",
+        "tests for hasSwapCalls exist",
+        "tests for hasPartitionCalls exist",
+        "npm run test:run passes"
       ],
-      "affectedFiles": [
-        "src/components/TestPanel/TestPanel.tsx",
-        "src/components/TestPanel/TestPanel.css"
-      ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "UI-007",
-      "category": "UI Bug",
-      "priority": "low",
-      "title": "Fix Run icon alignment in test case items",
-      "description": "The icon next to 'Run' in the test case items is not properly aligned with the text.",
-      "acceptanceCriteria": [
-        "Run icon is vertically centered with 'Run' text",
-        "Icon spacing is consistent across all test case items"
-      ],
+      "id": "AST-005",
+      "title": "Add patternRequirement to TestCase interface",
+      "category": "testing",
+      "description": "Modify src/lib/testing/types.ts to import PatternRequirement from validation types and add optional patternRequirement?: PatternRequirement field to TestCase interface.",
       "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175",
-        "agent-browser snapshot -i",
-        "Verify Run icons are properly aligned in test case items"
+        "PatternRequirement imported in types.ts",
+        "patternRequirement field added to TestCase interface",
+        "typecheck passes"
       ],
-      "affectedFiles": ["src/components/TestPanel/TestPanel.css"],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "DATA-001",
-      "category": "Test Data",
-      "priority": "high",
-      "title": "Use single dataset for Array test cases",
-      "description": "The Array data structure uses multiple different datasets for its 3 test cases. For simplicity, use a single consistent dataset across all Array test cases.",
-      "acceptanceCriteria": [
-        "All 3 Array test cases use the same input dataset",
-        "Test cases still have different expected outputs based on difficulty/algorithm",
-        "Reference solutions pass all tests with the unified dataset"
-      ],
+      "id": "AST-006",
+      "title": "Update array tests with pattern requirements",
+      "category": "testing",
+      "description": "Modify src/lib/testing/testCases/arrayTests.ts to add patternRequirement to medium test (anyOf: ['nestedLoops', 'swapCalls']) and hard test (anyOf: ['recursion', 'partitionCalls']) with appropriate error messages explaining expected algorithm.",
       "stepsToVerify": [
-        "Review src/lib/testing/testCases/arrayTests.ts",
-        "Verify all test cases use same input data",
-        "agent-browser navigate http://localhost:5175/?ds=array",
-        "agent-browser click on Show Solution button",
-        "agent-browser click on Run all tests button",
-        "Verify all tests pass"
+        "array-sort-medium has patternRequirement with nestedLoops or swapCalls",
+        "array-sort-hard has patternRequirement with recursion or partitionCalls",
+        "error messages explain expected algorithm",
+        "typecheck passes"
       ],
-      "affectedFiles": ["src/lib/testing/testCases/arrayTests.ts"],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "DATA-002",
-      "category": "Test Data",
-      "priority": "medium",
-      "title": "Use single dataset for other data structure test cases",
-      "description": "Similar to Array, all other data structures should use a single consistent dataset across their test cases for simplicity.",
-      "acceptanceCriteria": [
-        "LinkedList test cases use single dataset",
-        "Stack test cases use single dataset",
-        "Queue test cases use single dataset",
-        "Binary Tree test cases use single dataset",
-        "Graph test cases use single dataset",
-        "HashMap test cases use single dataset",
-        "All reference solutions still pass"
-      ],
+      "id": "AST-007",
+      "title": "Integrate validation into testRunner",
+      "category": "testing",
+      "description": "Modify src/lib/testing/testRunner.ts to import validatePatterns from validation module and add validation check before test execution: if testCase.patternRequirement exists, call validatePatterns and return early with error if validation fails.",
       "stepsToVerify": [
-        "Review all test case files in src/lib/testing/testCases/",
-        "Verify each data structure uses consistent input data",
-        "Run Show Solution + Run All Tests for each data structure",
-        "Verify all tests pass"
+        "validatePatterns imported in testRunner.ts",
+        "validation check added before execution",
+        "returns early with error when validation fails",
+        "typecheck passes"
       ],
-      "affectedFiles": [
-        "src/lib/testing/testCases/linkedListTests.ts",
-        "src/lib/testing/testCases/stackQueueTests.ts",
-        "src/lib/testing/testCases/binaryTreeTests.ts",
-        "src/lib/testing/testCases/graphTests.ts",
-        "src/lib/testing/testCases/hashMapTests.ts"
-      ],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUG-001",
-      "category": "Visualization Bug",
-      "priority": "critical",
-      "title": "Fix Array Compare mode showing unsorted expected output",
-      "description": "In the Array data structure's 'Compare' mode, the 'Expected output' is not actually sorted. It should show the correctly sorted array.",
-      "acceptanceCriteria": [
-        "In Compare mode, Expected output shows properly sorted array",
-        "User's execution output is shown correctly alongside",
-        "Comparison clearly shows differences between user output and expected"
-      ],
+      "id": "AST-008",
+      "title": "Create validation index export",
+      "category": "validation",
+      "description": "Create src/lib/validation/index.ts to export all types and functions from the validation module.",
       "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=array",
-        "agent-browser click on Show Solution button",
-        "agent-browser click on Run all tests button",
-        "sleep 1",
-        "agent-browser click on Compare button",
-        "agent-browser snapshot -c -d 6",
-        "Verify Expected output shows sorted array"
+        "src/lib/validation/index.ts exists",
+        "exports types from types.ts",
+        "exports functions from astAnalyzer.ts",
+        "typecheck passes"
       ],
-      "affectedFiles": ["src/lib/execution/referenceSolutionRunner.ts"],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "BUG-002",
-      "category": "Test Design",
-      "priority": "high",
-      "title": "Simplify Array test case to use single function",
-      "description": "The Array test case appears to require 3 different function names (possibly bubbleSort, quickSort, etc.). This is not immediately clear to users. Simplify to a single function (e.g., 'sortArray') that can be implemented in different ways.",
-      "acceptanceCriteria": [
-        "Array tests require only a single function name (e.g., 'sortArray')",
-        "Users can implement this function using any sorting algorithm",
-        "Test descriptions make it clear what function to implement",
-        "Reference solutions work with the simplified function name"
-      ],
+      "id": "AST-009",
+      "title": "Full validation passes",
+      "category": "verification",
+      "description": "Run npm run validate to ensure lint, format, typecheck, and all tests pass.",
       "stepsToVerify": [
-        "Review src/lib/testing/testCases/arrayTests.ts",
-        "Verify single function name is used",
-        "agent-browser navigate http://localhost:5175/?ds=array",
-        "Verify skeleton code shows single function to implement",
-        "agent-browser click on Show Solution button",
-        "agent-browser click on Run all tests button",
-        "Verify all tests pass"
+        "npm run validate passes with no errors"
       ],
-      "affectedFiles": [
-        "src/lib/testing/testCases/arrayTests.ts",
-        "src/templates/array/index.ts",
-        "src/components/EditorPanel/EditorPanel.tsx"
-      ],
-      "passes": true
-    },
-    {
-      "id": "FEAT-001",
-      "category": "Feature",
-      "priority": "high",
-      "title": "Highlight code lines during visualization playback",
-      "description": "When playing steps in the visualization (via play, next, or previous buttons), highlight the corresponding lines in the code editor that triggered the visualization change. The highlight should fade away after a sensible timeout. Timing must be carefully considered: highlights should not overlap when playing continuously, but also should not flash too quickly to be visible.",
-      "acceptanceCriteria": [
-        "When stepping through visualization, corresponding code line(s) highlight",
-        "Highlights fade away smoothly after a brief period",
-        "During continuous play, highlights do not overlap awkwardly",
-        "Highlights are visible long enough to be noticed (not just a flash)",
-        "Previous/next step buttons trigger appropriate line highlights",
-        "Play button triggers sequential highlights as animation progresses"
-      ],
-      "stepsToVerify": [
-        "agent-browser navigate http://localhost:5175/?ds=array",
-        "agent-browser click on Show Solution button",
-        "agent-browser click on Run all tests button",
-        "sleep 1",
-        "Click next step button multiple times",
-        "Verify code lines highlight and fade",
-        "Click play button",
-        "Verify highlights appear sequentially without overlap"
-      ],
-      "technicalNotes": "Consider using CodeMirror decorations for highlighting. Timeout should be around 300-500ms for visibility. Clear previous highlight before applying new one during rapid stepping. May need to track line numbers in captured operations.",
-      "affectedFiles": [
-        "src/components/EditorPanel/CodeMirrorEditor.tsx",
-        "src/components/EditorPanel/EditorPanel.tsx",
-        "src/components/VisualizationPanel/VisualizationPanel.tsx",
-        "src/store/useAppStore.ts",
-        "src/lib/testing/trackedArrayBundle.ts",
-        "src/lib/testing/trackedLinkedListBundle.ts",
-        "src/lib/testing/trackedStackBundle.ts",
-        "src/lib/testing/trackedQueueBundle.ts",
-        "src/lib/testing/trackedBinaryTreeBundle.ts",
-        "src/lib/testing/trackedGraphBundle.ts",
-        "src/lib/testing/trackedHashMapBundle.ts",
-        "src/lib/testing/testRunner.ts",
-        "src/lib/execution/sandbox.ts",
-        "src/lib/execution/messageValidation.ts",
-        "src/lib/execution/stepCapture.ts"
-      ],
-      "passes": true
-    },
-    {
-      "id": "PERF-001",
-      "category": "Performance",
-      "priority": "high",
-      "title": "Replace barrel imports with direct icon imports",
-      "description": "The codebase imports icons from @tabler/icons-react barrel file, which loads the entire icon library. Direct imports should be used to reduce bundle size significantly.",
-      "acceptanceCriteria": [
-        "All @tabler/icons-react imports use direct paths (e.g., @tabler/icons-react/dist/esm/icons/IconPlayerPlay)",
-        "No barrel imports from icon libraries remain",
-        "Bundle size decreases measurably",
-        "All icons still render correctly"
-      ],
-      "stepsToVerify": [
-        "Run grep for 'from \"@tabler/icons-react\"' - should return 0 results",
-        "npm run build and check bundle size",
-        "agent-browser navigate http://localhost:5175",
-        "Verify all icons render correctly"
-      ],
-      "affectedFiles": [
-        "src/components/EditorPanel/HintModal.tsx",
-        "src/components/EditorPanel/HintButton.tsx",
-        "src/components/EditorPanel/RunButton.tsx",
-        "src/components/EditorPanel/PresetSelector.tsx",
-        "src/components/VisualizationPanel/VisualizationPanel.tsx",
-        "src/components/TestPanel/TestPanel.tsx"
-      ],
-      "technicalNotes": "Check @tabler/icons-react package structure for correct direct import paths. Alternative: configure Vite to tree-shake barrel imports, or replace with inline SVG components.",
-      "passes": true
-    },
-    {
-      "id": "PERF-002",
-      "category": "Performance",
-      "priority": "medium",
-      "title": "Use Set for O(1) lookups instead of Array.includes()",
-      "description": "Multiple files use Array.includes() in loops or render functions where Set.has() would provide O(1) instead of O(n) lookup performance. This is especially important in visualization rendering loops.",
-      "acceptanceCriteria": [
-        "ArrayVisualizer highlight indices use Set instead of Array",
-        "BinaryTreeVisualizer path lookup uses Set",
-        "urlParams validation uses Set for data structure types",
-        "No performance regression in visualizations"
-      ],
-      "stepsToVerify": [
-        "Review affected files for Array.includes() patterns",
-        "Verify Set.has() is used for repeated lookups",
-        "agent-browser navigate http://localhost:5175/?ds=array",
-        "Run visualization and verify smooth 60fps animation"
-      ],
-      "affectedFiles": [
-        "src/components/visualizers/ArrayVisualizer.tsx",
-        "src/components/visualizers/BinaryTreeVisualizer.tsx",
-        "src/lib/urlParams.ts"
-      ],
-      "technicalNotes": "Convert arrays to Sets at the point of use: `const activeSet = new Set(highlightIndices.active)`. For static validation arrays, define Set at module level.",
-      "passes": true
-    },
-    {
-      "id": "PERF-003",
-      "category": "Performance",
-      "priority": "low",
-      "title": "Memoize derived state calculations in TestPanel",
-      "description": "TestPanel calculates passedCount and totalRun on every render by iterating testResults. These should be memoized with useMemo to prevent unnecessary recalculations.",
-      "acceptanceCriteria": [
-        "passedCount and totalRun are wrapped in useMemo",
-        "Dependencies correctly specify testResults",
-        "No unnecessary re-renders when test results don't change"
-      ],
-      "stepsToVerify": [
-        "Review src/components/TestPanel/TestPanel.tsx",
-        "Verify useMemo is used for derived calculations",
-        "Run tests and verify correct behavior"
-      ],
-      "affectedFiles": ["src/components/TestPanel/TestPanel.tsx"],
-      "technicalNotes": "Use `useMemo(() => { const arr = Array.from(testResults.values()); return { passedCount: arr.filter(r => r.passed).length, totalRun: testResults.size }; }, [testResults])`",
-      "passes": true
-    },
-    {
-      "id": "PERF-004",
-      "category": "Performance",
-      "priority": "low",
-      "title": "Hoist static helper functions outside components",
-      "description": "The formatStep function in ArrayVisualizer is defined inside the component but doesn't use any props or state. It should be hoisted to module level to prevent recreation on every render.",
-      "acceptanceCriteria": [
-        "formatStep function is defined at module level, not inside component",
-        "Function behavior remains identical",
-        "No performance regression"
-      ],
-      "stepsToVerify": [
-        "Review src/components/visualizers/ArrayVisualizer.tsx",
-        "Verify formatStep is at module level",
-        "Test visualization still works correctly"
-      ],
-      "affectedFiles": ["src/components/visualizers/ArrayVisualizer.tsx"],
-      "technicalNotes": "Move `function formatStep(step: CapturedStep): string` outside the component function. If it needs props, consider using useCallback instead.",
-      "passes": true
-    },
-    {
-      "id": "PERF-005",
-      "category": "Performance",
-      "priority": "low",
-      "title": "Remove unnecessary function dependencies from useEffect",
-      "description": "CodeMirrorEditor includes highlightLine function in useEffect dependencies, causing unnecessary effect re-runs. Since highlightLine is defined in the same component, it doesn't need to be a dependency.",
-      "acceptanceCriteria": [
-        "highlightLine removed from useEffect dependency array",
-        "Effect only re-runs when highlightedLine changes",
-        "Highlighting still works correctly"
-      ],
-      "stepsToVerify": [
-        "Review src/components/EditorPanel/CodeMirrorEditor.tsx",
-        "Verify useEffect dependencies are minimal",
-        "Test code highlighting during visualization playback"
-      ],
-      "affectedFiles": ["src/components/EditorPanel/CodeMirrorEditor.tsx"],
-      "technicalNotes": "Change `useEffect(() => { highlightLine(highlightedLine ?? null); }, [highlightedLine, highlightLine])` to `useEffect(() => { highlightLine(highlightedLine ?? null); }, [highlightedLine])`",
-      "passes": true
+      "passes": false
     }
-  ],
-  "knownIssues": {
-    "uiCleanup": [
-      "UI-001: Remove 'Visualizing your code execution' helper text",
-      "UI-002: Remove 'Visualization' title heading",
-      "UI-004: Remove redundant 'Show Expected' button",
-      "UI-005: Inconsistent button/badge sizes in Editor header",
-      "UI-006: Difficulty badge not updating after Show Solution",
-      "UI-007: Run icon alignment in test case items"
-    ],
-    "uiEnhancements": ["UI-003: Reorganize playback controls below visualization"],
-    "dataConsistency": [
-      "DATA-001: Array uses multiple datasets",
-      "DATA-002: Other data structures use multiple datasets"
-    ],
-    "bugs": [
-      "BUG-001: Array Compare mode shows unsorted expected output",
-      "BUG-002: Array tests require multiple function names"
-    ],
-    "features": ["FEAT-001: Code line highlighting during playback"],
-    "performance": [
-      "PERF-001: Barrel imports loading entire icon library (CRITICAL)",
-      "PERF-002: Array.includes() in render loops should use Set (MEDIUM)",
-      "PERF-003: Derived state should use useMemo (LOW)",
-      "PERF-004: Static functions should be hoisted outside components (LOW)",
-      "PERF-005: Unnecessary function dependencies in useEffect (LOW)"
-    ],
-    "fixPriority": [
-      "1. UI-001, UI-002 - Remove unnecessary text/titles (quick wins)",
-      "2. PERF-001 - Replace barrel imports (high impact on bundle size)",
-      "3. UI-003 - Reorganize playback controls (improves UX)",
-      "4. UI-004 - Remove Show Expected button",
-      "5. BUG-001 - Fix Compare mode expected output",
-      "6. BUG-002 - Simplify Array function names",
-      "7. DATA-001 - Unify Array datasets",
-      "8. PERF-002 - Use Set for O(1) lookups in visualizers",
-      "9. FEAT-001 - Code line highlighting (complex feature)",
-      "10. UI-005, UI-006, UI-007 - Polish UI details",
-      "11. DATA-002 - Unify other data structure datasets",
-      "12. PERF-003, PERF-004, PERF-005 - Minor performance optimizations"
-    ]
-  },
-  "completionCriteria": {
-    "required": [
-      "All critical user stories must have passes=true",
-      "All high priority user stories must have passes=true",
-      "npm run validate must exit with code 0",
-      "Test coverage must be >= 80%",
-      "No TypeScript errors",
-      "No linting errors",
-      "Application loads successfully at localhost:5175 for all data structures",
-      "All reference solutions execute successfully",
-      "Agent-browser verification confirms all acceptance criteria met"
-    ],
-    "recommended": [
-      "Bundle size is under 4MB",
-      "All animations maintain 60fps",
-      "Visualizations render correctly for all data structures",
-      "No D3/React conflicts or warnings in console"
-    ]
-  },
-  "technicalNotes": {
-    "testingApproach": "Use agent-browser for automated UI verification. Each user story includes specific agent-browser commands for validation.",
-    "devServer": "npm run dev starts development server at http://localhost:5175",
-    "validation": "npm run validate runs all checks: lint + format + typecheck + test",
-    "browserRequirements": "Chrome/Chromium required for agent-browser testing",
-    "sandboxSecurity": "User code runs in sandboxed iframe with allow-scripts only",
-    "performanceTargets": {
-      "bundleSize": "< 4MB",
-      "swcTransform": "< 10ms",
-      "d3Rendering": "16ms (60fps)",
-      "testExecution": "< 1s per test case"
-    },
-    "codeHighlightingNotes": {
-      "approach": "Use CodeMirror decorations API to highlight lines",
-      "timing": "300-500ms visibility, clear before new highlight during rapid steps",
-      "dataRequirement": "Captured operations need to include source line numbers from instrumentation"
-    }
-  }
+  ]
 }
