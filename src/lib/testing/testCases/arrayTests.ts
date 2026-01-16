@@ -35,8 +35,7 @@ export const arrayTests: TestCase[] = [
   return arr;
 }`,
     skeletonCode: `function sortArray(arr) {
-  // TODO: Implement sorting algorithm
-  // Hint: You can use arr.sort() with a compare function
+  // TODO: Implement sorting algorithm. Return arr sorted
   // The arr parameter is a TrackedArray that records operations
 
   return arr;

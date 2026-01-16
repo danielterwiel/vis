@@ -39,6 +39,7 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
     setUserCode,
     setCodeStatus,
     setSelectedDataStructure,
+    setVisualizationMode,
     resetHints,
   } = useAppStore();
 
@@ -191,6 +192,14 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
     }
   };
 
+  // Handle show solution button
+  const handleShowSolution = () => {
+    const confirmed = confirm("This will reveal the solution. Continue?");
+    if (confirmed) {
+      setVisualizationMode("reference");
+    }
+  };
+
   return (
     <div className="editor-panel">
       <div className="editor-header">
@@ -207,17 +216,19 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
               </option>
             ))}
           </select>
-          <span className={`difficulty-badge difficulty-${selectedDifficulty}`}>
-            {selectedDifficulty}
-          </span>
-          {isReadOnly && (
-            <span className="reference-mode-badge">Reference Solution (Read-Only)</span>
-          )}
           <PresetSelector
             dataStructure={selectedDataStructure}
             onSelectPreset={handlePresetSelect}
             disabled={isReadOnly}
           />
+          <button
+            className="show-solution-button"
+            onClick={handleShowSolution}
+            disabled={isReadOnly}
+            title="Reveal the reference solution (warning: spoilers!)"
+          >
+            Show Solution
+          </button>
         </div>
       </div>
       <div className="run-button-container">

@@ -444,16 +444,7 @@ function VisualizationPanel() {
         <div className="visualizer-inner">
           {renderVisualizer()}
           {visualizationMode === "skeleton" && (
-            <div className="skeleton-overlay">
-              <div className="skeleton-message">
-                <h3>Initial State</h3>
-                <p>Complete the function in the editor to see the animation.</p>
-                <p className="skeleton-hint">
-                  Try clicking &quot;Compare&quot; after running a test to see expected output, or
-                  use the hints below the editor.
-                </p>
-              </div>
-            </div>
+            <div className="skeleton-badge">Initial State</div>
           )}
         </div>
 

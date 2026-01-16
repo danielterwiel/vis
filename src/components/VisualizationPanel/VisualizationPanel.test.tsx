@@ -31,8 +31,8 @@ describe("VisualizationPanel", () => {
 
   it("renders ModeSelector component", () => {
     render(<VisualizationPanel />);
-    expect(screen.getByText("Visualization Mode")).toBeInTheDocument();
-    expect(screen.getByText("My Execution")).toBeInTheDocument();
+    expect(screen.getByText("Mode")).toBeInTheDocument();
+    expect(screen.getByText("Code Visualization")).toBeInTheDocument();
     expect(screen.getByText("Compare")).toBeInTheDocument();
     expect(screen.getByText("Show Solution")).toBeInTheDocument();
   });
@@ -61,7 +61,9 @@ describe("VisualizationPanel", () => {
     expect(screen.getByText(/Step \d+ \/ \d+/)).toBeDefined();
 
     // Check for playback control buttons by aria-label
-    expect(screen.getByLabelText("Replay animation from beginning")).toBeDefined();
+    expect(
+      screen.getByLabelText("Replay animation from beginning"),
+    ).toBeDefined();
     expect(screen.getByLabelText("Previous step")).toBeDefined();
     expect(screen.getByLabelText("Next step")).toBeDefined();
   });
@@ -77,7 +79,9 @@ describe("VisualizationPanel", () => {
 
     // No playback controls should be shown
     expect(screen.queryByText("Play")).toBeNull();
-    expect(screen.queryByLabelText("Replay animation from beginning")).toBeNull();
+    expect(
+      screen.queryByLabelText("Replay animation from beginning"),
+    ).toBeNull();
   });
 
   // Animation speed control was removed as per PRD Phase 9
@@ -229,28 +233,19 @@ describe("VisualizationPanel", () => {
       render(<VisualizationPanel />);
 
       expect(screen.getByText("Initial State")).toBeInTheDocument();
-      expect(
-        screen.getByText("Complete the function in the editor to see the animation."),
-      ).toBeInTheDocument();
     });
 
-    it("shows helpful hint in skeleton mode", () => {
-      useAppStore.setState({
-        visualizationMode: "skeleton",
-      });
-
-      render(<VisualizationPanel />);
-
-      expect(
-        screen.getByText(/Try clicking "Compare" after running a test to see expected output/),
-      ).toBeInTheDocument();
-    });
-
-    it("does not show skeleton overlay when not in skeleton mode", () => {
+    it("does not show skeleton badge when not in skeleton mode", () => {
       useAppStore.setState({
         visualizationMode: "user-code",
         userCodeSteps: [
-          { type: "push", target: "array", args: [5], result: [5], timestamp: Date.now() },
+          {
+            type: "push",
+            target: "array",
+            args: [5],
+            result: [5],
+            timestamp: Date.now(),
+          },
         ],
         codeStatus: "complete",
       });
@@ -295,7 +290,13 @@ describe("VisualizationPanel", () => {
         visualizationMode: "user-code",
         codeStatus: "complete",
         userCodeSteps: [
-          { type: "push", target: "array", args: [5], result: [5], timestamp: Date.now() },
+          {
+            type: "push",
+            target: "array",
+            args: [5],
+            result: [5],
+            timestamp: Date.now(),
+          },
         ],
       });
 

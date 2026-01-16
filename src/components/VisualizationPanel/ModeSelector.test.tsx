@@ -15,13 +15,15 @@ describe("ModeSelector", () => {
   it("renders all mode buttons", () => {
     render(<ModeSelector {...defaultProps} />);
 
-    expect(screen.getByText("My Execution")).toBeInTheDocument();
+    expect(screen.getByText("Code Visualization")).toBeInTheDocument();
     expect(screen.getByText("Compare")).toBeInTheDocument();
     expect(screen.getByText("Show Solution")).toBeInTheDocument();
   });
 
   it("displays mode description for current mode", () => {
-    render(<ModeSelector {...defaultProps} currentMode="comparison" hasSteps />);
+    render(
+      <ModeSelector {...defaultProps} currentMode="comparison" hasSteps />,
+    );
 
     expect(
       screen.getByText(/Comparing your execution .* with expected output/i),
@@ -29,30 +31,40 @@ describe("ModeSelector", () => {
   });
 
   it("highlights active mode button", () => {
-    render(<ModeSelector {...defaultProps} currentMode="comparison" hasSteps />);
+    render(
+      <ModeSelector {...defaultProps} currentMode="comparison" hasSteps />,
+    );
 
     const compareButton = screen.getByText("Compare");
     expect(compareButton).toHaveClass("active");
   });
 
-  it("disables 'My Execution' when there are no steps (regardless of code status)", () => {
-    render(<ModeSelector {...defaultProps} codeStatus="incomplete" hasSteps={false} />);
+  it("disables 'Code Visualization' when there are no steps (regardless of code status)", () => {
+    render(
+      <ModeSelector
+        {...defaultProps}
+        codeStatus="incomplete"
+        hasSteps={false}
+      />,
+    );
 
-    const runButton = screen.getByText("My Execution");
+    const runButton = screen.getByText("Code Visualization");
     expect(runButton).toBeDisabled();
   });
 
-  it("disables 'My Execution' when there are no steps even with complete code", () => {
-    render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps={false} />);
+  it("disables 'Code Visualization' when there are no steps even with complete code", () => {
+    render(
+      <ModeSelector {...defaultProps} codeStatus="complete" hasSteps={false} />,
+    );
 
-    const runButton = screen.getByText("My Execution");
+    const runButton = screen.getByText("Code Visualization");
     expect(runButton).toBeDisabled();
   });
 
-  it("enables 'My Execution' when has steps", () => {
+  it("enables 'Code Visualization' when has steps", () => {
     render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps />);
 
-    const runButton = screen.getByText("My Execution");
+    const runButton = screen.getByText("Code Visualization");
     expect(runButton).not.toBeDisabled();
   });
 
@@ -67,7 +79,9 @@ describe("ModeSelector", () => {
 
     await user.click(screen.getByText("Show Solution"));
 
-    expect(confirmSpy).toHaveBeenCalledWith("This will reveal the solution. Continue?");
+    expect(confirmSpy).toHaveBeenCalledWith(
+      "This will reveal the solution. Continue?",
+    );
     expect(onModeChange).toHaveBeenCalledWith("reference");
 
     confirmSpy.mockRestore();
@@ -91,23 +105,35 @@ describe("ModeSelector", () => {
   });
 
   it("displays user-code mode description when no steps", () => {
-    render(<ModeSelector {...defaultProps} currentMode="user-code" hasSteps={false} />);
+    render(
+      <ModeSelector
+        {...defaultProps}
+        currentMode="user-code"
+        hasSteps={false}
+      />,
+    );
 
-    expect(screen.getByText(/Run a test to see your code/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Run a test to see your code/i),
+    ).toBeInTheDocument();
   });
 
   it("does not display description when user-code mode has steps", () => {
     render(<ModeSelector {...defaultProps} currentMode="user-code" hasSteps />);
 
     // No description text is shown when user has steps - the visualization speaks for itself
-    expect(screen.queryByText(/Visualizing your code execution/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Visualizing your code execution/i),
+    ).not.toBeInTheDocument();
   });
 
   it("displays reference mode description with warning", () => {
     render(<ModeSelector {...defaultProps} currentMode="reference" />);
 
     expect(screen.getByText(/Solution revealed!/i)).toBeInTheDocument();
-    expect(screen.getByText(/Study the reference implementation/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Study the reference implementation/i),
+    ).toBeInTheDocument();
   });
 
   it("applies warning styling to 'Show Solution' button", () => {
@@ -117,31 +143,44 @@ describe("ModeSelector", () => {
     expect(solutionButton).toHaveClass("mode-button-warning");
   });
 
-  it("calls onModeChange when clicking enabled 'My Execution'", async () => {
+  it("calls onModeChange when clicking enabled 'Code Visualization'", async () => {
     const onModeChange = vi.fn();
     const user = userEvent.setup();
 
     render(
-      <ModeSelector {...defaultProps} codeStatus="complete" hasSteps onModeChange={onModeChange} />,
+      <ModeSelector
+        {...defaultProps}
+        codeStatus="complete"
+        hasSteps
+        onModeChange={onModeChange}
+      />,
     );
 
-    await user.click(screen.getByText("My Execution"));
+    await user.click(screen.getByText("Code Visualization"));
 
     expect(onModeChange).toHaveBeenCalledWith("user-code");
   });
 
-  it("displays correct title for disabled 'My Execution' (no steps)", () => {
-    render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps={false} />);
+  it("displays correct title for disabled 'Code Visualization' (no steps)", () => {
+    render(
+      <ModeSelector {...defaultProps} codeStatus="complete" hasSteps={false} />,
+    );
 
-    const runButton = screen.getByText("My Execution");
-    expect(runButton).toHaveAttribute("title", "Run a test first to see your code visualization");
+    const runButton = screen.getByText("Code Visualization");
+    expect(runButton).toHaveAttribute(
+      "title",
+      "Run a test first to see your code visualization",
+    );
   });
 
-  it("displays correct title for enabled 'My Execution'", () => {
+  it("displays correct title for enabled 'Code Visualization'", () => {
     render(<ModeSelector {...defaultProps} codeStatus="complete" hasSteps />);
 
-    const runButton = screen.getByText("My Execution");
-    expect(runButton).toHaveAttribute("title", "View your code execution steps");
+    const runButton = screen.getByText("Code Visualization");
+    expect(runButton).toHaveAttribute(
+      "title",
+      "View your code execution steps",
+    );
   });
 
   it("renders mode selector header", () => {
@@ -168,7 +207,9 @@ describe("ModeSelector", () => {
     const onModeChange = vi.fn();
     const user = userEvent.setup();
 
-    render(<ModeSelector {...defaultProps} hasSteps onModeChange={onModeChange} />);
+    render(
+      <ModeSelector {...defaultProps} hasSteps onModeChange={onModeChange} />,
+    );
 
     await user.click(screen.getByText("Compare"));
 
@@ -176,7 +217,9 @@ describe("ModeSelector", () => {
   });
 
   it("displays comparison mode description when active", () => {
-    render(<ModeSelector {...defaultProps} currentMode="comparison" hasSteps />);
+    render(
+      <ModeSelector {...defaultProps} currentMode="comparison" hasSteps />,
+    );
 
     expect(
       screen.getByText(/Comparing your execution .* with expected output/i),

@@ -70,12 +70,13 @@ export function ArrayVisualizer({
     svg.attr("viewBox", `0 0 ${width} ${height}`);
 
     // Calculate dimensions (reduced top margin since step text is outside SVG)
-    const margin = { top: 20, right: 40, bottom: 60, left: 40 };
+    const margin = { top: 20, right: 40, bottom: 100, left: 40 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
-    const barWidth = Math.min(80, innerWidth / data.length - 10);
     const barSpacing = innerWidth / data.length;
+    const barWidth = Math.min(50, barSpacing * 0.4);
     const maxValue = Math.max(...data, 1);
+    const barOffset = (barSpacing - barWidth) / 2;
 
     // Get current step for highlighting
     const currentStep =
@@ -96,7 +97,9 @@ export function ArrayVisualizer({
 
     // Data join for bars - use index as key for position-based animations
     // This ensures bars update in place rather than exit/enter when values swap
-    const bars = g.selectAll<SVGGElement, number>("g.bar").data(data, (_, i) => `${i}`);
+    const bars = g
+      .selectAll<SVGGElement, number>("g.bar")
+      .data(data, (_, i) => `${i}`);
 
     // EXIT: Remove bars that are no longer in the data
     bars.exit().transition().duration(duration).style("opacity", 0).remove();
@@ -113,7 +116,7 @@ export function ArrayVisualizer({
     barsEnter
       .append("rect")
       .attr("class", "bar-rect")
-      .attr("x", (barWidth - barWidth) / 2)
+      .attr("x", barOffset)
       .attr("y", innerHeight)
       .attr("width", barWidth)
       .attr("height", 0)
@@ -123,16 +126,28 @@ export function ArrayVisualizer({
     barsEnter
       .append("text")
       .attr("class", "bar-label")
-      .attr("x", barWidth / 2)
+      .attr("x", barSpacing / 2)
       .attr("y", innerHeight - 10)
       .attr("text-anchor", "middle");
 
-    // Add index labels to new bars
-    barsEnter
+    // Add index label group (background + text) to new bars
+    const indexGroup = barsEnter
+      .append("g")
+      .attr("class", "bar-index-group")
+      .attr("transform", `translate(${barSpacing / 2}, ${innerHeight + 18})`);
+
+    indexGroup
+      .append("rect")
+      .attr("class", "bar-index-bg")
+      .attr("x", -10)
+      .attr("y", -10)
+      .attr("width", 20)
+      .attr("height", 16)
+      .attr("rx", 3);
+
+    indexGroup
       .append("text")
       .attr("class", "bar-index")
-      .attr("x", barWidth / 2)
-      .attr("y", innerHeight + 25)
       .attr("text-anchor", "middle");
 
     // UPDATE: Merge enter and update selections
@@ -161,6 +176,8 @@ export function ArrayVisualizer({
         if (swappedSet.has(i)) return "bar-rect bar-swapped";
         return "bar-rect";
       })
+      .attr("x", barOffset)
+      .attr("width", barWidth)
       .attr("y", (d) => innerHeight - (d / maxValue) * innerHeight)
       .attr("height", (d) => (d / maxValue) * innerHeight);
 
@@ -170,18 +187,22 @@ export function ArrayVisualizer({
       .text((d) => d)
       .transition()
       .duration(duration)
+      .attr("x", barSpacing / 2)
       .attr("y", (d) => innerHeight - (d / maxValue) * innerHeight - 10);
 
-    // Update index labels
+    // Update index label groups - position at bottom of each bar
+    barsMerge
+      .select<SVGGElement>("g.bar-index-group")
+      .attr("transform", `translate(${barSpacing / 2}, ${innerHeight + 18})`);
+
+    // Update index text
     barsMerge.select<SVGTextElement>("text.bar-index").text((_, i) => i);
 
-    // Cleanup function
+    // Cleanup: only interrupt in-flight transitions
+    // Do NOT remove bars here - let D3's data join handle enter/update/exit animations
     return () => {
       try {
-        // Interrupt all transitions before cleanup
         svg.selectAll("*").interrupt();
-        // Remove all elements to prevent stale references
-        svg.selectAll(".bar-group").remove();
       } catch {
         // Ignore cleanup errors (e.g., if SVG was already removed)
       }
@@ -190,8 +211,8 @@ export function ArrayVisualizer({
 
   return (
     <div className="array-visualizer-container">
-      {stepText && <div className="step-indicator">{stepText}</div>}
       <svg ref={svgRef} className="array-visualizer" />
+      {stepText && <div className="step-indicator">{stepText}</div>}
     </div>
   );
 }
@@ -213,11 +234,19 @@ function getHighlightIndices(step: VisualizationStep | null): {
   if (!step) return result;
 
   // Extract indices from step metadata
-  if (step.type === "swap" && Array.isArray(step.args) && step.args.length >= 2) {
+  if (
+    step.type === "swap" &&
+    Array.isArray(step.args) &&
+    step.args.length >= 2
+  ) {
     result.swapped = [step.args[0], step.args[1]].filter(
       (idx): idx is number => typeof idx === "number",
     );
-  } else if (step.type === "compare" && Array.isArray(step.args) && step.args.length >= 2) {
+  } else if (
+    step.type === "compare" &&
+    Array.isArray(step.args) &&
+    step.args.length >= 2
+  ) {
     result.comparing = [step.args[0], step.args[1]].filter(
       (idx): idx is number => typeof idx === "number",
     );

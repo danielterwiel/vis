@@ -6,7 +6,7 @@ An application for visualizing data structures and algorithms. Write JavaScript 
 
 _NOTE_: This project is still in development and may contain bugs or incomplete features.
 
-_NOTE_: This project is was my first iteration using Ralph Wiggum, so it's not perfect.
+_NOTE_: This project is was my first attempt using Ralph Wiggum, so it's not perfect.
 
 ## Features
 

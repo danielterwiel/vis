@@ -201,8 +201,8 @@ describe("ArrayVisualizer", () => {
     const { container } = render(<ArrayVisualizer data={testData} />);
     const bars = container.querySelectorAll("g.bar");
     expect(bars).toHaveLength(3);
-    // Each bar should have a rect
-    const rects = container.querySelectorAll("g.bar rect");
+    // Each bar should have a bar rect
+    const rects = container.querySelectorAll("g.bar rect.bar-rect");
     expect(rects).toHaveLength(3);
   });
 

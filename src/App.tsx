@@ -164,25 +164,25 @@ function App() {
         <h1>Data Structure Visualizer</h1>
       </header>
       <PanelGroup direction={isMobile ? "vertical" : "horizontal"} className="panels-container">
-        <Panel defaultSize={50} minSize={isMobile ? 20 : 30}>
+        <Panel defaultSize={50} minSize={isMobile ? 20 : 30} maxSize={70}>
           <PanelGroup direction="vertical">
-            <Panel defaultSize={60} minSize={30}>
+            <Panel defaultSize={60} minSize={30} maxSize={80}>
               <EditorPanel onRunAllTests={handleRunAllTests} />
             </Panel>
-            <PanelResizeHandle className="resize-handle" />
-            <Panel defaultSize={40} minSize={20}>
+            <PanelResizeHandle className="resize-handle resize-handle-vertical" />
+            <Panel defaultSize={40} minSize={20} maxSize={70}>
               <TestPanel testCases={testCases} onRunTest={handleRunTest} />
             </Panel>
           </PanelGroup>
         </Panel>
-        <PanelResizeHandle className="resize-handle" />
-        <Panel defaultSize={50} minSize={isMobile ? 20 : 30}>
+        <PanelResizeHandle className="resize-handle resize-handle-horizontal" />
+        <Panel defaultSize={50} minSize={isMobile ? 20 : 30} maxSize={70}>
           <PanelGroup direction="vertical">
-            <Panel defaultSize={70} minSize={30}>
+            <Panel defaultSize={70} minSize={30} maxSize={85}>
               <VisualizationPanel />
             </Panel>
-            <PanelResizeHandle className="resize-handle" />
-            <Panel defaultSize={30} minSize={15}>
+            <PanelResizeHandle className="resize-handle resize-handle-vertical" />
+            <Panel defaultSize={30} minSize={15} maxSize={70}>
               <ConsoleOutput logs={consoleLogs} onClear={clearConsoleLogs} />
             </Panel>
           </PanelGroup>

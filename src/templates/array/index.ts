@@ -17,8 +17,7 @@ const easySkeleton = `// Sort an array of numbers in ascending order
 // You can use any sorting method, including built-in sort()
 
 function sortArray(arr) {
-  // TODO: Implement sorting algorithm
-  // Hint: You can use arr.sort() with a compare function
+  // TODO: Implement sorting algorithm. Return arr sorted
 
   return arr;
 }
