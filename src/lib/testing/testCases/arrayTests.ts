@@ -1,4 +1,5 @@
 import type { TestCase } from "../types";
+import type { PatternRequirement } from "../../validation/types";
 
 /**
  * Array test cases with 3 difficulty levels (Easy, Medium, Hard)
@@ -96,6 +97,11 @@ export const arrayTests: TestCase[] = [
       "Function returns array sorted in ascending order",
       "Consider using bubble sort to see swap visualizations",
     ],
+    patternRequirement: {
+      anyOf: ["nestedLoops", "swapCalls"],
+      errorMessage:
+        "Medium difficulty requires implementing a comparison-based sort with nested loops or swap operations (e.g., bubble sort, selection sort).",
+    } satisfies PatternRequirement,
   },
   {
     id: "array-sort-hard",
@@ -148,5 +154,10 @@ function partition(arr, low, high) {
       "Function returns array sorted in ascending order",
       "Consider using quick sort to see partition visualizations",
     ],
+    patternRequirement: {
+      anyOf: ["recursion", "partitionCalls"],
+      errorMessage:
+        "Hard difficulty requires implementing a divide-and-conquer sort with recursion or partition operations (e.g., quick sort, merge sort).",
+    } satisfies PatternRequirement,
   },
 ];

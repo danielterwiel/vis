@@ -81,7 +81,7 @@
         "error messages explain expected algorithm",
         "typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "AST-007",

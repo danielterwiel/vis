@@ -756,3 +756,18 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1308 tests passing). Updated prd.json to mark AST-005 as passes=true.
+
+2026-01-16: Completed AST-006 (Update array tests with pattern requirements) - Added patternRequirement field to medium and hard array test cases to enforce algorithmic pattern validation.
+
+Changes made:
+1. **arrayTests.ts**: Added import for PatternRequirement type from validation/types
+2. **array-sort-medium**: Added patternRequirement with `anyOf: ["nestedLoops", "swapCalls"]` and error message explaining that medium difficulty requires comparison-based sort with nested loops or swap operations (e.g., bubble sort, selection sort)
+3. **array-sort-hard**: Added patternRequirement with `anyOf: ["recursion", "partitionCalls"]` and error message explaining that hard difficulty requires divide-and-conquer sort with recursion or partition operations (e.g., quick sort, merge sort)
+
+All acceptance criteria met:
+- array-sort-medium has patternRequirement with nestedLoops or swapCalls ✓
+- array-sort-hard has patternRequirement with recursion or partitionCalls ✓
+- error messages explain expected algorithm ✓
+- typecheck passes ✓
+
+All validation checks pass: typecheck (0 errors), test suite (1308 tests passing). Updated prd.json to mark AST-006 as passes=true.
