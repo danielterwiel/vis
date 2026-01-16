@@ -663,3 +663,129 @@ All acceptance criteria met:
 - Highlighting still works correctly ✓
 
 All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1271 tests passing). Updated prd.json to mark PERF-005 as passes=true.
+
+2026-01-16: Completed AST-001 (Create validation types) - Created src/lib/validation/types.ts with three type definitions for AST-based code validation:
+
+1. **PatternId**: Union type of four pattern identifiers: 'nestedLoops' | 'swapCalls' | 'recursion' | 'partitionCalls'
+2. **PatternRequirement**: Interface with `anyOf: PatternId[]` (acceptable patterns) and `errorMessage: string` (failure message)
+3. **ValidationResult**: Interface with `valid: boolean` and optional `error?: string`
+
+All acceptance criteria met:
+- src/lib/validation/types.ts exists ✓
+- PatternId type exported ✓
+- PatternRequirement interface exported ✓
+- ValidationResult interface exported ✓
+- typecheck passes ✓
+
+Updated prd.json to mark AST-001 as passes=true.
+
+2026-01-16: Completed AST-002 (Export parseSync from SWC initializer) - Modified src/lib/execution/swcInitializer.ts to import and re-export `parseSync` from @swc/wasm-web alongside existing `transformSync`.
+
+Changes made:
+1. Added `parseSync` to the import statement from @swc/wasm-web
+2. Added `export { parseSync }` at the end of the file to re-export the function
+3. Fixed `any` type in `transformCode` function to use `unknown` with proper type casting
+
+All acceptance criteria met:
+- parseSync imported from @swc/wasm-web ✓
+- parseSync exported from swcInitializer.ts ✓
+- typecheck passes ✓
+
+All validation checks pass: typecheck (0 errors), test suite (1271 tests passing). Updated prd.json to mark AST-002 as passes=true.
+
+2026-01-16: Completed AST-003 (Create AST analyzer with pattern detection) - Created src/lib/validation/astAnalyzer.ts with comprehensive pattern detection functions for validating user code implements required algorithmic patterns.
+
+Implementation details:
+1. **parseCode(code)**: Wraps SWC's parseSync to parse JavaScript code into an AST. Returns null on parse failure.
+
+2. **hasNestedLoops(ast)**: Detects nested loop patterns (for/while/do-while inside another loop). Recursively checks function declarations, arrow functions, and blocks. Used to validate bubble sort implementations.
+
+3. **hasSwapCalls(ast)**: Detects .swap() method calls on any object. Traverses all expressions including inside loops, conditionals, and functions.
+
+4. **hasRecursion(ast)**: Detects when a function calls itself by name. Handles both function declarations and arrow functions assigned to variables.
+
+5. **hasPartitionCalls(ast)**: Detects .partition() method calls, similar to hasSwapCalls. Used for quick sort validation.
+
+6. **validatePatterns(code, requirement)**: Main entry point that parses code and checks if any pattern in the requirement's `anyOf` array is detected. Returns ValidationResult with valid/error.
+
+All acceptance criteria met:
+- src/lib/validation/astAnalyzer.ts exists ✓
+- parseCode function exported ✓
+- hasNestedLoops function exported ✓
+- hasSwapCalls function exported ✓
+- hasRecursion function exported ✓
+- hasPartitionCalls function exported ✓
+- validatePatterns function exported ✓
+- typecheck passes ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors). Updated prd.json to mark AST-003 as passes=true.
+
+2026-01-16: Completed AST-004 (Create AST analyzer unit tests) - Created src/lib/validation/astAnalyzer.test.ts with comprehensive unit tests for all pattern detection functions.
+
+Test coverage:
+1. **parseCode tests** (3 tests): valid code parsing, invalid code returns null, function declaration parsing
+2. **hasNestedLoops tests** (9 tests): for-for, while-for, for-while, do-while-for nested loops; single loop rejection; sequential loop rejection; nested loops inside function declarations and arrow functions
+3. **hasRecursion tests** (7 tests): direct recursion, arrow function recursion, function expression recursion, quicksort-like patterns, non-recursive rejection, different function calls, conditional expression recursion
+4. **hasSwapCalls tests** (6 tests): arr.swap() detection, swap inside loops/if/functions, other method call rejection, variable name rejection
+5. **hasPartitionCalls tests** (5 tests): arr.partition() detection, partition in quicksort, partition inside while loop, other method call rejection, variable name rejection
+6. **validatePatterns tests** (7 tests): valid pattern match, multiple pattern matching, no match error, parse error handling, recursion validation, partition validation, non-recursive sort rejection
+
+Test approach: Uses mock AST structures via helper functions (id, block, forLoop, whileLoop, doWhileLoop, funcDecl, varDeclArrow, call, member, etc.) instead of actual SWC parsing. This avoids WASM initialization issues in the jsdom test environment while still testing the actual pattern detection logic.
+
+All acceptance criteria met:
+- src/lib/validation/astAnalyzer.test.ts exists ✓
+- tests for hasNestedLoops exist (9 tests) ✓
+- tests for hasRecursion exist (7 tests) ✓
+- tests for hasSwapCalls exist (6 tests) ✓
+- tests for hasPartitionCalls exist (5 tests) ✓
+- All 37 tests pass ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors). Updated prd.json to mark AST-004 as passes=true.
+
+2026-01-16: Completed AST-005 (Add patternRequirement to TestCase interface) - Modified src/lib/testing/types.ts to support AST-based pattern validation for test cases.
+
+Changes made:
+1. Added import for PatternRequirement type from ../validation/types
+2. Added optional `patternRequirement?: PatternRequirement` field to TestCase interface
+
+This enables test cases to specify required algorithmic patterns (nestedLoops, swapCalls, recursion, partitionCalls) that user code must implement. The validation system can now check if user code matches the expected patterns before running tests.
+
+All acceptance criteria met:
+- PatternRequirement imported in types.ts ✓
+- patternRequirement field added to TestCase interface ✓
+- typecheck passes ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1308 tests passing). Updated prd.json to mark AST-005 as passes=true.
+
+2026-01-16: Completed AST-006 (Update array tests with pattern requirements) - Added patternRequirement field to medium and hard array test cases to enforce algorithmic pattern validation.
+
+Changes made:
+1. **arrayTests.ts**: Added import for PatternRequirement type from validation/types
+2. **array-sort-medium**: Added patternRequirement with `anyOf: ["nestedLoops", "swapCalls"]` and error message explaining that medium difficulty requires comparison-based sort with nested loops or swap operations (e.g., bubble sort, selection sort)
+3. **array-sort-hard**: Added patternRequirement with `anyOf: ["recursion", "partitionCalls"]` and error message explaining that hard difficulty requires divide-and-conquer sort with recursion or partition operations (e.g., quick sort, merge sort)
+
+All acceptance criteria met:
+- array-sort-medium has patternRequirement with nestedLoops or swapCalls ✓
+- array-sort-hard has patternRequirement with recursion or partitionCalls ✓
+- error messages explain expected algorithm ✓
+- typecheck passes ✓
+
+All validation checks pass: typecheck (0 errors), test suite (1308 tests passing). Updated prd.json to mark AST-006 as passes=true.
+
+2026-01-16: Completed AST-007 (Integrate validation into testRunner) - Added AST-based pattern validation to the test runner to enforce algorithmic pattern requirements before test execution.
+
+Changes made:
+1. **src/lib/testing/testRunner.ts**:
+   - Added import for `validatePatterns` from `../validation/astAnalyzer`
+   - Added Step 2 validation check after function name extraction: if `testCase.patternRequirement` exists, call `validatePatterns(userCode, testCase.patternRequirement)` and return early with error if validation fails
+   - Updated subsequent step comments (Step 3 → Step 4, Step 4 → Step 5)
+
+Behavior: When a test case has a `patternRequirement` field (e.g., medium array test requires nestedLoops or swapCalls), the test runner now validates the user's code against those patterns before executing the test. If the code doesn't match any required pattern, the test fails immediately with the requirement's error message, without running the actual test.
+
+All acceptance criteria met:
+- validatePatterns imported in testRunner.ts ✓
+- validation check added before execution ✓
+- returns early with error when validation fails ✓
+- typecheck passes ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1308 tests passing). Updated prd.json to mark AST-007 as passes=true.
