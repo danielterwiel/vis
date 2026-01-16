@@ -94,7 +94,7 @@
         "returns early with error when validation fails",
         "typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "AST-008",

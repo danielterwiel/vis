@@ -771,3 +771,21 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All validation checks pass: typecheck (0 errors), test suite (1308 tests passing). Updated prd.json to mark AST-006 as passes=true.
+
+2026-01-16: Completed AST-007 (Integrate validation into testRunner) - Added AST-based pattern validation to the test runner to enforce algorithmic pattern requirements before test execution.
+
+Changes made:
+1. **src/lib/testing/testRunner.ts**:
+   - Added import for `validatePatterns` from `../validation/astAnalyzer`
+   - Added Step 2 validation check after function name extraction: if `testCase.patternRequirement` exists, call `validatePatterns(userCode, testCase.patternRequirement)` and return early with error if validation fails
+   - Updated subsequent step comments (Step 3 → Step 4, Step 4 → Step 5)
+
+Behavior: When a test case has a `patternRequirement` field (e.g., medium array test requires nestedLoops or swapCalls), the test runner now validates the user's code against those patterns before executing the test. If the code doesn't match any required pattern, the test fails immediately with the requirement's error message, without running the actual test.
+
+All acceptance criteria met:
+- validatePatterns imported in testRunner.ts ✓
+- validation check added before execution ✓
+- returns early with error when validation fails ✓
+- typecheck passes ✓
+
+All validation checks pass: lint (0 errors), format (0 errors), typecheck (0 errors), test suite (1308 tests passing). Updated prd.json to mark AST-007 as passes=true.

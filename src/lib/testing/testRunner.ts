@@ -6,6 +6,7 @@
  */
 
 import { captureSteps } from "../execution/stepCapture";
+import { validatePatterns } from "../validation/astAnalyzer";
 import { bundleExpect } from "./expectBundle";
 import { bundleTrackedArray } from "./trackedArrayBundle";
 import { bundleTrackedLinkedList } from "./trackedLinkedListBundle";
@@ -162,7 +163,22 @@ export async function runTest(
       };
     }
 
-    // Step 2: Build the complete sandbox code with appropriate data structure bundle
+    // Step 2: Validate pattern requirements if specified
+    if (testCase.patternRequirement) {
+      const validationResult = validatePatterns(userCode, testCase.patternRequirement);
+      if (!validationResult.valid) {
+        return {
+          testId: testCase.id,
+          passed: false,
+          error: validationResult.error,
+          executionTime: Date.now() - startTime,
+          steps: [],
+          consoleLogs: [],
+        };
+      }
+    }
+
+    // Step 3: Build the complete sandbox code with appropriate data structure bundle
     const expectCode = bundleExpect();
     const dsBundle = getDataStructureBundle(testCase.id);
 
@@ -232,7 +248,7 @@ export async function runTest(
       ${testCase.assertions.replace(/\bresult\b/g, "finalResult")}
     `;
 
-    // Step 3: Execute in sandbox with step capture
+    // Step 4: Execute in sandbox with step capture
     const steps: VisualizationStep[] = [];
     const consoleLogs: Array<{ level: string; args: unknown[] }> = [];
 
@@ -251,7 +267,7 @@ export async function runTest(
         : undefined,
     });
 
-    // Step 4: Check execution result
+    // Step 5: Check execution result
     if (!captureResult.success) {
       return {
         testId: testCase.id,
