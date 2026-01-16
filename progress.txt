@@ -1144,3 +1144,20 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All 24 binaryTreeTests tests pass. Updated prd.json to mark VIS-008 as passes=true.
+
+2026-01-16: Completed VIS-009 (Add pattern requirements to graphTests) - Added patternRequirement field to medium and hard graph test cases to enforce algorithmic pattern validation.
+
+Changes made:
+1. **graphTests.ts**: Added import for PatternRequirement type from validation/types
+2. **graph-cycle-medium**: Added patternRequirement with `anyOf: ["recursion", "dfs"]` and error message explaining that medium difficulty requires DFS-based cycle detection using recursion or explicit DFS traversal
+3. **graph-dijkstra-hard**: Added patternRequirement with `anyOf: ["nestedLoops"]` and error message explaining that hard difficulty requires Dijkstra's algorithm which uses nested loops (outer while loop to visit vertices, inner for loop to update neighbor distances)
+
+Note: The PRD specified `anyOf: ['dijkstra', 'priorityQueue']` for the hard test, but these pattern IDs don't exist in the PatternId type. Used `nestedLoops` instead since Dijkstra's reference implementation uses nested loops (while + for).
+
+All acceptance criteria met:
+- graph-cycle-medium has patternRequirement ✓
+- graph-dijkstra-hard has patternRequirement ✓
+- error messages explain expected algorithm ✓
+- typecheck passes ✓
+
+All 26 graphTests tests pass. Updated prd.json to mark VIS-009 as passes=true.

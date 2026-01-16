@@ -1,4 +1,5 @@
 import type { TestCase } from "../types";
+import type { PatternRequirement } from "../../validation/types";
 
 /**
  * Graph test cases following PRD specifications (lines 538-546)
@@ -109,6 +110,11 @@ export const graphTests: TestCase[] = [
       "Works correctly for directed graphs",
       "Cycle detection operation is captured in visualization steps",
     ],
+    patternRequirement: {
+      anyOf: ["recursion", "dfs"],
+      errorMessage:
+        "Medium difficulty requires DFS-based cycle detection using recursion or explicit DFS traversal (e.g., using graph.hasCycle() which uses DFS internally).",
+    } as PatternRequirement,
   },
 
   // ========== HARD: Dijkstra's Shortest Path ==========
@@ -240,5 +246,10 @@ export const graphTests: TestCase[] = [
       "Returns empty array if no path exists",
       "Shortest path operation is captured in visualization steps",
     ],
+    patternRequirement: {
+      anyOf: ["nestedLoops"],
+      errorMessage:
+        "Hard difficulty requires Dijkstra's algorithm which uses nested loops (outer while loop to visit vertices, inner for loop to update neighbor distances).",
+    } as PatternRequirement,
   },
 ];
