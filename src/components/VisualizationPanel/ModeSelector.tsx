@@ -8,11 +8,7 @@ interface ModeSelectorProps {
   hasSteps: boolean; // Whether user has run tests and captured execution steps
 }
 
-export function ModeSelector({
-  currentMode,
-  onModeChange,
-  hasSteps,
-}: ModeSelectorProps) {
+export function ModeSelector({ currentMode, onModeChange, hasSteps }: ModeSelectorProps) {
   return (
     <div className="mode-selector">
       <div className="mode-selector-row">
@@ -48,9 +44,7 @@ export function ModeSelector({
 
       <div className="mode-description">
         {currentMode === "user-code" && !hasSteps && (
-          <p className="hint-text">
-            Run a test to see your code&apos;s execution visualized here.
-          </p>
+          <p className="hint-text">Run a test to see your code&apos;s execution visualized here.</p>
         )}
         {currentMode === "comparison" && !hasSteps && (
           <p className="hint-text">

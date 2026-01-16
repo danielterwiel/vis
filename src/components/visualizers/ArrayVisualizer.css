@@ -1,78 +1,77 @@
 .array-visualizer-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    background: #1e1e1e;
-    border-radius: 8px;
-    gap: 48px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #1e1e1e;
+  border-radius: 8px;
+  gap: 48px;
 }
 
 .array-visualizer {
-    display: block;
-    flex: 1;
-    width: 100%;
-    min-height: 0;
+  display: block;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
 }
 
 /* Bar styling */
 .bar-rect {
-    fill: #4a9eff;
-    stroke: #2e7dd3;
-    stroke-width: 2;
-    transition:
-        fill 0.3s ease,
-        stroke 0.3s ease;
+  fill: #4a9eff;
+  stroke: #2e7dd3;
+  stroke-width: 2;
+  transition:
+    fill 0.3s ease,
+    stroke 0.3s ease;
 }
 
 .bar-rect.bar-active {
-    fill: #50fa7b;
-    stroke: #3dd15c;
+  fill: #50fa7b;
+  stroke: #3dd15c;
 }
 
 .bar-rect.bar-comparing {
-    fill: #ffb86c;
-    stroke: #ff9a4d;
+  fill: #ffb86c;
+  stroke: #ff9a4d;
 }
 
 .bar-rect.bar-swapped {
-    fill: #ff5555;
-    stroke: #e03636;
+  fill: #ff5555;
+  stroke: #e03636;
 }
 
 /* Label styling */
 .bar-label {
-    fill: #f8f8f2;
-    font-size: 14px;
-    font-weight: 600;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    pointer-events: none;
+  fill: #f8f8f2;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  pointer-events: none;
 }
 
 .bar-index-bg {
-    fill: rgba(30, 30, 30, 0.85);
-    stroke: rgba(255, 255, 255, 0.15);
-    stroke-width: 1;
+  fill: rgba(30, 30, 30, 0.85);
+  stroke: rgba(255, 255, 255, 0.15);
+  stroke-width: 1;
 }
 
 .bar-index {
-    fill: #f8f8f2;
-    font-size: 11px;
-    font-weight: 600;
-    font-family: "Courier New", monospace;
-    pointer-events: none;
+  fill: #f8f8f2;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: "Courier New", monospace;
+  pointer-events: none;
 }
 
 /* Step indicator */
 .array-visualizer-container .step-indicator {
-    color: rgba(255, 255, 255, 0.87);
-    font-size: 14px;
-    font-weight: 500;
-    font-family: inherit;
-    text-align: center;
-    padding: 0.75rem 1rem;
-    flex-shrink: 0;
-    background-color: rgba(100, 108, 255, 0.1);
-    border-top: 1px solid rgba(100, 108, 255, 0.2);
+  color: rgba(255, 255, 255, 0.87);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  flex-shrink: 0;
+  background-color: rgba(100, 108, 255, 0.1);
+  border-top: 1px solid rgba(100, 108, 255, 0.2);
 }

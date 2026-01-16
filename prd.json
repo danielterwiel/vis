@@ -258,7 +258,7 @@
       "category": "verification",
       "description": "Run npm run validate to ensure lint, format, typecheck, and all tests pass after all changes.",
       "stepsToVerify": ["npm run validate passes with no errors"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "VIS-016",

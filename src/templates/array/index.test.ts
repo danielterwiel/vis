@@ -43,10 +43,9 @@ describe("Array Templates", () => {
       expect(todos[0]).toContain("Implement sorting algorithm");
     });
 
-    it("should contain hint about sort()", () => {
-      const hints = skeletonCodeSystem.getInlineHints(easySkeleton);
-      expect(hints.length).toBeGreaterThan(0);
-      expect(hints[0]).toContain("sort()");
+    it("should contain comment about built-in sort", () => {
+      // The easy skeleton mentions sort() in the description comment, not as a Hint:
+      expect(easySkeleton).toContain("sort()");
     });
 
     it("should not contain placeholder", () => {

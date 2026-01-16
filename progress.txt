@@ -1216,3 +1216,41 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All 25 hashMapTests tests pass. All 69 astAnalyzer tests pass. Note: 15 pre-existing test failures in other files (ModeSelector.test.tsx, VisualizationPanel.test.tsx, EditorPanel.test.tsx, array/index.test.ts) are unrelated to this change. Updated prd.json to mark VIS-011 as passes=true.
+
+2026-01-16: Completed VIS-015 (Full validation passes) - Fixed all failing tests to make npm run validate pass completely.
+
+Issues fixed:
+
+1. **ModeSelector.test.tsx**: Updated 8 failing tests to match simplified ModeSelector component:
+   - Component no longer has "Show Solution" button (moved to EditorPanel)
+   - Header changed from "Visualization Mode" to "Mode"
+   - No longer has reference mode or comparison mode descriptions
+   - Removed tests for features that no longer exist in ModeSelector
+
+2. **VisualizationPanel.test.tsx**: Updated 2 failing tests:
+   - Changed expectation from "Visualization Mode" to "Mode" for header
+   - Removed "Show Solution" button expectation from ModeSelector rendering test
+
+3. **EditorPanel.test.tsx**: Updated 3 failing tests:
+   - Removed difficulty badge expectation (no longer displayed)
+   - Changed reference mode badge tests to test Show Solution button disabled state instead
+   - Now tests that Show Solution button is disabled in reference mode
+
+4. **App.test.tsx**: Updated 1 failing test:
+   - Changed expectation from "Visualization Mode" to "Mode" to match current UI
+
+5. **array/index.test.ts**: Updated 1 failing test:
+   - Test expected `// Hint: sort()` comment but easySkeleton only has comment mentioning sort()
+   - Changed test to verify the skeleton contains "sort()" in its text (not as a formal Hint comment)
+
+6. **TestPanel.test.tsx**: Fixed unhandled promise rejection error:
+   - Tests clicking Run buttons didn't wait for async handlers to complete
+   - Added mockOnRunTest.mockResolvedValue(undefined) to ensure promises resolve
+   - Added waitFor() calls to ensure async state updates complete before test ends
+
+All acceptance criteria met:
+- npm run validate passes with no errors ✓
+- All 57 test files pass ✓
+- All 1341 tests pass (12 skipped) ✓
+
+Updated prd.json to mark VIS-015 as passes=true.

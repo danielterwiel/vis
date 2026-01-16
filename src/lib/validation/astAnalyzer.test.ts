@@ -478,10 +478,7 @@ describe("astAnalyzer", () => {
     it("should detect slow/fast pointer pattern in function", () => {
       // function detectCycle(head) { let slow = head; let fast = head; }
       const ast = module([
-        funcDecl(
-          "detectCycle",
-          block([varDecl("slow", id("head")), varDecl("fast", id("head"))]),
-        ),
+        funcDecl("detectCycle", block([varDecl("slow", id("head")), varDecl("fast", id("head"))])),
       ]);
       expect(hasTwoPointers(ast)).toBe(true);
     });
@@ -516,7 +513,9 @@ describe("astAnalyzer", () => {
 
     it("should detect p1/p2 pointer pattern", () => {
       // function compare() { let p1 = list1; let p2 = list2; }
-      const ast = module([funcDecl("compare", block([varDecl("p1", id("list1")), varDecl("p2", id("list2"))]))]);
+      const ast = module([
+        funcDecl("compare", block([varDecl("p1", id("list1")), varDecl("p2", id("list2"))])),
+      ]);
       expect(hasTwoPointers(ast)).toBe(true);
     });
 
@@ -632,10 +631,7 @@ describe("astAnalyzer", () => {
     it("should detect recursive tree traversal with node.left", () => {
       // function traverse(node) { traverse(node.left); }
       const ast = module([
-        funcDecl(
-          "traverse",
-          block([exprStmt(call(id("traverse"), [member(id("node"), "left")]))]),
-        ),
+        funcDecl("traverse", block([exprStmt(call(id("traverse"), [member(id("node"), "left")]))])),
       ]);
       expect(hasDFS(ast)).toBe(true);
     });

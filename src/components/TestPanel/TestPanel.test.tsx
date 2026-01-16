@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TestPanel } from "./TestPanel";
 import type { TestCase, TestResult } from "../../lib/testing/types";
@@ -115,6 +115,8 @@ describe("TestPanel", () => {
   describe("Test Execution", () => {
     it("should call onRunTest when clicking Run on individual test", async () => {
       const user = userEvent.setup();
+      // Make mock resolve immediately so async action completes within test
+      mockOnRunTest.mockResolvedValue(undefined);
       render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       const runButtons = screen.getAllByText("Run");
@@ -123,11 +125,20 @@ describe("TestPanel", () => {
       }
 
       expect(mockOnRunTest).toHaveBeenCalledWith(mockTestCases[0]);
+
+      // Wait for the async handler to complete
+      await waitFor(() => {
+        expect(screen.queryByText("Running...")).not.toBeInTheDocument();
+      });
     });
 
     it("should disable buttons while running", async () => {
       const user = userEvent.setup();
-      mockOnRunTest.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)));
+      let resolvePromise: () => void;
+      const runPromise = new Promise<void>((resolve) => {
+        resolvePromise = resolve;
+      });
+      mockOnRunTest.mockReturnValue(runPromise);
 
       render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
@@ -139,6 +150,12 @@ describe("TestPanel", () => {
       // Should show "Running..." text in individual test buttons
       const runningTexts = screen.getAllByText("Running...");
       expect(runningTexts.length).toBeGreaterThan(0);
+
+      // Resolve the promise to complete the async action
+      resolvePromise!();
+      await waitFor(() => {
+        expect(screen.queryByText("Running...")).not.toBeInTheDocument();
+      });
     });
   });
 
@@ -349,6 +366,8 @@ describe("TestPanel", () => {
 
     it("should not trigger selection when clicking Run button", async () => {
       const user = userEvent.setup();
+      // Make mock resolve immediately so async action completes within test
+      mockOnRunTest.mockResolvedValue(undefined);
       render(<TestPanel testCases={mockTestCases} onRunTest={mockOnRunTest} />);
 
       // Click the Run button on the hard test
@@ -364,6 +383,11 @@ describe("TestPanel", () => {
       expect(mockSetSelectedDifficulty).not.toHaveBeenCalled();
       // But onRunTest should be called with the hard test case
       expect(mockOnRunTest).toHaveBeenCalledWith(mockTestCases[2]);
+
+      // Wait for the async handler to complete
+      await waitFor(() => {
+        expect(screen.queryByText("Running...")).not.toBeInTheDocument();
+      });
     });
 
     it("should support keyboard navigation for test selection", async () => {
