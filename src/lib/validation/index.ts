@@ -15,5 +15,8 @@ export {
   hasPartitionCalls,
   hasTwoPointers,
   hasPointerManipulation,
+  hasDFS,
+  hasBFS,
+  hasDivideAndConquer,
   validatePatterns,
 } from "./astAnalyzer";

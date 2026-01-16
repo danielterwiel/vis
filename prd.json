@@ -235,7 +235,7 @@
         "hasDivideAndConquer function exported",
         "typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "VIS-014",

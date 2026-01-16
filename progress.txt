@@ -1019,3 +1019,40 @@ All acceptance criteria met:
 - typecheck passes ✓
 
 All 37 astAnalyzer tests pass. Updated prd.json to mark VIS-012 as passes=true.
+
+2026-01-16: Completed VIS-013 (Add new pattern detectors for graph/tree patterns) - Added three new pattern detection functions to astAnalyzer.ts for validating graph and tree algorithm implementations.
+
+Changes made:
+
+1. **types.ts**: Extended PatternId type to include 'dfs', 'bfs', 'divideAndConquer'
+
+2. **astAnalyzer.ts**: Added hasDFS(ast) function (lines 728-994):
+   - Detects recursive tree traversal with node.left/node.right access
+   - Detects stack-based DFS with push/pop operations and 'stack' variable
+   - Detects .dfs(), .depthFirst(), .depthFirstSearch() method calls
+   - Detects dfs(), depthFirst(), depthFirstSearch() function calls
+
+3. **astAnalyzer.ts**: Added hasBFS(ast) function (lines 1004-1167):
+   - Detects queue-based BFS with push/shift operations and 'queue' variable
+   - Detects .bfs(), .breadthFirst(), .breadthFirstSearch() method calls
+   - Detects bfs(), breadthFirst(), breadthFirstSearch() function calls
+
+4. **astAnalyzer.ts**: Added hasDivideAndConquer(ast) function (lines 1177-1392):
+   - Detects mid-point calculation: Math.floor(... / 2)
+   - Detects bitwise right shift >> 1 (equivalent to divide by 2)
+   - Detects direct division by 2
+   - Detects 'mid', 'middle', 'midpoint' variable names
+   - Detects array slicing combined with recursion
+
+5. **astAnalyzer.ts**: Updated patternDetectors mapping to include new functions
+
+6. **index.ts**: Exported hasDFS, hasBFS, hasDivideAndConquer from validation module
+
+All acceptance criteria met:
+- PatternId includes 'dfs', 'bfs', 'divideAndConquer' ✓
+- hasDFS function exported ✓
+- hasBFS function exported ✓
+- hasDivideAndConquer function exported ✓
+- typecheck passes ✓
+
+All 37 astAnalyzer tests pass. Updated prd.json to mark VIS-013 as passes=true.

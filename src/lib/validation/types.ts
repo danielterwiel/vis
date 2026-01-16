@@ -8,7 +8,10 @@ export type PatternId =
   | "recursion"
   | "partitionCalls"
   | "twoPointers"
-  | "pointerManipulation";
+  | "pointerManipulation"
+  | "dfs"
+  | "bfs"
+  | "divideAndConquer";
 
 /**
  * Defines a pattern requirement for a test case.

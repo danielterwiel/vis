@@ -551,7 +551,11 @@ export function hasTwoPointers(ast: Program): boolean {
           if (stmt.alternate) checkStmts([stmt.alternate]);
         }
 
-        if (stmt.type === "ForStatement" || stmt.type === "WhileStatement" || stmt.type === "DoWhileStatement") {
+        if (
+          stmt.type === "ForStatement" ||
+          stmt.type === "WhileStatement" ||
+          stmt.type === "DoWhileStatement"
+        ) {
           checkStmts([stmt.body]);
         }
 
@@ -586,7 +590,10 @@ export function hasTwoPointers(ast: Program): boolean {
 
     if (item.type === "VariableDeclaration") {
       for (const decl of item.declarations) {
-        if (decl.init?.type === "ArrowFunctionExpression" && decl.init.body.type === "BlockStatement") {
+        if (
+          decl.init?.type === "ArrowFunctionExpression" &&
+          decl.init.body.type === "BlockStatement"
+        ) {
           if (checkFunction(decl.init.body.stmts)) return true;
         }
         if (decl.init?.type === "FunctionExpression" && decl.init.body) {
@@ -719,6 +726,685 @@ export function hasPointerManipulation(ast: Program): boolean {
 }
 
 /**
+ * Detect depth-first search/traversal pattern.
+ * Common in tree and graph algorithms. Detects:
+ * - Recursive function calls with node.left/node.right traversal
+ * - Stack-based iteration with push/pop operations
+ * - Method calls like .dfs(), .depthFirst(), or variable names containing 'dfs'
+ */
+export function hasDFS(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  // Check for recursive traversal pattern (tree DFS)
+  function hasRecursiveTraversal(stmts: Statement[], funcName: string): boolean {
+    function checkExpr(expr: Expression): boolean {
+      // Check for recursive call with .left or .right access
+      if (expr.type === "CallExpression") {
+        const callee = expr.callee;
+        if (callee.type === "Identifier" && callee.value === funcName) {
+          // Check if any argument accesses .left or .right
+          for (const arg of expr.arguments) {
+            if (arg.expression.type === "MemberExpression") {
+              const prop = arg.expression.property;
+              if (prop.type === "Identifier" && (prop.value === "left" || prop.value === "right")) {
+                return true;
+              }
+            }
+          }
+        }
+        // Check arguments recursively
+        for (const arg of expr.arguments) {
+          if (checkExpr(arg.expression)) return true;
+        }
+      }
+
+      if (expr.type === "ConditionalExpression") {
+        return checkExpr(expr.test) || checkExpr(expr.consequent) || checkExpr(expr.alternate);
+      }
+
+      if (expr.type === "BinaryExpression") {
+        return checkExpr(expr.left) || checkExpr(expr.right);
+      }
+
+      if (expr.type === "AssignmentExpression") {
+        return checkExpr(expr.right);
+      }
+
+      if (expr.type === "ArrayExpression") {
+        return expr.elements.some((el) => el !== undefined && checkExpr(el.expression));
+      }
+
+      return false;
+    }
+
+    function checkStmts(statements: Statement[]): boolean {
+      for (const stmt of statements) {
+        if (stmt.type === "ExpressionStatement") {
+          if (checkExpr(stmt.expression)) return true;
+        }
+
+        if (stmt.type === "ReturnStatement" && stmt.argument) {
+          if (checkExpr(stmt.argument)) return true;
+        }
+
+        if (stmt.type === "VariableDeclaration") {
+          for (const decl of stmt.declarations) {
+            if (decl.init && checkExpr(decl.init)) return true;
+          }
+        }
+
+        if (stmt.type === "BlockStatement") {
+          if (checkStmts(stmt.stmts)) return true;
+        }
+
+        if (stmt.type === "IfStatement") {
+          if (checkStmts([stmt.consequent])) return true;
+          if (stmt.alternate && checkStmts([stmt.alternate])) return true;
+        }
+
+        if (
+          stmt.type === "ForStatement" ||
+          stmt.type === "WhileStatement" ||
+          stmt.type === "DoWhileStatement"
+        ) {
+          if (checkStmts([stmt.body])) return true;
+        }
+      }
+      return false;
+    }
+
+    return checkStmts(stmts);
+  }
+
+  // Check for stack-based DFS pattern (push/pop with visited set)
+  function hasStackBasedDFS(stmts: Statement[]): boolean {
+    let hasStack = false;
+    let hasPush = false;
+    let hasPop = false;
+
+    function checkExpr(expr: Expression): void {
+      if (expr.type === "CallExpression") {
+        const callee = expr.callee;
+        if (callee.type === "MemberExpression" && callee.property.type === "Identifier") {
+          const method = callee.property.value;
+          if (method === "push") hasPush = true;
+          if (method === "pop") hasPop = true;
+        }
+        // Check arguments
+        for (const arg of expr.arguments) {
+          checkExpr(arg.expression);
+        }
+      }
+
+      if (expr.type === "ArrayExpression") {
+        expr.elements.forEach((el) => el && checkExpr(el.expression));
+      }
+
+      if (expr.type === "AssignmentExpression") {
+        checkExpr(expr.right);
+      }
+    }
+
+    function checkStmts(statements: Statement[]): void {
+      for (const stmt of statements) {
+        // Check for stack variable declaration
+        if (stmt.type === "VariableDeclaration") {
+          for (const decl of stmt.declarations) {
+            if (decl.id.type === "Identifier") {
+              const name = decl.id.value.toLowerCase();
+              if (name === "stack" || name.includes("stack")) {
+                hasStack = true;
+              }
+            }
+            if (decl.init) checkExpr(decl.init);
+          }
+        }
+
+        if (stmt.type === "ExpressionStatement") {
+          checkExpr(stmt.expression);
+        }
+
+        if (stmt.type === "BlockStatement") {
+          checkStmts(stmt.stmts);
+        }
+
+        if (stmt.type === "IfStatement") {
+          checkStmts([stmt.consequent]);
+          if (stmt.alternate) checkStmts([stmt.alternate]);
+        }
+
+        if (
+          stmt.type === "ForStatement" ||
+          stmt.type === "WhileStatement" ||
+          stmt.type === "DoWhileStatement"
+        ) {
+          checkStmts([stmt.body]);
+        }
+
+        if (stmt.type === "FunctionDeclaration" && stmt.body) {
+          checkStmts(stmt.body.stmts);
+        }
+      }
+    }
+
+    checkStmts(stmts);
+    return hasStack && hasPush && hasPop;
+  }
+
+  // Check for DFS method calls or variable names
+  function hasDFSMethodOrVariable(stmts: Statement[]): boolean {
+    function checkExpr(expr: Expression): boolean {
+      if (expr.type === "CallExpression") {
+        const callee = expr.callee;
+        // Check for .dfs() or .depthFirst() method calls
+        if (callee.type === "MemberExpression" && callee.property.type === "Identifier") {
+          const method = callee.property.value.toLowerCase();
+          if (method === "dfs" || method === "depthfirst" || method === "depthfirstsearch") {
+            return true;
+          }
+        }
+        // Check for dfs() function call
+        if (callee.type === "Identifier") {
+          const name = callee.value.toLowerCase();
+          if (name === "dfs" || name === "depthfirst" || name === "depthfirstsearch") {
+            return true;
+          }
+        }
+      }
+
+      if (expr.type === "ArrowFunctionExpression" && expr.body.type === "BlockStatement") {
+        return checkStmts(expr.body.stmts);
+      }
+
+      if (expr.type === "FunctionExpression" && expr.body) {
+        return checkStmts(expr.body.stmts);
+      }
+
+      return false;
+    }
+
+    function checkStmts(statements: Statement[]): boolean {
+      for (const stmt of statements) {
+        if (stmt.type === "ExpressionStatement") {
+          if (checkExpr(stmt.expression)) return true;
+        }
+
+        if (stmt.type === "ReturnStatement" && stmt.argument) {
+          if (checkExpr(stmt.argument)) return true;
+        }
+
+        if (stmt.type === "VariableDeclaration") {
+          for (const decl of stmt.declarations) {
+            if (decl.init && checkExpr(decl.init)) return true;
+          }
+        }
+
+        if (stmt.type === "BlockStatement") {
+          if (checkStmts(stmt.stmts)) return true;
+        }
+
+        if (stmt.type === "IfStatement") {
+          if (checkStmts([stmt.consequent])) return true;
+          if (stmt.alternate && checkStmts([stmt.alternate])) return true;
+        }
+
+        if (
+          stmt.type === "ForStatement" ||
+          stmt.type === "WhileStatement" ||
+          stmt.type === "DoWhileStatement"
+        ) {
+          if (checkStmts([stmt.body])) return true;
+        }
+
+        if (stmt.type === "FunctionDeclaration" && stmt.body) {
+          if (checkStmts(stmt.body.stmts)) return true;
+        }
+      }
+      return false;
+    }
+
+    return checkStmts(stmts);
+  }
+
+  const statements = body.filter(
+    (item): item is Statement => !("source" in item && item.type.includes("Export")),
+  ) as Statement[];
+
+  // Check for DFS method calls
+  if (hasDFSMethodOrVariable(statements)) return true;
+
+  // Check for stack-based DFS
+  if (hasStackBasedDFS(statements)) return true;
+
+  // Check function declarations for recursive tree traversal
+  for (const item of body) {
+    if (item.type === "FunctionDeclaration" && item.body) {
+      const funcName = item.identifier.value;
+      if (hasRecursiveTraversal(item.body.stmts, funcName)) return true;
+    }
+
+    if (item.type === "VariableDeclaration") {
+      for (const decl of item.declarations) {
+        if (decl.id.type === "Identifier" && decl.init) {
+          const varName = decl.id.value;
+          if (
+            decl.init.type === "ArrowFunctionExpression" &&
+            decl.init.body.type === "BlockStatement"
+          ) {
+            if (hasRecursiveTraversal(decl.init.body.stmts, varName)) return true;
+          }
+          if (decl.init.type === "FunctionExpression" && decl.init.body) {
+            if (hasRecursiveTraversal(decl.init.body.stmts, varName)) return true;
+          }
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Detect breadth-first search/traversal pattern.
+ * Common in tree and graph algorithms. Detects:
+ * - Queue-based iteration with push/shift or enqueue/dequeue operations
+ * - Method calls like .bfs(), .breadthFirst(), or variable names containing 'bfs'
+ * - Level-order traversal pattern
+ */
+export function hasBFS(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  // Check for queue-based BFS pattern (push/shift with queue variable)
+  function hasQueueBasedBFS(stmts: Statement[]): boolean {
+    let hasQueue = false;
+    let hasPush = false;
+    let hasShift = false;
+
+    function checkExpr(expr: Expression): void {
+      if (expr.type === "CallExpression") {
+        const callee = expr.callee;
+        if (callee.type === "MemberExpression" && callee.property.type === "Identifier") {
+          const method = callee.property.value;
+          if (method === "push" || method === "enqueue") hasPush = true;
+          if (method === "shift" || method === "dequeue") hasShift = true;
+        }
+        // Check arguments
+        for (const arg of expr.arguments) {
+          checkExpr(arg.expression);
+        }
+      }
+
+      if (expr.type === "ArrayExpression") {
+        expr.elements.forEach((el) => el && checkExpr(el.expression));
+      }
+
+      if (expr.type === "AssignmentExpression") {
+        checkExpr(expr.right);
+      }
+    }
+
+    function checkStmts(statements: Statement[]): void {
+      for (const stmt of statements) {
+        // Check for queue variable declaration
+        if (stmt.type === "VariableDeclaration") {
+          for (const decl of stmt.declarations) {
+            if (decl.id.type === "Identifier") {
+              const name = decl.id.value.toLowerCase();
+              if (name === "queue" || name.includes("queue")) {
+                hasQueue = true;
+              }
+            }
+            if (decl.init) checkExpr(decl.init);
+          }
+        }
+
+        if (stmt.type === "ExpressionStatement") {
+          checkExpr(stmt.expression);
+        }
+
+        if (stmt.type === "BlockStatement") {
+          checkStmts(stmt.stmts);
+        }
+
+        if (stmt.type === "IfStatement") {
+          checkStmts([stmt.consequent]);
+          if (stmt.alternate) checkStmts([stmt.alternate]);
+        }
+
+        if (
+          stmt.type === "ForStatement" ||
+          stmt.type === "WhileStatement" ||
+          stmt.type === "DoWhileStatement"
+        ) {
+          checkStmts([stmt.body]);
+        }
+
+        if (stmt.type === "FunctionDeclaration" && stmt.body) {
+          checkStmts(stmt.body.stmts);
+        }
+      }
+    }
+
+    checkStmts(stmts);
+    return hasQueue && hasPush && hasShift;
+  }
+
+  // Check for BFS method calls or variable names
+  function hasBFSMethodOrVariable(stmts: Statement[]): boolean {
+    function checkExpr(expr: Expression): boolean {
+      if (expr.type === "CallExpression") {
+        const callee = expr.callee;
+        // Check for .bfs() or .breadthFirst() method calls
+        if (callee.type === "MemberExpression" && callee.property.type === "Identifier") {
+          const method = callee.property.value.toLowerCase();
+          if (method === "bfs" || method === "breadthfirst" || method === "breadthfirstsearch") {
+            return true;
+          }
+        }
+        // Check for bfs() function call
+        if (callee.type === "Identifier") {
+          const name = callee.value.toLowerCase();
+          if (name === "bfs" || name === "breadthfirst" || name === "breadthfirstsearch") {
+            return true;
+          }
+        }
+      }
+
+      if (expr.type === "ArrowFunctionExpression" && expr.body.type === "BlockStatement") {
+        return checkStmts(expr.body.stmts);
+      }
+
+      if (expr.type === "FunctionExpression" && expr.body) {
+        return checkStmts(expr.body.stmts);
+      }
+
+      return false;
+    }
+
+    function checkStmts(statements: Statement[]): boolean {
+      for (const stmt of statements) {
+        if (stmt.type === "ExpressionStatement") {
+          if (checkExpr(stmt.expression)) return true;
+        }
+
+        if (stmt.type === "ReturnStatement" && stmt.argument) {
+          if (checkExpr(stmt.argument)) return true;
+        }
+
+        if (stmt.type === "VariableDeclaration") {
+          for (const decl of stmt.declarations) {
+            if (decl.init && checkExpr(decl.init)) return true;
+          }
+        }
+
+        if (stmt.type === "BlockStatement") {
+          if (checkStmts(stmt.stmts)) return true;
+        }
+
+        if (stmt.type === "IfStatement") {
+          if (checkStmts([stmt.consequent])) return true;
+          if (stmt.alternate && checkStmts([stmt.alternate])) return true;
+        }
+
+        if (
+          stmt.type === "ForStatement" ||
+          stmt.type === "WhileStatement" ||
+          stmt.type === "DoWhileStatement"
+        ) {
+          if (checkStmts([stmt.body])) return true;
+        }
+
+        if (stmt.type === "FunctionDeclaration" && stmt.body) {
+          if (checkStmts(stmt.body.stmts)) return true;
+        }
+      }
+      return false;
+    }
+
+    return checkStmts(stmts);
+  }
+
+  const statements = body.filter(
+    (item): item is Statement => !("source" in item && item.type.includes("Export")),
+  ) as Statement[];
+
+  // Check for BFS method calls
+  if (hasBFSMethodOrVariable(statements)) return true;
+
+  // Check for queue-based BFS
+  if (hasQueueBasedBFS(statements)) return true;
+
+  return false;
+}
+
+/**
+ * Detect divide-and-conquer pattern.
+ * Common in tree balancing, merge sort, quick sort. Detects:
+ * - Mid-point calculation: Math.floor((left + right) / 2) or similar
+ * - Recursive calls with divided ranges (low, mid) and (mid, high)
+ * - Array slicing with mid-point: arr.slice(0, mid), arr.slice(mid)
+ */
+export function hasDivideAndConquer(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  // Check for mid-point calculation pattern
+  function hasMidPointCalculation(stmts: Statement[]): boolean {
+    function checkExpr(expr: Expression): boolean {
+      // Check for Math.floor(... / 2)
+      if (expr.type === "CallExpression") {
+        const callee = expr.callee;
+        if (
+          callee.type === "MemberExpression" &&
+          callee.object.type === "Identifier" &&
+          callee.object.value === "Math" &&
+          callee.property.type === "Identifier" &&
+          callee.property.value === "floor"
+        ) {
+          // Check if argument contains division by 2
+          if (expr.arguments.length > 0) {
+            const arg = expr.arguments[0]?.expression;
+            if (arg && hasDivisionByTwo(arg)) {
+              return true;
+            }
+          }
+        }
+      }
+
+      // Check for bitwise right shift >> 1 (equivalent to divide by 2)
+      if (expr.type === "BinaryExpression" && expr.operator === ">>") {
+        if (expr.right.type === "NumericLiteral" && expr.right.value === 1) {
+          return true;
+        }
+      }
+
+      // Check for direct division by 2
+      if (expr.type === "BinaryExpression" && expr.operator === "/") {
+        if (expr.right.type === "NumericLiteral" && expr.right.value === 2) {
+          return true;
+        }
+      }
+
+      // Check for variable named 'mid', 'middle', or similar
+      if (expr.type === "Identifier") {
+        const name = expr.value.toLowerCase();
+        if (name === "mid" || name === "middle" || name === "midpoint") {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function hasDivisionByTwo(expr: Expression): boolean {
+      if (expr.type === "BinaryExpression" && expr.operator === "/") {
+        if (expr.right.type === "NumericLiteral" && expr.right.value === 2) {
+          return true;
+        }
+      }
+      if (expr.type === "ParenthesisExpression") {
+        return hasDivisionByTwo(expr.expression);
+      }
+      return false;
+    }
+
+    function checkStmts(statements: Statement[]): boolean {
+      for (const stmt of statements) {
+        if (stmt.type === "VariableDeclaration") {
+          for (const decl of stmt.declarations) {
+            // Check for mid variable assignment
+            if (decl.id.type === "Identifier") {
+              const name = decl.id.value.toLowerCase();
+              if (name === "mid" || name === "middle" || name === "midpoint") {
+                return true;
+              }
+            }
+            if (decl.init && checkExpr(decl.init)) return true;
+          }
+        }
+
+        if (stmt.type === "ExpressionStatement") {
+          if (checkExpr(stmt.expression)) return true;
+        }
+
+        if (stmt.type === "ReturnStatement" && stmt.argument) {
+          if (checkExpr(stmt.argument)) return true;
+        }
+
+        if (stmt.type === "BlockStatement") {
+          if (checkStmts(stmt.stmts)) return true;
+        }
+
+        if (stmt.type === "IfStatement") {
+          if (checkStmts([stmt.consequent])) return true;
+          if (stmt.alternate && checkStmts([stmt.alternate])) return true;
+        }
+
+        if (
+          stmt.type === "ForStatement" ||
+          stmt.type === "WhileStatement" ||
+          stmt.type === "DoWhileStatement"
+        ) {
+          if (checkStmts([stmt.body])) return true;
+        }
+
+        if (stmt.type === "FunctionDeclaration" && stmt.body) {
+          if (checkStmts(stmt.body.stmts)) return true;
+        }
+      }
+      return false;
+    }
+
+    return checkStmts(stmts);
+  }
+
+  // Check for array slicing with mid-point
+  function hasArraySlicing(stmts: Statement[]): boolean {
+    let hasSlice = false;
+
+    function checkExpr(expr: Expression): void {
+      if (expr.type === "CallExpression") {
+        const callee = expr.callee;
+        if (
+          callee.type === "MemberExpression" &&
+          callee.property.type === "Identifier" &&
+          callee.property.value === "slice"
+        ) {
+          hasSlice = true;
+        }
+        // Check arguments
+        for (const arg of expr.arguments) {
+          checkExpr(arg.expression);
+        }
+      }
+
+      if (expr.type === "AssignmentExpression") {
+        checkExpr(expr.right);
+      }
+
+      if (expr.type === "ArrayExpression") {
+        expr.elements.forEach((el) => el && checkExpr(el.expression));
+      }
+    }
+
+    function checkStmts(statements: Statement[]): void {
+      for (const stmt of statements) {
+        if (stmt.type === "ExpressionStatement") {
+          checkExpr(stmt.expression);
+        }
+
+        if (stmt.type === "VariableDeclaration") {
+          for (const decl of stmt.declarations) {
+            if (decl.init) checkExpr(decl.init);
+          }
+        }
+
+        if (stmt.type === "ReturnStatement" && stmt.argument) {
+          checkExpr(stmt.argument);
+        }
+
+        if (stmt.type === "BlockStatement") {
+          checkStmts(stmt.stmts);
+        }
+
+        if (stmt.type === "IfStatement") {
+          checkStmts([stmt.consequent]);
+          if (stmt.alternate) checkStmts([stmt.alternate]);
+        }
+
+        if (
+          stmt.type === "ForStatement" ||
+          stmt.type === "WhileStatement" ||
+          stmt.type === "DoWhileStatement"
+        ) {
+          checkStmts([stmt.body]);
+        }
+
+        if (stmt.type === "FunctionDeclaration" && stmt.body) {
+          checkStmts(stmt.body.stmts);
+        }
+      }
+    }
+
+    checkStmts(stmts);
+    return hasSlice;
+  }
+
+  const statements = body.filter(
+    (item): item is Statement => !("source" in item && item.type.includes("Export")),
+  ) as Statement[];
+
+  // Check for mid-point calculation (strongest indicator)
+  if (hasMidPointCalculation(statements)) return true;
+
+  // Check function declarations for divide-and-conquer patterns
+  for (const item of body) {
+    if (item.type === "FunctionDeclaration" && item.body) {
+      if (hasMidPointCalculation(item.body.stmts)) return true;
+      // Array slicing combined with recursion indicates divide-and-conquer
+      if (hasArraySlicing(item.body.stmts) && hasRecursion(ast)) return true;
+    }
+
+    if (item.type === "VariableDeclaration") {
+      for (const decl of item.declarations) {
+        if (
+          decl.init?.type === "ArrowFunctionExpression" &&
+          decl.init.body.type === "BlockStatement"
+        ) {
+          if (hasMidPointCalculation(decl.init.body.stmts)) return true;
+          if (hasArraySlicing(decl.init.body.stmts) && hasRecursion(ast)) return true;
+        }
+        if (decl.init?.type === "FunctionExpression" && decl.init.body) {
+          if (hasMidPointCalculation(decl.init.body.stmts)) return true;
+          if (hasArraySlicing(decl.init.body.stmts) && hasRecursion(ast)) return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
  * Mapping of pattern IDs to their detection functions.
  */
 const patternDetectors: Record<string, (ast: Program) => boolean> = {
@@ -728,6 +1414,9 @@ const patternDetectors: Record<string, (ast: Program) => boolean> = {
   partitionCalls: hasPartitionCalls,
   twoPointers: hasTwoPointers,
   pointerManipulation: hasPointerManipulation,
+  dfs: hasDFS,
+  bfs: hasBFS,
+  divideAndConquer: hasDivideAndConquer,
 };
 
 /**
