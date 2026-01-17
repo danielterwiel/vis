@@ -76,8 +76,8 @@ describe("Array Templates", () => {
       expect(mediumSkeleton).toContain("Inner loop");
     });
 
-    it("should contain swap hint", () => {
-      expect(mediumSkeleton).toContain("arr.swap");
+    it("should contain standard JS array syntax hint", () => {
+      expect(mediumSkeleton).toContain("arr[i]");
     });
 
     it("should contain return statement", () => {
@@ -116,8 +116,8 @@ describe("Array Templates", () => {
       expect(hardSkeleton).toContain("Recursively sort");
     });
 
-    it("should mention partition for visualization", () => {
-      expect(hardSkeleton).toContain("arr.partition");
+    it("should mention Lomuto partition scheme", () => {
+      expect(hardSkeleton).toContain("Lomuto partition");
     });
 
     it("should mention quick sort approach", () => {

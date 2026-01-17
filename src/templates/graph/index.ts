@@ -9,16 +9,25 @@ import { skeletonCodeSystem } from "../skeletonCodeSystem";
 
 /**
  * Easy: Find Path (any method)
- * Uses built-in BFS for path finding
+ * Simple BFS-based path finding
  */
 const easySkeleton = `// Example usage: Find a path between two vertices in a graph
 
 function findPath(graph, start, end) {
-  // TODO: Find a path from start to end vertex
-  // The graph parameter is a TrackedGraph
-  // Hint: Use graph.bfs(start, end) for built-in BFS pathfinding
+  // TODO: Find a path from start to end using BFS
+  // Use graph.getNeighbors(vertex) to get adjacent vertices
+  //
+  // BFS uses a queue and tracks visited vertices
+  // Store the path by keeping track of how we reached each vertex
 
-  return graph.bfs(start, end);
+  const visited = new Set();
+  const queue = [[start]];  // Queue of paths
+
+  // TODO: Implement BFS loop
+  // Dequeue a path, check if last vertex is end
+  // Otherwise, add neighbors to queue with extended path
+
+  return [];
 }
 `;
 

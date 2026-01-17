@@ -472,6 +472,14 @@ describe("astAnalyzer", () => {
       ]);
       expect(hasPartitionCalls(ast)).toBe(false);
     });
+
+    it("should detect partition() as regular function call", () => {
+      // const pi = partition(arr, low, high);
+      const ast = module([
+        varDecl("pi", call(id("partition"), [id("arr"), id("low"), id("high")])),
+      ]);
+      expect(hasPartitionCalls(ast)).toBe(true);
+    });
   });
 
   describe("hasTwoPointers", () => {

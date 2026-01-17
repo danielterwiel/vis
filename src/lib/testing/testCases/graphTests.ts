@@ -49,20 +49,51 @@ export const graphTests: TestCase[] = [
       expect(finalResult.length).toBeGreaterThanOrEqual(2);
     `,
     referenceSolution: `function findPath(graph, start, end) {
-  // Easy approach: use built-in BFS to find path
-  return graph.bfs(start, end);
+  // BFS implementation to find a path
+  const visited = new Set();
+  const queue = [[start]];  // Queue of paths
+
+  while (queue.length > 0) {
+    const path = queue.shift();
+    const vertex = path[path.length - 1];
+
+    if (vertex === end) {
+      return path;
+    }
+
+    if (!visited.has(vertex)) {
+      visited.add(vertex);
+      const neighbors = graph.getNeighbors(vertex);
+      for (const neighbor of neighbors) {
+        if (!visited.has(neighbor)) {
+          queue.push([...path, neighbor]);
+        }
+      }
+    }
+  }
+
+  return [];
 }`,
     skeletonCode: `function findPath(graph, start, end) {
-  // TODO: Find a path from start to end vertex
-  // The graph parameter is a TrackedGraph
-  // Hint: Use graph.bfs(start, end) for built-in BFS pathfinding
+  // TODO: Find a path from start to end using BFS
+  // Use graph.getNeighbors(vertex) to get adjacent vertices
+  //
+  // BFS uses a queue and tracks visited vertices
+  // Store the path by keeping track of how we reached each vertex
 
-  return graph.bfs(start, end);
+  const visited = new Set();
+  const queue = [[start]];  // Queue of paths
+
+  // TODO: Implement BFS loop
+  // Dequeue a path, check if last vertex is end
+  // Otherwise, add neighbors to queue with extended path
+
+  return [];
 }`,
     hints: [
-      "TrackedGraph has a built-in bfs() method that can find paths",
-      "Call graph.bfs(start, end) to find a path between two vertices",
-      "BFS finds the path with fewest edges (not necessarily shortest by weight)",
+      "BFS uses a queue to explore vertices level by level",
+      "Store entire paths in the queue, not just vertices",
+      "Use graph.getNeighbors(vertex) to get adjacent vertices",
     ],
     acceptanceCriteria: [
       "Function returns array starting with start vertex",

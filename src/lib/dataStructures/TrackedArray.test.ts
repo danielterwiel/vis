@@ -180,17 +180,15 @@ describe("TrackedArray", () => {
       expect(() => arr.swap(0, 5)).toThrow("Invalid indices");
     });
 
-    it("should emit swap step", () => {
+    it("should emit set steps for swap", () => {
       const callback = vi.fn();
       const arr = new TrackedArray([1, 2, 3], callback);
       arr.swap(0, 2);
 
-      expect(callback).toHaveBeenCalledOnce();
-      const step: VisualizationStep = callback.mock.calls[0]![0]!;
-      expect(step.type).toBe("swap");
-      expect(step.args).toEqual([0, 2]);
-      expect(step.metadata?.indices).toEqual([0, 2]);
-      expect(step.metadata?.values).toEqual([3, 1]);
+      // Swap emits two "set" operations (one for each element)
+      expect(callback).toHaveBeenCalledTimes(2);
+      expect(callback.mock.calls[0]![0]!.type).toBe("set");
+      expect(callback.mock.calls[1]![0]!.type).toBe("set");
     });
   });
 
@@ -202,18 +200,13 @@ describe("TrackedArray", () => {
       expect(arr.compare(0, 0)).toBe(0); // 3 === 3
     });
 
-    it("should emit compare step", () => {
+    it("should not emit step (read-only operation)", () => {
       const callback = vi.fn();
       const arr = new TrackedArray([3, 1, 2], callback);
       arr.compare(0, 1);
 
-      expect(callback).toHaveBeenCalledOnce();
-      const step: VisualizationStep = callback.mock.calls[0]![0]!;
-      expect(step.type).toBe("compare");
-      expect(step.args).toEqual([0, 1]);
-      expect(step.metadata?.indices).toEqual([0, 1]);
-      expect(step.metadata?.values).toEqual([3, 1]);
-      expect(step.metadata?.comparison).toBe(1);
+      // Compare is a read-only operation, doesn't emit
+      expect(callback).not.toHaveBeenCalled();
     });
   });
 
@@ -296,18 +289,13 @@ describe("TrackedArray", () => {
   });
 
   describe("partition", () => {
-    it("should emit partition step with metadata", () => {
+    it("should be a no-op (users implement partition themselves)", () => {
       const callback = vi.fn();
       const arr = new TrackedArray([3, 1, 4, 1, 5], callback);
+      // partition is kept for backwards compatibility but is now a no-op
       arr.partition(2, [0, 1, 3], [4]);
-
-      expect(callback).toHaveBeenCalledOnce();
-      const step: VisualizationStep = callback.mock.calls[0]![0]!;
-      expect(step.type).toBe("partition");
-      expect(step.args).toEqual([2]);
-      expect(step.metadata?.pivotIndex).toBe(2);
-      expect(step.metadata?.leftIndices).toEqual([0, 1, 3]);
-      expect(step.metadata?.rightIndices).toEqual([4]);
+      // No longer emits a step - users implement partition logic themselves
+      expect(callback).not.toHaveBeenCalled();
     });
   });
 
@@ -319,14 +307,15 @@ describe("TrackedArray", () => {
       expect(arr.length).toBe(2);
     });
 
-    it("should emit reset step", () => {
+    it("should emit length and push steps when resetting", () => {
       const callback = vi.fn();
       const arr = new TrackedArray([1, 2, 3], callback);
       arr.reset([10, 20]);
 
-      expect(callback).toHaveBeenCalledOnce();
-      const step: VisualizationStep = callback.mock.calls[0]![0]!;
-      expect(step.type).toBe("reset");
+      // Reset uses length=0 then push, so emits 2 steps
+      expect(callback).toHaveBeenCalledTimes(2);
+      expect(callback.mock.calls[0]![0]!.type).toBe("length");
+      expect(callback.mock.calls[1]![0]!.type).toBe("push");
     });
   });
 
@@ -353,17 +342,43 @@ describe("TrackedArray", () => {
     });
   });
 
-  describe("createTrackedArray", () => {
-    it("should create TrackedArray", () => {
+  describe("createTrackedArray (Proxy-based)", () => {
+    it("should create array that behaves like native array", () => {
       const arr = createTrackedArray([1, 2, 3]);
-      expect(arr.getData()).toEqual([1, 2, 3]);
+      expect(arr.length).toBe(3);
+      expect(arr[0]).toBe(1);
+      expect(arr[1]).toBe(2);
+      expect(arr[2]).toBe(3);
     });
 
-    it("should accept callback", () => {
+    it("should support native array assignment syntax", () => {
+      const callback = vi.fn();
+      const arr = createTrackedArray([1, 2, 3], callback);
+
+      // Native syntax: arr[i] = value
+      arr[1] = 99;
+
+      expect(arr[1]).toBe(99);
+      expect(callback).toHaveBeenCalledOnce();
+      const step: VisualizationStep = callback.mock.calls[0]![0]!;
+      expect(step.type).toBe("set");
+      expect(step.metadata?.index).toBe(1);
+      expect(step.metadata?.value).toBe(99);
+    });
+
+    it("should support native array methods", () => {
       const callback = vi.fn();
       const arr = createTrackedArray([1, 2], callback);
       arr.push(3);
+      expect(arr.length).toBe(3);
       expect(callback).toHaveBeenCalledOnce();
+    });
+
+    it("should support toArray for compatibility", () => {
+      const arr = createTrackedArray([1, 2, 3]);
+      // toArray is added by the proxy
+      const toArray = (arr as unknown as { toArray: () => number[] }).toArray;
+      expect(toArray()).toEqual([1, 2, 3]);
     });
   });
 
@@ -380,19 +395,20 @@ describe("TrackedArray", () => {
       const callback = vi.fn();
       const arr = new TrackedArray([1, 2, 3], callback);
 
-      arr.push(4);
-      arr.pop();
-      arr.shift();
-      arr.unshift(0);
-      arr.set(0, 99);
-      arr.swap(0, 1);
-      arr.compare(0, 1);
-      arr.reverse();
-      arr.sort((a, b) => a - b);
-      arr.splice(0, 1);
-      arr.partition(0, [], [1]);
-      arr.reset([1, 2]);
+      arr.push(4);       // 1 call
+      arr.pop();         // 1 call
+      arr.shift();       // 1 call
+      arr.unshift(0);    // 1 call
+      arr.set(0, 99);    // 1 call (2 calls from swap: two set operations)
+      arr.swap(0, 1);    // 2 calls (two set operations)
+      arr.compare(0, 1); // 0 calls (compare doesn't emit in proxy)
+      arr.reverse();     // 1 call
+      arr.sort((a, b) => a - b); // 1 call
+      arr.splice(0, 1);  // 1 call
+      arr.partition(0, [], [1]); // 0 calls (no-op)
+      arr.reset([1, 2]); // 2 calls (length + push)
 
+      // Total: 1+1+1+1+1+2+0+1+1+1+0+2 = 12
       expect(callback).toHaveBeenCalledTimes(12);
     });
 

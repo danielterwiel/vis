@@ -406,6 +406,11 @@ export function hasPartitionCalls(ast: Program): boolean {
   function checkExpression(expr: Expression): boolean {
     if (expr.type === "CallExpression") {
       const callee = expr.callee;
+      // Check for regular function call: partition(...)
+      if (callee.type === "Identifier" && callee.value === "partition") {
+        return true;
+      }
+      // Check for method call: arr.partition(...) (legacy support)
       if (
         callee.type === "MemberExpression" &&
         callee.property.type === "Identifier" &&
