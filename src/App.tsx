@@ -41,7 +41,6 @@ function App() {
 
   const {
     selectedDataStructure,
-    userCode,
     consoleLogs,
     setTestResult,
     setCurrentSteps,
@@ -92,7 +91,9 @@ function App() {
   // Handler for running a single test
   const handleRunTest = async (testCase: TestCase) => {
     try {
-      const result = await runTest(userCode, testCase);
+      // Read latest code from store to avoid stale closure (e.g., when called right after setUserCode)
+      const currentCode = useAppStore.getState().userCode;
+      const result = await runTest(currentCode, testCase);
       setTestResult(testCase.id, result);
 
       // Update console logs from test result

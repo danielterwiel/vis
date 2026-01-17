@@ -1,9 +1,10 @@
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { CodeMirrorEditor } from "./CodeMirrorEditor";
 import { HintButton } from "./HintButton";
 import { PresetSelector } from "./PresetSelector";
 import { RunButton } from "./RunButton";
-import useAppStore, { DataStructureType } from "../../store/useAppStore";
+import { SolutionDropdown } from "./SolutionDropdown";
+import useAppStore, { DataStructureType, DifficultyLevel } from "../../store/useAppStore";
 import { skeletonCodeSystem } from "../../templates";
 import {
   arrayTests,
@@ -42,10 +43,7 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
     resetHints,
   } = useAppStore();
 
-  // Track previous mode to detect when switching to reference mode
-  const prevModeRef = useRef(visualizationMode);
-
-  // Get current test case for hints and reference solution
+  // Get current test case for hints
   const getCurrentTestCase = useCallback(() => {
     switch (selectedDataStructure) {
       case "array":
@@ -88,79 +86,6 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
     resetHints();
   }, [selectedDataStructure, selectedDifficulty, setUserCode, setCodeStatus, resetHints]);
 
-  // Get all test cases for the current data structure
-  const getAllTestCasesForDataStructure = useCallback(() => {
-    switch (selectedDataStructure) {
-      case "array":
-        return arrayTests;
-      case "linkedList":
-        return linkedListTests;
-      case "stack":
-        return stackQueueTests.filter((t) => t.id.startsWith("stack-"));
-      case "queue":
-        return stackQueueTests.filter((t) => t.id.startsWith("queue-"));
-      case "tree":
-        return binaryTreeTests;
-      case "graph":
-        return graphTests;
-      case "hashMap":
-        return hashMapTests;
-      default:
-        return arrayTests;
-    }
-  }, [selectedDataStructure]);
-
-  // Load reference solution when visualization mode changes to "reference"
-  useEffect(() => {
-    const prevMode = prevModeRef.current;
-    prevModeRef.current = visualizationMode;
-
-    // Only load reference when switching TO reference mode (not when already in it)
-    if (visualizationMode === "reference" && prevMode !== "reference") {
-      // Load the current test case's reference solution
-      // Since all Array tests use the same 'sortArray' function name,
-      // we only load one reference solution (the selected difficulty).
-      // For other data structures that use different function names per difficulty,
-      // load all reference solutions so all tests can pass.
-      const allTestCases = getAllTestCasesForDataStructure();
-      const currentTestCase = getCurrentTestCase();
-
-      // Check if all test cases use the same main function name
-      const functionNames = allTestCases.map((tc) => {
-        const match = tc.referenceSolution?.match(/function\s+(\w+)\s*\(/);
-        return match?.[1];
-      });
-      const uniqueFunctionNames = new Set(functionNames.filter(Boolean));
-      const allUseSameFunctionName = uniqueFunctionNames.size === 1;
-
-      let solution: string;
-      if (allUseSameFunctionName) {
-        // All tests use the same function name - load only current test's solution
-        solution = currentTestCase?.referenceSolution || "";
-      } else {
-        // Tests use different function names - load all solutions
-        solution = allTestCases
-          .map((tc) => tc.referenceSolution)
-          .filter(Boolean)
-          .join("\n\n");
-      }
-
-      if (solution) {
-        setUserCode(solution);
-        setCodeStatus("complete");
-        // Auto-run tests after loading solution so visualization updates
-        onRunAllTests();
-      }
-    }
-  }, [
-    visualizationMode,
-    getAllTestCasesForDataStructure,
-    getCurrentTestCase,
-    setUserCode,
-    setCodeStatus,
-    onRunAllTests,
-  ]);
-
   // Update code status when user edits code
   const handleCodeChange = (newCode: string) => {
     setUserCode(newCode);
@@ -191,11 +116,41 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
     }
   };
 
-  // Handle show solution button
-  const handleShowSolution = () => {
-    const confirmed = confirm("This will reveal the solution. Continue?");
-    if (confirmed) {
+  // Get test case for a specific difficulty
+  const getTestCaseForDifficultyLevel = useCallback(
+    (difficulty: DifficultyLevel) => {
+      switch (selectedDataStructure) {
+        case "array":
+          return arrayTests.find((t) => t.difficulty === difficulty);
+        case "linkedList":
+          return linkedListTests.find((t) => t.difficulty === difficulty);
+        case "stack":
+          return stackQueueTests.find((t) => t.difficulty === difficulty && t.id.startsWith("stack-"));
+        case "queue":
+          return stackQueueTests.find((t) => t.difficulty === difficulty && t.id.startsWith("queue-"));
+        case "tree":
+          return binaryTreeTests.find((t) => t.difficulty === difficulty);
+        case "graph":
+          return graphTests.find((t) => t.difficulty === difficulty);
+        case "hashMap":
+          return hashMapTests.find((t) => t.difficulty === difficulty);
+        default:
+          return arrayTests.find((t) => t.difficulty === difficulty);
+      }
+    },
+    [selectedDataStructure],
+  );
+
+  // Handle show solution for a specific difficulty
+  const handleShowSolutionForDifficultyLevel = async (difficulty: DifficultyLevel) => {
+    const testCase = getTestCaseForDifficultyLevel(difficulty);
+    const solution = testCase?.referenceSolution;
+
+    if (solution) {
+      setUserCode(solution);
+      setCodeStatus("complete");
       setVisualizationMode("reference");
+      await onRunAllTests();
     }
   };
 
@@ -220,14 +175,7 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
             onSelectPreset={handlePresetSelect}
             disabled={isReadOnly}
           />
-          <button
-            className="show-solution-button"
-            onClick={handleShowSolution}
-            disabled={isReadOnly}
-            title="Reveal the reference solution (warning: spoilers!)"
-          >
-            Show Solution
-          </button>
+          <SolutionDropdown disabled={isReadOnly} onSelectSolution={handleShowSolutionForDifficultyLevel} />
         </div>
       </div>
       <div className="run-button-container">

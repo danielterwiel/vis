@@ -2,86 +2,98 @@
  * Hash Map skeleton code templates
  *
  * These templates match the test cases defined in hashMapTests.ts
+ * All levels use the same function name 'countFrequency' with different approaches
  */
 
 import { skeletonCodeSystem } from "../skeletonCodeSystem";
 
 /**
- * Easy: Basic Get/Set Operations
- * Simple key-value storage and retrieval
+ * Easy: Count Frequency (any method)
+ * Uses plain object for counting
  */
-const easySkeleton = `// Example usage: Implement basic get and set operations for a hash map
+const easySkeleton = `// Example usage: Count character frequencies and find the most frequent
 
-function basicHashMap(entries) {
-  // TODO: Create a new TrackedHashMap
-  const map = createTrackedHashMap();
+function countFrequency(str) {
+  // TODO: Count character frequencies and find the most frequent
+  // You can use any method - plain object, Map, etc.
+  //
+  // Steps:
+  // 1. Count occurrences of each character (skip spaces)
+  // 2. Find the character with highest count
+  // 3. Return { char, count }
 
-  // TODO: Set key-value pairs
-  // Use map.set(key, value) to add entries
-  // Example: map.set("apple", 3);
+  const counts = {};
 
+  // TODO: Count each character
 
-  // TODO: Get values back
-  // Use map.get(key) to retrieve values
-  // Return array of values in order: ["apple", "banana", "cherry"]
+  // TODO: Find the most frequent character
 
+  return { char: '', count: 0 };
 }
 `;
 
 /**
- * Medium: Collision Handling with Chaining
- * Demonstrates separate chaining for hash collisions
+ * Medium: Count Frequency (hash map required)
+ * Uses TrackedHashMap for visualization
  */
-const mediumSkeleton = `// Example usage: Handle hash collisions by adding multiple entries
+const mediumSkeleton = `// Example usage: Count character frequencies using TrackedHashMap
 
-function handleCollisions(entries) {
-  // TODO: Create a small-capacity hash map to force collisions
-  // Use createTrackedHashMap(capacity, loadFactorThreshold)
-  // Hint: Use capacity=4 and threshold=0.99 to prevent resize
+function countFrequency(str) {
+  // TODO: Use TrackedHashMap to count character frequencies
+  // This allows visualization of hash map operations
+  //
+  // Steps:
+  // 1. Create a TrackedHashMap with createTrackedHashMap()
+  // 2. Count each character using map.get() and map.set()
+  // 3. Find max using map.entries()
 
-
-  // TODO: Add multiple key-value pairs
-  // map.set("a", 1), map.set("b", 2), etc.
-  // Add at least 5 entries to ensure collisions
-
-
-  // TODO: Verify all entries exist using map.has(key)
-  // Check that all keys are present
-
-
-  // TODO: Verify all values are correct using map.get(key)
-  // Check that each key returns the correct value
-
-
-  // TODO: Return object with size, hasAll, and correctValues
-
-}
-`;
-
-/**
- * Hard: Character Frequency Counter
- * Practical application of hash map for counting
- */
-const hardSkeleton = `// Example usage: Use a hash map to count character frequencies and find the most frequent
-
-function characterFrequency(str) {
-  // TODO: Create a TrackedHashMap to store character counts
   const map = createTrackedHashMap();
 
-  // TODO: Iterate through the string
-  // For each character (excluding spaces):
-  // - Get current count using map.get(char) || 0
-  // - Increment count
-  // - Set new count using map.set(char, newCount)
+  // TODO: Count each character (skip spaces)
+  // Use map.get(char) || 0 to get current count
+  // Use map.set(char, newCount) to update
 
-
-  // TODO: Find the character with maximum frequency
+  // TODO: Find the most frequent character
   // Use map.entries() to get all [char, count] pairs
-  // Track maxChar and maxCount while iterating
 
+  return { char: '', count: 0 };
+}
+`;
 
-  // TODO: Return object with char and count
+/**
+ * Hard: Count Frequency (hash map + iteration required)
+ * Uses TrackedHashMap with explicit iteration patterns
+ */
+const hardSkeleton = `// Example usage: Count character frequencies with explicit iteration
 
+function countFrequency(str) {
+  // TODO: Use TrackedHashMap with explicit iteration patterns
+  // This demonstrates both hash map usage AND iteration patterns
+  //
+  // Requirements:
+  // 1. Use createTrackedHashMap() for the hash map
+  // 2. Use explicit for loops for iteration
+  // 3. Process entries individually to find maximum
+
+  const map = createTrackedHashMap();
+
+  // TODO: Count characters with explicit for loop
+  for (let i = 0; i < str.length; i++) {
+    // Get character, skip spaces
+    // Update count in map
+  }
+
+  // TODO: Find max with explicit iteration
+  let maxChar = '';
+  let maxCount = 0;
+
+  const entries = map.entries();
+  for (let i = 0; i < entries.length; i++) {
+    // Access entry[0] for char, entry[1] for count
+    // Update maxChar and maxCount if this count is higher
+  }
+
+  return { char: maxChar, count: maxCount };
 }
 `;
 
