@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useMemo } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { CodeMirrorEditor } from "./CodeMirrorEditor";
 import { HintButton } from "./HintButton";
 import { PresetSelector } from "./PresetSelector";
@@ -24,14 +24,6 @@ const DATA_STRUCTURE_OPTIONS: { value: DataStructureType; label: string }[] = [
   { value: "graph", label: "Graph" },
   { value: "hashMap", label: "Hash Map" },
 ];
-
-const DIFFICULTY_LEVELS: DifficultyLevel[] = ["easy", "medium", "hard"];
-
-const DIFFICULTY_LABELS: Record<DifficultyLevel, string> = {
-  easy: "Easy",
-  medium: "Medium",
-  hard: "Hard",
-};
 
 interface EditorPanelProps {
   onRunAllTests: () => Promise<void>;
