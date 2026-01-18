@@ -28,17 +28,16 @@ function sortArray(arr) {
  * Suggests using nested loops and element swapping for visualization
  */
 const mediumSkeleton = `// Sort an array of numbers in ascending order
-// Try implementing bubble sort to see swap operations visualized
+// Implement bubble sort to see swap operations visualized
 
 function sortArray(arr) {
   const n = arr.length;
 
   // TODO: Implement bubble sort with nested loops
   // Outer loop: iterate n-1 times
-  // Inner loop: compare adjacent elements
+  // Inner loop: compare adjacent elements and swap if out of order
 
-  // Use arr.at(index) to read values
-  // Use arr.swap(i, j) to swap elements (this will be visualized!)
+  // Use standard JavaScript array syntax: arr[i], arr[i] = value, arr.length
 
   return arr;
 }
@@ -49,7 +48,7 @@ function sortArray(arr) {
  * Suggests using recursion and partitioning for visualization
  */
 const hardSkeleton = `// Sort an array of numbers in ascending order
-// Try implementing quick sort to see partition operations visualized
+// Implement quick sort with recursion and partitioning
 
 function sortArray(arr, low = 0, high = arr.length - 1) {
   // TODO: Implement recursive quick sort
@@ -63,8 +62,12 @@ function sortArray(arr, low = 0, high = arr.length - 1) {
 }
 
 function partition(arr, low, high) {
-  // TODO: Use arr.partition(low, high) for visualization
-  // This method handles the partitioning and captures the operation
+  // TODO: Implement Lomuto partition scheme
+  // 1. Choose pivot (e.g., element at high index)
+  // 2. Partition array so elements < pivot are on left
+  // 3. Return final pivot position
+
+  // Use standard JavaScript: arr[i], arr[i] = value
 
 }
 `;

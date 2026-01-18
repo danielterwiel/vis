@@ -57,6 +57,32 @@ describe("LinkedListVisualizer", () => {
       expect(svg).toBeTruthy();
     });
 
+    it("should display node values inside rectangles", () => {
+      const data = createLinkedList([10, 20, 30]);
+      const { container } = render(<LinkedListVisualizer data={data} />);
+      const svg = container.querySelector("svg");
+      expect(svg).toBeTruthy();
+
+      // Check that node value text elements exist
+      const nodeValues = svg?.querySelectorAll(".node-value");
+      expect(nodeValues?.length).toBe(3);
+
+      // Check that the values are displayed correctly
+      const valueTexts = Array.from(nodeValues || []).map((el) => el.textContent);
+      expect(valueTexts).toContain("10");
+      expect(valueTexts).toContain("20");
+      expect(valueTexts).toContain("30");
+    });
+
+    it("should display node values with correct font size and fill", () => {
+      const data = createLinkedList([42]);
+      const { container } = render(<LinkedListVisualizer data={data} />);
+      const svg = container.querySelector("svg");
+      const nodeValue = svg?.querySelector(".node-value");
+      expect(nodeValue).toBeTruthy();
+      expect(nodeValue?.textContent).toBe("42");
+    });
+
     it("should render step indicator", () => {
       const data = createLinkedList([1, 2, 3]);
       const { container } = render(<LinkedListVisualizer data={data} />);

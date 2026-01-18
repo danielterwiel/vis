@@ -1,121 +1,301 @@
 {
+  "investigation": {
+    "technique": "Ralph Wiggum (aihero.dev)",
+    "principles": [
+      "Feedback loops: tests pass or commits blocked",
+      "Small atomic tasks: one file or concern per story",
+      "Programmatic verification: npm run validate gates each step",
+      "Hard stuff first: visualizer refactors before test updates"
+    ],
+    "tools_used": ["agent-browser", "d3-inspection", "screenshot-analysis"]
+  },
+  "findings": {
+    "visualizer_rerender_issue": {
+      "description": "Visualizers use svg.selectAll('*').remove() instead of D3 data join pattern",
+      "affected_files": [
+        "src/components/visualizers/GraphVisualizer.tsx:52",
+        "src/components/visualizers/BinaryTreeVisualizer.tsx:36",
+        "src/components/visualizers/StackQueueVisualizer.tsx:35",
+        "src/components/visualizers/HashMapVisualizer.tsx:74"
+      ],
+      "reference_pattern": "src/components/visualizers/ArrayVisualizer.tsx (lines 100-106)",
+      "severity": "high"
+    },
+    "binary_tree_rendering_bug": {
+      "description": "Tree shows single dot instead of full tree structure",
+      "screenshot": "/tmp/claude/-Users-dani-code-vis/tree-initial.png",
+      "probable_cause": "viewBox/positioning or data not passed correctly to d3.hierarchy",
+      "severity": "high"
+    },
+    "linkedlist_values_missing": {
+      "description": "Linked list nodes render as empty boxes without showing values",
+      "screenshot": "/tmp/claude/-Users-dani-code-vis/linkedlist-initial.png",
+      "probable_cause": "Text element styling or positioning issue",
+      "severity": "medium"
+    },
+    "missing_pattern_requirements": {
+      "description": "Only arrayTests has patternRequirement; other data structures lack algorithm validation",
+      "affected_files": [
+        "src/lib/testing/testCases/linkedListTests.ts",
+        "src/lib/testing/testCases/graphTests.ts",
+        "src/lib/testing/testCases/binaryTreeTests.ts",
+        "src/lib/testing/testCases/stackQueueTests.ts",
+        "src/lib/testing/testCases/hashMapTests.ts"
+      ],
+      "severity": "medium"
+    },
+    "incomplete_validation_module": {
+      "description": "AST-008 (validation index export) not completed",
+      "file": "src/lib/validation/index.ts",
+      "severity": "low"
+    },
+    "editor_highlighting_broken": {
+      "description": "Editor line highlighting feature doesn't work correctly during animation",
+      "affected_files": [
+        "src/components/EditorPanel/CodeMirrorEditor.tsx",
+        "src/components/EditorPanel/EditorPanel.tsx",
+        "src/store/useAppStore.ts"
+      ],
+      "action": "Remove feature for now",
+      "severity": "low"
+    }
+  },
   "userStories": [
     {
-      "id": "AST-001",
-      "title": "Create validation types",
-      "category": "validation",
-      "description": "Create src/lib/validation/types.ts with PatternId type ('nestedLoops' | 'swapCalls' | 'recursion' | 'partitionCalls'), PatternRequirement interface (anyOf: PatternId[], errorMessage: string), and ValidationResult interface (valid: boolean, error?: string).",
-      "stepsToVerify": [
-        "src/lib/validation/types.ts exists",
-        "PatternId type exported",
-        "PatternRequirement interface exported",
-        "ValidationResult interface exported",
-        "typecheck passes"
-      ],
-      "passes": true
-    },
-    {
-      "id": "AST-002",
-      "title": "Export parseSync from SWC initializer",
-      "category": "validation",
-      "description": "Modify src/lib/execution/swcInitializer.ts to import and export parseSync from @swc/wasm-web alongside existing transformSync.",
-      "stepsToVerify": [
-        "parseSync imported from @swc/wasm-web",
-        "parseSync exported from swcInitializer.ts",
-        "typecheck passes"
-      ],
-      "passes": true
-    },
-    {
-      "id": "AST-003",
-      "title": "Create AST analyzer with pattern detection",
-      "category": "validation",
-      "description": "Create src/lib/validation/astAnalyzer.ts with: parseCode(code) wrapping SWC parseSync, hasNestedLoops(ast) detecting for/while inside for/while, hasSwapCalls(ast) detecting .swap() method calls, hasRecursion(ast) detecting function calling itself, hasPartitionCalls(ast) detecting .partition() calls, validatePatterns(code, requirement) as main entry point.",
-      "stepsToVerify": [
-        "src/lib/validation/astAnalyzer.ts exists",
-        "parseCode function exported",
-        "hasNestedLoops function exported",
-        "hasSwapCalls function exported",
-        "hasRecursion function exported",
-        "hasPartitionCalls function exported",
-        "validatePatterns function exported",
-        "typecheck passes"
-      ],
-      "passes": true
-    },
-    {
-      "id": "AST-004",
-      "title": "Create AST analyzer unit tests",
-      "category": "validation",
-      "description": "Create src/lib/validation/astAnalyzer.test.ts with tests for: hasNestedLoops detecting for-for, while-for, for-while loops and rejecting single loops; hasRecursion detecting direct recursion and arrow function recursion; hasSwapCalls detecting arr.swap() calls; hasPartitionCalls detecting arr.partition() calls; validatePatterns returning valid/invalid correctly.",
-      "stepsToVerify": [
-        "src/lib/validation/astAnalyzer.test.ts exists",
-        "tests for hasNestedLoops exist",
-        "tests for hasRecursion exist",
-        "tests for hasSwapCalls exist",
-        "tests for hasPartitionCalls exist",
-        "npm run test:run passes"
-      ],
-      "passes": true
-    },
-    {
-      "id": "AST-005",
-      "title": "Add patternRequirement to TestCase interface",
-      "category": "testing",
-      "description": "Modify src/lib/testing/types.ts to import PatternRequirement from validation types and add optional patternRequirement?: PatternRequirement field to TestCase interface.",
-      "stepsToVerify": [
-        "PatternRequirement imported in types.ts",
-        "patternRequirement field added to TestCase interface",
-        "typecheck passes"
-      ],
-      "passes": true
-    },
-    {
-      "id": "AST-006",
-      "title": "Update array tests with pattern requirements",
-      "category": "testing",
-      "description": "Modify src/lib/testing/testCases/arrayTests.ts to add patternRequirement to medium test (anyOf: ['nestedLoops', 'swapCalls']) and hard test (anyOf: ['recursion', 'partitionCalls']) with appropriate error messages explaining expected algorithm.",
-      "stepsToVerify": [
-        "array-sort-medium has patternRequirement with nestedLoops or swapCalls",
-        "array-sort-hard has patternRequirement with recursion or partitionCalls",
-        "error messages explain expected algorithm",
-        "typecheck passes"
-      ],
-      "passes": true
-    },
-    {
-      "id": "AST-007",
-      "title": "Integrate validation into testRunner",
-      "category": "testing",
-      "description": "Modify src/lib/testing/testRunner.ts to import validatePatterns from validation module and add validation check before test execution: if testCase.patternRequirement exists, call validatePatterns and return early with error if validation fails.",
-      "stepsToVerify": [
-        "validatePatterns imported in testRunner.ts",
-        "validation check added before execution",
-        "returns early with error when validation fails",
-        "typecheck passes"
-      ],
-      "passes": true
-    },
-    {
-      "id": "AST-008",
+      "id": "VIS-001",
       "title": "Create validation index export",
       "category": "validation",
-      "description": "Create src/lib/validation/index.ts to export all types and functions from the validation module.",
+      "description": "Create src/lib/validation/index.ts to export all types and functions from the validation module (completes AST-008).",
       "stepsToVerify": [
         "src/lib/validation/index.ts exists",
         "exports types from types.ts",
         "exports functions from astAnalyzer.ts",
         "typecheck passes"
       ],
-      "passes": false
+      "passes": true
     },
     {
-      "id": "AST-009",
+      "id": "VIS-002",
+      "title": "Refactor GraphVisualizer to use D3 data join",
+      "category": "visualizer-refactor",
+      "description": "Remove svg.selectAll('*').remove() (line 52) from GraphVisualizer.tsx. Use D3 enter/update/exit pattern with selectAll.data().join() for nodes and links. Preserve force simulation ref across renders.",
+      "stepsToVerify": [
+        "GraphVisualizer.tsx does not call svg.selectAll('*').remove()",
+        "Uses selectAll.data().join() pattern for nodes",
+        "Uses selectAll.data().join() pattern for links",
+        "Force simulation persists across step changes",
+        "typecheck passes",
+        "GraphVisualizer.test.tsx passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-003",
+      "title": "Refactor BinaryTreeVisualizer to use D3 data join",
+      "category": "visualizer-refactor",
+      "description": "Remove svg.selectAll('*').remove() (line 36) from BinaryTreeVisualizer.tsx. Use D3 enter/update/exit pattern. Fix tree rendering bug where tree appears as single dot.",
+      "stepsToVerify": [
+        "BinaryTreeVisualizer.tsx does not call svg.selectAll('*').remove()",
+        "Uses selectAll.data().join() pattern",
+        "Tree renders with all nodes visible",
+        "typecheck passes",
+        "BinaryTreeVisualizer.test.tsx passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-004",
+      "title": "Refactor StackQueueVisualizer to use D3 data join",
+      "category": "visualizer-refactor",
+      "description": "Remove svg.selectAll('*').remove() (line 35) from StackQueueVisualizer.tsx. Use D3 enter/update/exit pattern with proper data keying.",
+      "stepsToVerify": [
+        "StackQueueVisualizer.tsx does not call svg.selectAll('*').remove()",
+        "Uses selectAll.data().join() pattern",
+        "Elements animate smoothly on push/pop/enqueue/dequeue",
+        "typecheck passes",
+        "StackQueueVisualizer.test.tsx passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-005",
+      "title": "Refactor HashMapVisualizer to use D3 data join",
+      "category": "visualizer-refactor",
+      "description": "Remove svg.selectAll('g.main-group').remove() (line 74) from HashMapVisualizer.tsx. Use D3 enter/update/exit pattern for buckets and entries.",
+      "stepsToVerify": [
+        "HashMapVisualizer.tsx does not remove main-group on each render",
+        "Uses selectAll.data().join() pattern for buckets",
+        "Uses selectAll.data().join() pattern for entries",
+        "typecheck passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-006",
+      "title": "Fix LinkedListVisualizer value display",
+      "category": "visualizer-fix",
+      "description": "Fix LinkedListVisualizer.tsx so that node values are visible inside the rectangles. Values currently not showing (empty boxes). Check text positioning, font-size, and fill color.",
+      "stepsToVerify": [
+        "Node values visible in visualization",
+        "Values use correct font-size and fill color",
+        "typecheck passes",
+        "LinkedListVisualizer.test.tsx passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-007",
+      "title": "Add pattern requirements to linkedListTests",
+      "category": "pattern-validation",
+      "description": "Add patternRequirement to linkedListTests.ts: medium test (anyOf: ['pointerManipulation', 'recursion']), hard test (anyOf: ['twoPointers', 'recursion']) with appropriate error messages.",
+      "stepsToVerify": [
+        "linkedlist-reverse-medium has patternRequirement",
+        "linkedlist-cycle-hard has patternRequirement",
+        "error messages explain expected algorithm",
+        "typecheck passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-008",
+      "title": "Add pattern requirements to binaryTreeTests",
+      "category": "pattern-validation",
+      "description": "Add patternRequirement to binaryTreeTests.ts: medium test (anyOf: ['recursion']), hard test (anyOf: ['recursion', 'divideAndConquer']) with appropriate error messages.",
+      "stepsToVerify": [
+        "binarytree-validate-medium has patternRequirement",
+        "binarytree-balance-hard has patternRequirement",
+        "error messages explain expected algorithm",
+        "typecheck passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-009",
+      "title": "Add pattern requirements to graphTests",
+      "category": "pattern-validation",
+      "description": "Add patternRequirement to graphTests.ts: medium test (anyOf: ['recursion', 'dfs']), hard test (anyOf: ['dijkstra', 'priorityQueue']) with appropriate error messages.",
+      "stepsToVerify": [
+        "graph-cycle-medium has patternRequirement",
+        "graph-dijkstra-hard has patternRequirement",
+        "error messages explain expected algorithm",
+        "typecheck passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-010",
+      "title": "Add pattern requirements to stackQueueTests",
+      "category": "pattern-validation",
+      "description": "Add patternRequirement to stackQueueTests.ts: medium tests (anyOf: ['stackUsage', 'queueUsage']), hard tests (anyOf: ['twoStacks', 'minTracking']) with appropriate error messages.",
+      "stepsToVerify": [
+        "queue-reverse-first-k-medium has patternRequirement",
+        "stack-queue-using-stacks-medium has patternRequirement",
+        "queue-interleave-halves-hard has patternRequirement",
+        "stack-min-stack-hard has patternRequirement",
+        "error messages explain expected algorithm",
+        "typecheck passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-011",
+      "title": "Add pattern requirements to hashMapTests",
+      "category": "pattern-validation",
+      "description": "Add patternRequirement to hashMapTests.ts: medium test (anyOf: ['hashFunction', 'chaining']), hard test (anyOf: ['frequencyCounter', 'iteration']) with appropriate error messages.",
+      "stepsToVerify": [
+        "hashmap-collision-medium has patternRequirement",
+        "hashmap-frequency-hard has patternRequirement",
+        "error messages explain expected algorithm",
+        "typecheck passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-012",
+      "title": "Add new pattern detectors for linked list patterns",
+      "category": "validation",
+      "description": "Add to astAnalyzer.ts: hasTwoPointers(ast) detecting slow/fast pointer pattern, hasPointerManipulation(ast) detecting .next assignment patterns. Update PatternId type.",
+      "stepsToVerify": [
+        "PatternId includes 'twoPointers' and 'pointerManipulation'",
+        "hasTwoPointers function exported",
+        "hasPointerManipulation function exported",
+        "typecheck passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-013",
+      "title": "Add new pattern detectors for graph/tree patterns",
+      "category": "validation",
+      "description": "Add to astAnalyzer.ts: hasDFS(ast) detecting depth-first traversal, hasBFS(ast) detecting breadth-first traversal, hasDivideAndConquer(ast) detecting mid-point splitting. Update PatternId type.",
+      "stepsToVerify": [
+        "PatternId includes 'dfs', 'bfs', 'divideAndConquer'",
+        "hasDFS function exported",
+        "hasBFS function exported",
+        "hasDivideAndConquer function exported",
+        "typecheck passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-014",
+      "title": "Add unit tests for new pattern detectors",
+      "category": "validation",
+      "description": "Add tests to astAnalyzer.test.ts for: hasTwoPointers, hasPointerManipulation, hasDFS, hasBFS, hasDivideAndConquer with positive and negative cases.",
+      "stepsToVerify": [
+        "Tests for hasTwoPointers exist",
+        "Tests for hasPointerManipulation exist",
+        "Tests for hasDFS exist",
+        "Tests for hasBFS exist",
+        "Tests for hasDivideAndConquer exist",
+        "npm run test:run passes"
+      ],
+      "passes": true
+    },
+    {
+      "id": "VIS-015",
       "title": "Full validation passes",
       "category": "verification",
-      "description": "Run npm run validate to ensure lint, format, typecheck, and all tests pass.",
+      "description": "Run npm run validate to ensure lint, format, typecheck, and all tests pass after all changes.",
       "stepsToVerify": ["npm run validate passes with no errors"],
-      "passes": false
+      "passes": true
+    },
+    {
+      "id": "VIS-016",
+      "title": "Remove broken editor line highlighting",
+      "category": "cleanup",
+      "description": "Remove the non-working editor line highlighting feature. Delete: highlightField, highlightTheme, setHighlightedLineEffect, lineHighlightMark from CodeMirrorEditor.tsx. Remove highlightedLine prop and related useEffect. Remove highlightedLine from useAppStore.ts state and actions. Remove highlightedLine usage from EditorPanel.tsx.",
+      "stepsToVerify": [
+        "CodeMirrorEditor.tsx has no highlight-related code",
+        "EditorPanel.tsx does not pass highlightedLine prop",
+        "useAppStore.ts has no highlightedLine state or setHighlightedLine action",
+        "typecheck passes",
+        "CodeMirrorEditor.test.tsx passes"
+      ],
+      "passes": true
     }
+  ],
+  "priorityOrder": [
+    "VIS-001",
+    "VIS-016",
+    "VIS-003",
+    "VIS-002",
+    "VIS-004",
+    "VIS-005",
+    "VIS-006",
+    "VIS-012",
+    "VIS-013",
+    "VIS-014",
+    "VIS-007",
+    "VIS-008",
+    "VIS-009",
+    "VIS-010",
+    "VIS-011",
+    "VIS-015"
+  ],
+  "riskNotes": [
+    "Visualizer refactors (VIS-002 to VIS-005) are high-risk; test manually with agent-browser after each",
+    "Pattern detector changes (VIS-012, VIS-013) require SWC AST knowledge; may need iteration",
+    "BinaryTree bug (VIS-003) may have root cause in data passing, not just visualization code"
   ]
 }

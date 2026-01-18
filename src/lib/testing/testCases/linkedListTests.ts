@@ -1,4 +1,5 @@
 import type { TestCase } from "../types";
+import type { PatternRequirement } from "../../validation/types";
 
 /**
  * LinkedList test cases with 3 difficulty levels (Easy, Medium, Hard)
@@ -22,29 +23,42 @@ export const linkedListTests: TestCase[] = [
     expectedOutput: 30,
     assertions: `
       expect(result).toBe(30);
-      expect(steps.filter(s => s.type === 'find').length).toBeGreaterThan(0);
     `,
     referenceSolution: `function findElement(list, target) {
-  // Use TrackedLinkedList's find method to search for the value
-  const node = list.find(target);
-  return node ? node.value : null;
+  // Traverse the list manually to find the target
+  let current = list.getHead();
+
+  while (current !== null) {
+    if (current.value === target) {
+      return current.value;
+    }
+    current = current.next;
+  }
+
+  return null;
 }`,
     skeletonCode: `function findElement(list, target) {
-  // TODO: Implement find operation
-  // Hint: Use list.find(target) to search for the value
-  // The list parameter is a TrackedLinkedList that records operations
+  // TODO: Traverse the list and find the target value
+  // Use list.getHead() to get the first node
+  // Each node has: node.value (the data) and node.next (pointer to next node)
+
+  let current = list.getHead();
+
+  // TODO: Loop through the list
+  // Check if current node's value equals target
+  // If found, return the value
+  // Otherwise, move to the next node
 
   return null;
 }`,
     hints: [
-      "TrackedLinkedList has a built-in find() method",
-      "The find() method returns a node or null if not found",
-      "Access the node's value property to get the actual value",
+      "Use list.getHead() to get the first node",
+      "Each node has .value and .next properties",
+      "Loop while current !== null, checking each value",
     ],
     acceptanceCriteria: [
       "Function returns the correct value when element exists",
       "Function returns null when element doesn't exist",
-      "At least one find operation is captured for visualization",
     ],
   },
   {
@@ -56,31 +70,54 @@ export const linkedListTests: TestCase[] = [
     expectedOutput: [50, 40, 30, 20, 10],
     assertions: `
       expect(result).toEqual([50, 40, 30, 20, 10]);
-      expect(steps.filter(s => s.type === 'reverse').length).toBeGreaterThan(0);
     `,
     referenceSolution: `function reverseList(list) {
-  // Use TrackedLinkedList's reverse method for in-place reversal
-  list.reverse();
+  // Reverse by manipulating node pointers
+  let prev = null;
+  let current = list.getHead();
+
+  while (current !== null) {
+    const next = current.next;  // Save next
+    current.next = prev;        // Reverse pointer
+    prev = current;             // Move prev forward
+    current = next;             // Move current forward
+  }
+
   return list.toArray();
 }`,
     skeletonCode: `function reverseList(list) {
-  // TODO: Implement list reversal
-  // Hint: Use list.reverse() to reverse the list in place
-  // The list parameter is a TrackedLinkedList that records operations
-  // Use list.toArray() to get the final array for verification
+  // TODO: Reverse the linked list by manipulating node pointers
+  // Use three pointers: prev, current, next
+  //
+  // Algorithm:
+  // 1. Initialize prev = null, current = list.getHead()
+  // 2. While current is not null:
+  //    - Save next = current.next
+  //    - Reverse pointer: current.next = prev
+  //    - Move prev and current forward
+  // 3. Return the reversed list as array using list.toArray()
 
-  return [];
+  let prev = null;
+  let current = list.getHead();
+
+  // TODO: Implement the reversal loop
+
+  return list.toArray();
 }`,
     hints: [
-      "TrackedLinkedList has a built-in reverse() method that reverses in place",
-      "The reverse() method captures each pointer swap for visualization",
-      "After reversing, use toArray() to convert the list to an array for comparison",
+      "Use three pointers: prev (starts null), current (starts at head), next (temp)",
+      "In each iteration: save next, reverse current's pointer, advance prev and current",
+      "After the loop, prev points to the new head",
     ],
     acceptanceCriteria: [
       "Function returns reversed array",
-      "List is reversed in place (head becomes tail)",
-      "At least one reverse operation is captured for visualization",
+      "List is reversed using pointer manipulation",
     ],
+    patternRequirement: {
+      anyOf: ["pointerManipulation", "recursion"],
+      errorMessage:
+        "Medium difficulty requires implementing pointer manipulation (e.g., reassigning .next pointers) or using recursion to reverse the list.",
+    } satisfies PatternRequirement,
   },
   {
     id: "linkedlist-cycle-hard",
@@ -91,29 +128,55 @@ export const linkedListTests: TestCase[] = [
     expectedOutput: false,
     assertions: `
       expect(result).toBe(false);
-      expect(steps.filter(s => s.type === 'hasCycle').length).toBeGreaterThan(0);
     `,
     referenceSolution: `function detectCycle(list) {
-  // Use TrackedLinkedList's hasCycle method (Floyd's algorithm)
-  return list.hasCycle();
+  // Floyd's cycle detection algorithm (tortoise and hare)
+  let slow = list.getHead();
+  let fast = list.getHead();
+
+  while (fast !== null && fast.next !== null) {
+    slow = slow.next;           // Move slow 1 step
+    fast = fast.next.next;      // Move fast 2 steps
+
+    if (slow === fast) {
+      return true;              // Cycle detected
+    }
+  }
+
+  return false;                 // No cycle
 }`,
     skeletonCode: `function detectCycle(list) {
-  // TODO: Implement cycle detection
-  // Hint: Use list.hasCycle() to detect cycles using Floyd's algorithm
-  // The list parameter is a TrackedLinkedList that records operations
-  // Floyd's algorithm uses two pointers (slow and fast)
+  // TODO: Implement Floyd's cycle detection algorithm
+  // Use two pointers: slow (moves 1 step) and fast (moves 2 steps)
+  //
+  // Algorithm:
+  // 1. Initialize both pointers to list.getHead()
+  // 2. While fast and fast.next exist:
+  //    - Move slow one step: slow = slow.next
+  //    - Move fast two steps: fast = fast.next.next
+  //    - If slow === fast, cycle detected!
+  // 3. If loop exits normally, no cycle
+
+  let slow = list.getHead();
+  let fast = list.getHead();
+
+  // TODO: Implement the detection loop
 
   return false;
 }`,
     hints: [
-      "TrackedLinkedList has a built-in hasCycle() method",
-      "Floyd's cycle detection uses two pointers: slow moves 1 step, fast moves 2 steps",
-      "If there's a cycle, the fast pointer will eventually catch up to the slow pointer",
+      "Use two pointers: slow moves 1 step, fast moves 2 steps per iteration",
+      "Check that fast and fast.next exist before moving fast",
+      "If there's a cycle, fast will eventually catch up to slow",
     ],
     acceptanceCriteria: [
       "Function returns true when a cycle exists",
       "Function returns false when no cycle exists",
-      "At least one hasCycle operation is captured for visualization",
     ],
+    patternRequirement: {
+      anyOf: ["twoPointers", "recursion"],
+      errorMessage:
+        "Hard difficulty requires implementing Floyd's cycle detection with two pointers (slow/fast) or using recursion to detect cycles.",
+    } satisfies PatternRequirement,
   },
 ];

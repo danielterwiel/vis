@@ -25,75 +25,77 @@ describe("LinkedList Templates", () => {
       const template = skeletonCodeSystem.getSkeletonCode("linkedList", "easy");
       expect(template).toBe(easySkeleton);
       expect(template).toContain("findElement");
-      expect(template).toContain("TODO: Implement find operation");
+      expect(template).toContain("TODO: Traverse the list");
     });
 
     it("should retrieve medium template", () => {
       const template = skeletonCodeSystem.getSkeletonCode("linkedList", "medium");
       expect(template).toBe(mediumSkeleton);
       expect(template).toContain("reverseList");
-      expect(template).toContain("TODO: Implement list reversal");
+      expect(template).toContain("TODO: Reverse the linked list");
     });
 
     it("should retrieve hard template", () => {
       const template = skeletonCodeSystem.getSkeletonCode("linkedList", "hard");
       expect(template).toBe(hardSkeleton);
       expect(template).toContain("detectCycle");
-      expect(template).toContain("TODO: Implement cycle detection");
+      expect(template).toContain("TODO: Implement Floyd's cycle detection");
     });
   });
 
   describe("Template Content", () => {
     it("easy template should have correct structure", () => {
       expect(easySkeleton).toContain("function findElement(list, target)");
-      expect(easySkeleton).toContain("list.find(target)");
-      expect(easySkeleton).toContain("TrackedLinkedList");
+      expect(easySkeleton).toContain("list.getHead()");
+      expect(easySkeleton).toContain("node.value");
     });
 
     it("medium template should have correct structure", () => {
       expect(mediumSkeleton).toContain("function reverseList(list)");
-      expect(mediumSkeleton).toContain("list.reverse()");
+      expect(mediumSkeleton).toContain("list.getHead()");
       expect(mediumSkeleton).toContain("list.toArray()");
     });
 
     it("hard template should have correct structure", () => {
       expect(hardSkeleton).toContain("function detectCycle(list)");
-      expect(hardSkeleton).toContain("list.hasCycle()");
-      expect(hardSkeleton).toContain("Floyd's algorithm");
+      expect(hardSkeleton).toContain("list.getHead()");
+      expect(hardSkeleton).toContain("Floyd's");
     });
   });
 
   describe("TODO Extraction", () => {
     it("should extract TODOs from easy template", () => {
       const todos = skeletonCodeSystem.extractTodos(easySkeleton);
-      expect(todos).toContain("Implement find operation");
+      expect(todos).toContain("Traverse the list and find the target value");
     });
 
     it("should extract TODOs from medium template", () => {
       const todos = skeletonCodeSystem.extractTodos(mediumSkeleton);
-      expect(todos).toContain("Implement list reversal");
+      expect(todos).toContain("Reverse the linked list by manipulating node pointers");
     });
 
     it("should extract TODOs from hard template", () => {
       const todos = skeletonCodeSystem.extractTodos(hardSkeleton);
-      expect(todos).toContain("Implement cycle detection");
+      expect(todos).toContain("Implement Floyd's cycle detection algorithm");
     });
   });
 
-  describe("Hint Extraction", () => {
-    it("should extract hints from easy template", () => {
-      const hints = skeletonCodeSystem.getInlineHints(easySkeleton);
-      expect(hints).toContain("Use list.find(target) to search for the value");
+  describe("Template Guidance", () => {
+    it("easy template should guide node traversal", () => {
+      expect(easySkeleton).toContain("node.next");
+      expect(easySkeleton).toContain("Loop through the list");
     });
 
-    it("should extract hints from medium template", () => {
-      const hints = skeletonCodeSystem.getInlineHints(mediumSkeleton);
-      expect(hints).toContain("Use list.reverse() to reverse the list in place");
+    it("medium template should guide pointer manipulation", () => {
+      expect(mediumSkeleton).toContain("prev");
+      expect(mediumSkeleton).toContain("current");
+      expect(mediumSkeleton).toContain("current.next = prev");
     });
 
-    it("should extract hints from hard template", () => {
-      const hints = skeletonCodeSystem.getInlineHints(hardSkeleton);
-      expect(hints).toContain("Use list.hasCycle() to detect cycles using Floyd's algorithm");
+    it("hard template should guide two-pointer technique", () => {
+      expect(hardSkeleton).toContain("slow");
+      expect(hardSkeleton).toContain("fast");
+      expect(hardSkeleton).toContain("slow === fast");
     });
   });
 });

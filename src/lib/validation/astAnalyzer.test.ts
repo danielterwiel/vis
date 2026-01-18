@@ -189,6 +189,11 @@ import {
   hasSwapCalls,
   hasRecursion,
   hasPartitionCalls,
+  hasTwoPointers,
+  hasPointerManipulation,
+  hasDFS,
+  hasBFS,
+  hasDivideAndConquer,
   validatePatterns,
 } from "./astAnalyzer";
 
@@ -466,6 +471,425 @@ describe("astAnalyzer", () => {
         exprStmt(call(member(id("console"), "log"), [id("partition")])),
       ]);
       expect(hasPartitionCalls(ast)).toBe(false);
+    });
+
+    it("should detect partition() as regular function call", () => {
+      // const pi = partition(arr, low, high);
+      const ast = module([
+        varDecl("pi", call(id("partition"), [id("arr"), id("low"), id("high")])),
+      ]);
+      expect(hasPartitionCalls(ast)).toBe(true);
+    });
+  });
+
+  describe("hasTwoPointers", () => {
+    it("should detect slow/fast pointer pattern in function", () => {
+      // function detectCycle(head) { let slow = head; let fast = head; }
+      const ast = module([
+        funcDecl("detectCycle", block([varDecl("slow", id("head")), varDecl("fast", id("head"))])),
+      ]);
+      expect(hasTwoPointers(ast)).toBe(true);
+    });
+
+    it("should detect prev/curr pointer pattern", () => {
+      // function reverseList(head) { let prev = null; let curr = head; }
+      const ast = module([
+        funcDecl(
+          "reverseList",
+          block([
+            varDecl("prev", { type: "NullLiteral" as const, span }),
+            varDecl("curr", id("head")),
+          ]),
+        ),
+      ]);
+      expect(hasTwoPointers(ast)).toBe(true);
+    });
+
+    it("should detect left/right pointer pattern in arrow function", () => {
+      // const findMiddle = () => { let left = 0; let right = arr.length; }
+      const ast = module([
+        varDeclArrow(
+          "findMiddle",
+          block([
+            varDecl("left", { type: "NumericLiteral", value: 0, span }),
+            varDecl("right", member(id("arr"), "length")),
+          ]),
+        ),
+      ]);
+      expect(hasTwoPointers(ast)).toBe(true);
+    });
+
+    it("should detect p1/p2 pointer pattern", () => {
+      // function compare() { let p1 = list1; let p2 = list2; }
+      const ast = module([
+        funcDecl("compare", block([varDecl("p1", id("list1")), varDecl("p2", id("list2"))])),
+      ]);
+      expect(hasTwoPointers(ast)).toBe(true);
+    });
+
+    it("should NOT detect single pointer variable", () => {
+      // function traverse(head) { let slow = head; }
+      const ast = module([funcDecl("traverse", block([varDecl("slow", id("head"))]))]);
+      expect(hasTwoPointers(ast)).toBe(false);
+    });
+
+    it("should NOT detect unrelated variable names", () => {
+      // function process() { let x = 1; let y = 2; }
+      const ast = module([
+        funcDecl(
+          "process",
+          block([
+            varDecl("x", { type: "NumericLiteral", value: 1, span }),
+            varDecl("y", { type: "NumericLiteral", value: 2, span }),
+          ]),
+        ),
+      ]);
+      expect(hasTwoPointers(ast)).toBe(false);
+    });
+  });
+
+  describe("hasPointerManipulation", () => {
+    it("should detect node.next = something assignment", () => {
+      // node.next = newNode;
+      const ast = module([
+        exprStmt({
+          type: "AssignmentExpression" as const,
+          operator: "=",
+          left: member(id("node"), "next"),
+          right: id("newNode"),
+          span,
+        }),
+      ]);
+      expect(hasPointerManipulation(ast)).toBe(true);
+    });
+
+    it("should detect prev.next = curr.next pattern", () => {
+      // prev.next = curr.next;
+      const ast = module([
+        exprStmt({
+          type: "AssignmentExpression" as const,
+          operator: "=",
+          left: member(id("prev"), "next"),
+          right: member(id("curr"), "next"),
+          span,
+        }),
+      ]);
+      expect(hasPointerManipulation(ast)).toBe(true);
+    });
+
+    it("should detect .next assignment inside while loop", () => {
+      // while (curr) { curr.next = prev; }
+      const ast = module([
+        whileLoop(
+          block([
+            exprStmt({
+              type: "AssignmentExpression" as const,
+              operator: "=",
+              left: member(id("curr"), "next"),
+              right: id("prev"),
+              span,
+            }),
+          ]),
+        ),
+      ]);
+      expect(hasPointerManipulation(ast)).toBe(true);
+    });
+
+    it("should detect .next assignment inside function", () => {
+      // function reverse(head) { node.next = null; }
+      const ast = module([
+        funcDecl(
+          "reverse",
+          block([
+            exprStmt({
+              type: "AssignmentExpression" as const,
+              operator: "=",
+              left: member(id("node"), "next"),
+              right: { type: "NullLiteral" as const, span },
+              span,
+            }),
+          ]),
+        ),
+      ]);
+      expect(hasPointerManipulation(ast)).toBe(true);
+    });
+
+    it("should NOT detect reading .next property", () => {
+      // const next = node.next;
+      const ast = module([varDecl("next", member(id("node"), "next"))]);
+      expect(hasPointerManipulation(ast)).toBe(false);
+    });
+
+    it("should NOT detect assignment to other properties", () => {
+      // node.value = 5;
+      const ast = module([
+        exprStmt({
+          type: "AssignmentExpression" as const,
+          operator: "=",
+          left: member(id("node"), "value"),
+          right: { type: "NumericLiteral", value: 5, span },
+          span,
+        }),
+      ]);
+      expect(hasPointerManipulation(ast)).toBe(false);
+    });
+  });
+
+  describe("hasDFS", () => {
+    it("should detect recursive tree traversal with node.left", () => {
+      // function traverse(node) { traverse(node.left); }
+      const ast = module([
+        funcDecl("traverse", block([exprStmt(call(id("traverse"), [member(id("node"), "left")]))])),
+      ]);
+      expect(hasDFS(ast)).toBe(true);
+    });
+
+    it("should detect recursive tree traversal with node.right", () => {
+      // function traverse(node) { traverse(node.right); }
+      const ast = module([
+        funcDecl(
+          "traverse",
+          block([exprStmt(call(id("traverse"), [member(id("node"), "right")]))]),
+        ),
+      ]);
+      expect(hasDFS(ast)).toBe(true);
+    });
+
+    it("should detect stack-based DFS pattern", () => {
+      // const stack = []; stack.push(node); stack.pop();
+      const ast = module([
+        varDecl("stack", { type: "ArrayExpression" as const, elements: [], span }),
+        exprStmt(call(member(id("stack"), "push"), [id("node")])),
+        exprStmt(call(member(id("stack"), "pop"))),
+      ]);
+      expect(hasDFS(ast)).toBe(true);
+    });
+
+    it("should detect .dfs() method call", () => {
+      // graph.dfs(startNode);
+      const ast = module([exprStmt(call(member(id("graph"), "dfs"), [id("startNode")]))]);
+      expect(hasDFS(ast)).toBe(true);
+    });
+
+    it("should detect depthFirstSearch() function call", () => {
+      // depthFirstSearch(graph, start);
+      const ast = module([exprStmt(call(id("depthFirstSearch"), [id("graph"), id("start")]))]);
+      expect(hasDFS(ast)).toBe(true);
+    });
+
+    it("should NOT detect simple recursive function without tree traversal", () => {
+      // function factorial(n) { return factorial(n - 1); }
+      const ast = module([
+        funcDecl(
+          "factorial",
+          block([
+            returnStmt(
+              call(id("factorial"), [
+                {
+                  type: "BinaryExpression" as const,
+                  operator: "-",
+                  left: id("n"),
+                  right: { type: "NumericLiteral", value: 1, span },
+                  span,
+                },
+              ]),
+            ),
+          ]),
+        ),
+      ]);
+      expect(hasDFS(ast)).toBe(false);
+    });
+
+    it("should NOT detect queue-based traversal (BFS pattern)", () => {
+      // const queue = []; queue.push(node); queue.shift();
+      const ast = module([
+        varDecl("queue", { type: "ArrayExpression" as const, elements: [], span }),
+        exprStmt(call(member(id("queue"), "push"), [id("node")])),
+        exprStmt(call(member(id("queue"), "shift"))),
+      ]);
+      expect(hasDFS(ast)).toBe(false);
+    });
+  });
+
+  describe("hasBFS", () => {
+    it("should detect queue-based BFS pattern with push/shift", () => {
+      // const queue = []; queue.push(node); queue.shift();
+      const ast = module([
+        varDecl("queue", { type: "ArrayExpression" as const, elements: [], span }),
+        exprStmt(call(member(id("queue"), "push"), [id("node")])),
+        exprStmt(call(member(id("queue"), "shift"))),
+      ]);
+      expect(hasBFS(ast)).toBe(true);
+    });
+
+    it("should detect .bfs() method call", () => {
+      // graph.bfs(startNode);
+      const ast = module([exprStmt(call(member(id("graph"), "bfs"), [id("startNode")]))]);
+      expect(hasBFS(ast)).toBe(true);
+    });
+
+    it("should detect breadthFirstSearch() function call", () => {
+      // breadthFirstSearch(graph, start);
+      const ast = module([exprStmt(call(id("breadthFirstSearch"), [id("graph"), id("start")]))]);
+      expect(hasBFS(ast)).toBe(true);
+    });
+
+    it("should detect queue variable inside function", () => {
+      // function levelOrder() { const queue = [root]; queue.push(node); queue.shift(); }
+      const ast = module([
+        funcDecl(
+          "levelOrder",
+          block([
+            varDecl("queue", {
+              type: "ArrayExpression" as const,
+              elements: [{ expression: id("root") }],
+              span,
+            }),
+            exprStmt(call(member(id("queue"), "push"), [id("node")])),
+            exprStmt(call(member(id("queue"), "shift"))),
+          ]),
+        ),
+      ]);
+      expect(hasBFS(ast)).toBe(true);
+    });
+
+    it("should NOT detect stack-based traversal (DFS pattern)", () => {
+      // const stack = []; stack.push(node); stack.pop();
+      const ast = module([
+        varDecl("stack", { type: "ArrayExpression" as const, elements: [], span }),
+        exprStmt(call(member(id("stack"), "push"), [id("node")])),
+        exprStmt(call(member(id("stack"), "pop"))),
+      ]);
+      expect(hasBFS(ast)).toBe(false);
+    });
+
+    it("should NOT detect array without queue variable name", () => {
+      // const arr = []; arr.push(x); arr.shift();
+      const ast = module([
+        varDecl("arr", { type: "ArrayExpression" as const, elements: [], span }),
+        exprStmt(call(member(id("arr"), "push"), [id("x")])),
+        exprStmt(call(member(id("arr"), "shift"))),
+      ]);
+      expect(hasBFS(ast)).toBe(false);
+    });
+  });
+
+  describe("hasDivideAndConquer", () => {
+    it("should detect Math.floor division by 2", () => {
+      // const mid = Math.floor((left + right) / 2);
+      const ast = module([
+        varDecl(
+          "mid",
+          call(member(id("Math"), "floor"), [
+            {
+              type: "BinaryExpression" as const,
+              operator: "/",
+              left: {
+                type: "BinaryExpression" as const,
+                operator: "+",
+                left: id("left"),
+                right: id("right"),
+                span,
+              },
+              right: { type: "NumericLiteral", value: 2, span },
+              span,
+            },
+          ]),
+        ),
+      ]);
+      expect(hasDivideAndConquer(ast)).toBe(true);
+    });
+
+    it("should detect bitwise right shift by 1", () => {
+      // const mid = (left + right) >> 1;
+      const ast = module([
+        varDecl("x", {
+          type: "BinaryExpression" as const,
+          operator: ">>",
+          left: {
+            type: "BinaryExpression" as const,
+            operator: "+",
+            left: id("left"),
+            right: id("right"),
+            span,
+          },
+          right: { type: "NumericLiteral", value: 1, span },
+          span,
+        }),
+      ]);
+      expect(hasDivideAndConquer(ast)).toBe(true);
+    });
+
+    it("should detect mid variable declaration", () => {
+      // const mid = 5;
+      const ast = module([varDecl("mid", { type: "NumericLiteral", value: 5, span })]);
+      expect(hasDivideAndConquer(ast)).toBe(true);
+    });
+
+    it("should detect middle variable declaration", () => {
+      // const middle = arr.length / 2;
+      const ast = module([
+        varDecl("middle", {
+          type: "BinaryExpression" as const,
+          operator: "/",
+          left: member(id("arr"), "length"),
+          right: { type: "NumericLiteral", value: 2, span },
+          span,
+        }),
+      ]);
+      expect(hasDivideAndConquer(ast)).toBe(true);
+    });
+
+    it("should detect divide-and-conquer in function", () => {
+      // function binarySearch() { const mid = Math.floor(len / 2); }
+      const ast = module([
+        funcDecl(
+          "binarySearch",
+          block([
+            varDecl(
+              "mid",
+              call(member(id("Math"), "floor"), [
+                {
+                  type: "BinaryExpression" as const,
+                  operator: "/",
+                  left: id("len"),
+                  right: { type: "NumericLiteral", value: 2, span },
+                  span,
+                },
+              ]),
+            ),
+          ]),
+        ),
+      ]);
+      expect(hasDivideAndConquer(ast)).toBe(true);
+    });
+
+    it("should NOT detect simple division not by 2", () => {
+      // const x = total / 3;
+      const ast = module([
+        varDecl("x", {
+          type: "BinaryExpression" as const,
+          operator: "/",
+          left: id("total"),
+          right: { type: "NumericLiteral", value: 3, span },
+          span,
+        }),
+      ]);
+      expect(hasDivideAndConquer(ast)).toBe(false);
+    });
+
+    it("should NOT detect unrelated bitwise operations", () => {
+      // const x = y >> 2;
+      const ast = module([
+        varDecl("x", {
+          type: "BinaryExpression" as const,
+          operator: ">>",
+          left: id("y"),
+          right: { type: "NumericLiteral", value: 2, span },
+          span,
+        }),
+      ]);
+      expect(hasDivideAndConquer(ast)).toBe(false);
     });
   });
 

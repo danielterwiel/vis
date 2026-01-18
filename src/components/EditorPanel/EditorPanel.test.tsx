@@ -42,11 +42,10 @@ describe("EditorPanel", () => {
     expect(container.querySelector(".codemirror-wrapper")).toBeInTheDocument();
   });
 
-  it("displays data structure selector and difficulty badge", () => {
+  it("displays data structure selector", () => {
     render(<EditorPanel onRunAllTests={mockOnRunAllTests} />);
     const select = screen.getByRole("combobox");
     expect(select).toHaveValue("array");
-    expect(screen.getByText("easy")).toBeDefined();
   });
 
   it("renders HintButton component", () => {
@@ -110,11 +109,12 @@ describe("EditorPanel", () => {
       expect(useAppStore.getState().userCode).toBe("modified code");
     });
 
-    it("displays reference mode badge when in reference mode", async () => {
+    it("Show Solution button is disabled when in reference mode", async () => {
       render(<EditorPanel onRunAllTests={mockOnRunAllTests} />);
 
-      // Initially, no reference mode badge
-      expect(screen.queryByText(/Reference Solution \(Read-Only\)/)).toBeNull();
+      // Initially, Show Solution button is enabled
+      const solutionButton = screen.getByText("Show Solution");
+      expect(solutionButton).not.toBeDisabled();
 
       // Switch to reference mode
       await act(async () => {
@@ -122,11 +122,11 @@ describe("EditorPanel", () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      // Reference mode badge should appear
-      expect(screen.getByText("Reference Solution (Read-Only)")).toBeDefined();
+      // Show Solution button should be disabled in reference mode
+      expect(solutionButton).toBeDisabled();
     });
 
-    it("editor becomes editable again when leaving reference mode", async () => {
+    it("Show Solution button is enabled again when leaving reference mode", async () => {
       render(<EditorPanel onRunAllTests={mockOnRunAllTests} />);
 
       // Switch to reference mode
@@ -135,7 +135,8 @@ describe("EditorPanel", () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      expect(screen.getByText("Reference Solution (Read-Only)")).toBeDefined();
+      const solutionButton = screen.getByText("Show Solution");
+      expect(solutionButton).toBeDisabled();
 
       // Switch back to user-code mode
       await act(async () => {
@@ -143,8 +144,8 @@ describe("EditorPanel", () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
 
-      // Reference mode badge should disappear
-      expect(screen.queryByText(/Reference Solution \(Read-Only\)/)).toBeNull();
+      // Show Solution button should be enabled again
+      expect(solutionButton).not.toBeDisabled();
     });
   });
 });

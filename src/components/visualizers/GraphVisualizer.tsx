@@ -32,6 +32,9 @@ interface D3Link extends d3.SimulationLinkDatum<D3Node> {
   weight?: number;
 }
 
+// Store node positions to persist across renders
+const nodePositions = new Map<string, { x: number; y: number }>();
+
 function GraphVisualizer({
   data,
   steps = [],
@@ -47,29 +50,86 @@ function GraphVisualizer({
     const svg = d3.select(svgRef.current);
     const width = 800;
     const height = 600;
+    const duration = isAnimating ? 500 : 0;
 
-    // Clear previous content
-    svg.selectAll("*").remove();
+    // Create or select persistent main group
+    let mainGroup = svg.select<SVGGElement>("g.main-group");
+    if (mainGroup.empty()) {
+      mainGroup = svg.append("g").attr("class", "main-group");
+    }
+
+    // Handle empty graph case with data join pattern
+    const emptyData = !data || data.length === 0 ? [{ text: "No graph data" }] : [];
+    mainGroup
+      .selectAll<SVGTextElement, { text: string }>("text.empty-message")
+      .data(emptyData, (d) => d.text)
+      .join(
+        (enter) =>
+          enter
+            .append("text")
+            .attr("x", width / 2)
+            .attr("y", height / 2)
+            .attr("text-anchor", "middle")
+            .attr("class", "empty-message")
+            .text((d) => d.text),
+        (update) => update,
+        (exit) => exit.remove(),
+      );
 
     if (!data || data.length === 0) {
-      svg
-        .append("text")
-        .attr("x", width / 2)
-        .attr("y", height / 2)
-        .attr("text-anchor", "middle")
-        .attr("class", "empty-message")
-        .text("No graph data");
+      // Clear nodes and links when graph is empty
+      mainGroup.selectAll(".links line").data([]).join("line");
+      mainGroup.selectAll(".nodes g.node").data([]).join("g");
+      // Stop any existing simulation
+      if (simulationRef.current) {
+        simulationRef.current.stop();
+        simulationRef.current = null;
+      }
       return;
     }
 
-    // Create main group
-    const mainGroup = svg.append("g").attr("class", "main-group");
+    // Create or select defs for arrow marker
+    let defs = mainGroup.select<SVGDefsElement>("defs");
+    if (defs.empty()) {
+      defs = mainGroup.append("defs");
+      defs
+        .append("marker")
+        .attr("id", "arrowhead")
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 25)
+        .attr("refY", 0)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5")
+        .attr("fill", "#999");
+    }
+
+    // Create or select links group
+    let linksGroup = mainGroup.select<SVGGElement>("g.links");
+    if (linksGroup.empty()) {
+      linksGroup = mainGroup.append("g").attr("class", "links");
+    }
+
+    // Create or select nodes group
+    let nodesGroup = mainGroup.select<SVGGElement>("g.nodes");
+    if (nodesGroup.empty()) {
+      nodesGroup = mainGroup.append("g").attr("class", "nodes");
+    }
 
     // Convert graph data to D3 nodes and links
-    const nodes: D3Node[] = data.map((node) => ({
-      id: String(node.id),
-      label: String(node.label || node.id),
-    }));
+    const nodes: D3Node[] = data.map((node) => {
+      const id = String(node.id);
+      // Restore position if previously stored
+      const storedPos = nodePositions.get(id);
+      return {
+        id,
+        label: String(node.label || node.id),
+        x: storedPos?.x ?? width / 2 + (Math.random() - 0.5) * 100,
+        y: storedPos?.y ?? height / 2 + (Math.random() - 0.5) * 100,
+      };
+    });
 
     const links: D3Link[] = [];
     for (const node of data) {
@@ -83,37 +143,6 @@ function GraphVisualizer({
         }
       }
     }
-
-    // Create force simulation
-    const simulation = d3
-      .forceSimulation<D3Node>(nodes)
-      .force(
-        "link",
-        d3
-          .forceLink<D3Node, D3Link>(links)
-          .id((d) => d.id)
-          .distance(100),
-      )
-      .force("charge", d3.forceManyBody().strength(-300))
-      .force("center", d3.forceCenter(width / 2, height / 2))
-      .force("collision", d3.forceCollide().radius(40));
-
-    simulationRef.current = simulation;
-
-    // Define arrow marker for directed edges
-    const defs = mainGroup.append("defs");
-    defs
-      .append("marker")
-      .attr("id", "arrowhead")
-      .attr("viewBox", "0 -5 10 10")
-      .attr("refX", 25)
-      .attr("refY", 0)
-      .attr("markerWidth", 6)
-      .attr("markerHeight", 6)
-      .attr("orient", "auto")
-      .append("path")
-      .attr("d", "M0,-5L10,0L0,5")
-      .attr("fill", "#999");
 
     // Get current step metadata for highlighting
     const currentStep = steps[currentStepIndex];
@@ -136,76 +165,167 @@ function GraphVisualizer({
     const activeEdgeFrom = metadata?.from ? String(metadata.from) : null;
     const activeEdgeTo = metadata?.to ? String(metadata.to) : null;
 
-    // Create links
-    const link = mainGroup
-      .append("g")
-      .attr("class", "links")
+    // Helper to get link color
+    const getLinkColor = (d: D3Link) => {
+      const source = typeof d.source === "object" ? d.source.id : String(d.source);
+      const target = typeof d.target === "object" ? d.target.id : String(d.target);
+      if (activeEdgeFrom === source && activeEdgeTo === target && currentStepIndex >= 0) {
+        return "#10b981"; // green for active edge
+      }
+      return "#999";
+    };
+
+    // Helper to get node class
+    const getNodeClass = (d: D3Node) => {
+      if (currentStepIndex < 0) return "node-circle";
+      if (currentVertex === d.id) return "node-circle current";
+      if (activeVertex === d.id) return "node-circle active";
+      if (visitedSet.has(d.id)) return "node-circle visited";
+      return "node-circle";
+    };
+
+    // Data join for links
+    const link = linksGroup
       .selectAll<SVGLineElement, D3Link>("line")
-      .data(links)
-      .join("line")
-      .attr("class", "link")
-      .attr("marker-end", "url(#arrowhead)")
-      .attr("stroke", (d) => {
+      .data(links, (d) => {
         const source = typeof d.source === "object" ? d.source.id : String(d.source);
         const target = typeof d.target === "object" ? d.target.id : String(d.target);
-        if (activeEdgeFrom === source && activeEdgeTo === target && currentStepIndex >= 0) {
-          return "#10b981"; // green for active edge
-        }
-        return "#999";
+        return `${source}-${target}`;
       })
-      .attr("stroke-width", 2);
+      .join(
+        (enter) =>
+          enter
+            .append("line")
+            .attr("class", "link")
+            .attr("marker-end", "url(#arrowhead)")
+            .attr("stroke", getLinkColor)
+            .attr("stroke-width", 2)
+            .attr("stroke-opacity", 0)
+            .call((enter) => enter.transition().duration(duration).attr("stroke-opacity", 1)),
+        (update) =>
+          update.call((update) =>
+            update.transition().duration(duration).attr("stroke", getLinkColor),
+          ),
+        (exit) => exit.transition().duration(duration).attr("stroke-opacity", 0).remove(),
+      );
 
-    // Create nodes
-    const node = mainGroup
-      .append("g")
-      .attr("class", "nodes")
-      .selectAll<SVGGElement, D3Node>("g")
-      .data(nodes)
-      .join("g")
-      .attr("class", "node");
+    // Data join for nodes
+    const node = nodesGroup
+      .selectAll<SVGGElement, D3Node>("g.node")
+      .data(nodes, (d) => d.id)
+      .join(
+        (enter) => {
+          const g = enter.append("g").attr("class", "node").attr("opacity", 0);
 
-    // Add circles
-    node
-      .append("circle")
-      .attr("r", 20)
-      .attr("class", (d) => {
-        if (currentStepIndex < 0) return "node-circle";
-        if (currentVertex === d.id) return "node-circle current";
-        if (activeVertex === d.id) return "node-circle active";
-        if (visitedSet.has(d.id)) return "node-circle visited";
-        return "node-circle";
-      });
+          g.append("circle").attr("r", 20).attr("class", getNodeClass);
 
-    // Add labels
-    node
-      .append("text")
-      .attr("class", "node-label")
-      .attr("text-anchor", "middle")
-      .attr("dy", "0.3em")
-      .text((d) => d.label);
+          g.append("text")
+            .attr("class", "node-label")
+            .attr("text-anchor", "middle")
+            .attr("dy", "0.3em")
+            .text((d) => d.label);
 
-    // Update positions on tick
-    simulation.on("tick", () => {
-      link
-        .attr("x1", (d) => (typeof d.source === "object" ? d.source.x || 0 : 0))
-        .attr("y1", (d) => (typeof d.source === "object" ? d.source.y || 0 : 0))
-        .attr("x2", (d) => (typeof d.target === "object" ? d.target.x || 0 : 0))
-        .attr("y2", (d) => (typeof d.target === "object" ? d.target.y || 0 : 0));
+          g.transition().duration(duration).attr("opacity", 1);
 
-      node.attr("transform", (d) => `translate(${d.x || 0},${d.y || 0})`);
-    });
+          return g;
+        },
+        (update) => {
+          update.select("circle").attr("class", getNodeClass);
+          return update;
+        },
+        (exit) => exit.transition().duration(duration).attr("opacity", 0).remove(),
+      );
 
-    // Stop simulation after a while to save CPU
-    simulation.alpha(1).restart();
-    setTimeout(() => {
-      simulation.stop();
-    }, 3000);
+    // Create or update force simulation
+    // Only create new simulation if nodes have changed significantly
+    const existingNodeIds = new Set(simulationRef.current?.nodes().map((n) => n.id) ?? []);
+    const newNodeIds = new Set(nodes.map((n) => n.id));
+    const nodesChanged =
+      existingNodeIds.size !== newNodeIds.size ||
+      [...newNodeIds].some((id) => !existingNodeIds.has(id));
 
-    return () => {
+    if (!simulationRef.current || nodesChanged) {
+      // Stop old simulation
       if (simulationRef.current) {
         simulationRef.current.stop();
       }
-      svg.selectAll("*").remove();
+
+      // Create new simulation
+      const simulation = d3
+        .forceSimulation<D3Node>(nodes)
+        .force(
+          "link",
+          d3
+            .forceLink<D3Node, D3Link>(links)
+            .id((d) => d.id)
+            .distance(100),
+        )
+        .force("charge", d3.forceManyBody().strength(-300))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collision", d3.forceCollide().radius(40));
+
+      simulationRef.current = simulation;
+
+      // Update positions on tick
+      simulation.on("tick", () => {
+        link
+          .attr("x1", (d) => (typeof d.source === "object" ? d.source.x || 0 : 0))
+          .attr("y1", (d) => (typeof d.source === "object" ? d.source.y || 0 : 0))
+          .attr("x2", (d) => (typeof d.target === "object" ? d.target.x || 0 : 0))
+          .attr("y2", (d) => (typeof d.target === "object" ? d.target.y || 0 : 0));
+
+        node.attr("transform", (d) => `translate(${d.x || 0},${d.y || 0})`);
+
+        // Store positions for persistence across renders
+        for (const n of nodes) {
+          if (n.x !== undefined && n.y !== undefined) {
+            nodePositions.set(n.id, { x: n.x, y: n.y });
+          }
+        }
+      });
+
+      // Run simulation
+      simulation.alpha(1).restart();
+      setTimeout(() => {
+        simulation.stop();
+      }, 3000);
+    } else {
+      // Just update highlighting without recreating simulation
+      // Update node positions from stored values
+      node.attr("transform", (d) => {
+        const stored = nodePositions.get(d.id);
+        const x = stored?.x ?? d.x ?? 0;
+        const y = stored?.y ?? d.y ?? 0;
+        return `translate(${x},${y})`;
+      });
+
+      // Update link positions
+      link
+        .attr("x1", (d) => {
+          const sourceId = typeof d.source === "object" ? d.source.id : String(d.source);
+          return nodePositions.get(sourceId)?.x ?? 0;
+        })
+        .attr("y1", (d) => {
+          const sourceId = typeof d.source === "object" ? d.source.id : String(d.source);
+          return nodePositions.get(sourceId)?.y ?? 0;
+        })
+        .attr("x2", (d) => {
+          const targetId = typeof d.target === "object" ? d.target.id : String(d.target);
+          return nodePositions.get(targetId)?.x ?? 0;
+        })
+        .attr("y2", (d) => {
+          const targetId = typeof d.target === "object" ? d.target.id : String(d.target);
+          return nodePositions.get(targetId)?.y ?? 0;
+        });
+    }
+
+    // Cleanup function
+    return () => {
+      try {
+        svg.selectAll("*").interrupt();
+      } catch {
+        // Ignore D3 cleanup errors
+      }
     };
   }, [data, steps, currentStepIndex, isAnimating]);
 

@@ -2,7 +2,22 @@
  * Pattern identifiers for AST-based code validation.
  * Used to verify that user code implements specific algorithmic patterns.
  */
-export type PatternId = "nestedLoops" | "swapCalls" | "recursion" | "partitionCalls";
+export type PatternId =
+  | "nestedLoops"
+  | "swapCalls"
+  | "recursion"
+  | "partitionCalls"
+  | "twoPointers"
+  | "pointerManipulation"
+  | "dfs"
+  | "bfs"
+  | "divideAndConquer"
+  | "stackUsage"
+  | "queueUsage"
+  | "twoStacks"
+  | "twoQueues"
+  | "hashMapUsage"
+  | "iteration";
 
 /**
  * Defines a pattern requirement for a test case.

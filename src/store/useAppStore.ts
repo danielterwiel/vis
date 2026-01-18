@@ -66,7 +66,6 @@ export interface AppState {
   referenceSteps: VisualizationStep[];
   currentStepIndex: number;
   isAnimating: boolean;
-  highlightedLine: number | null; // Line number to highlight in editor (1-indexed)
 
   // Test results
   testResults: Map<string, TestResult>;
@@ -94,7 +93,6 @@ export interface AppState {
   nextStep: () => void;
   previousStep: () => void;
   setIsAnimating: (isAnimating: boolean) => void;
-  setHighlightedLine: (line: number | null) => void;
 
   // Actions - Testing
   setTestResult: (testId: string, result: TestResult) => void;
@@ -146,7 +144,6 @@ const useAppStore = create<AppState>((set, get) => {
     referenceSteps: [],
     currentStepIndex: 0,
     isAnimating: false,
-    highlightedLine: null,
 
     testResults: new Map(),
     hintsRevealed: savedHintsRevealed ?? 0,
@@ -253,8 +250,6 @@ const useAppStore = create<AppState>((set, get) => {
 
     setIsAnimating: (isAnimating) => set({ isAnimating }),
 
-    setHighlightedLine: (line) => set({ highlightedLine: line }),
-
     // Actions - Testing
     setTestResult: (testId, result) =>
       set((state) => {
@@ -296,7 +291,6 @@ const useAppStore = create<AppState>((set, get) => {
         referenceSteps: [],
         currentStepIndex: 0,
         isAnimating: false,
-        highlightedLine: null,
       }),
   };
 });

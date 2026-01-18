@@ -11,9 +11,16 @@ import { skeletonCodeSystem } from "../skeletonCodeSystem";
  * Traverse the list and find a specific element
  */
 const easySkeleton = `function findElement(list, target) {
-  // TODO: Implement find operation
-  // Hint: Use list.find(target) to search for the value
-  // The list parameter is a TrackedLinkedList that records operations
+  // TODO: Traverse the list and find the target value
+  // Use list.getHead() to get the first node
+  // Each node has: node.value (the data) and node.next (pointer to next node)
+
+  let current = list.getHead();
+
+  // TODO: Loop through the list
+  // Check if current node's value equals target
+  // If found, return the value
+  // Otherwise, move to the next node
 
   return null;
 }`;
@@ -23,12 +30,23 @@ const easySkeleton = `function findElement(list, target) {
  * Reverse a linked list in place
  */
 const mediumSkeleton = `function reverseList(list) {
-  // TODO: Implement list reversal
-  // Hint: Use list.reverse() to reverse the list in place
-  // The list parameter is a TrackedLinkedList that records operations
-  // Use list.toArray() to get the final array for verification
+  // TODO: Reverse the linked list by manipulating node pointers
+  // Use three pointers: prev, current, next
+  //
+  // Algorithm:
+  // 1. Initialize prev = null, current = list.getHead()
+  // 2. While current is not null:
+  //    - Save next = current.next
+  //    - Reverse pointer: current.next = prev
+  //    - Move prev and current forward
+  // 3. Return the reversed list as array using list.toArray()
 
-  return [];
+  let prev = null;
+  let current = list.getHead();
+
+  // TODO: Implement the reversal loop
+
+  return list.toArray();
 }`;
 
 /**
@@ -36,10 +54,21 @@ const mediumSkeleton = `function reverseList(list) {
  * Detect if the linked list has a cycle
  */
 const hardSkeleton = `function detectCycle(list) {
-  // TODO: Implement cycle detection
-  // Hint: Use list.hasCycle() to detect cycles using Floyd's algorithm
-  // The list parameter is a TrackedLinkedList that records operations
-  // Floyd's algorithm uses two pointers (slow and fast)
+  // TODO: Implement Floyd's cycle detection algorithm
+  // Use two pointers: slow (moves 1 step) and fast (moves 2 steps)
+  //
+  // Algorithm:
+  // 1. Initialize both pointers to list.getHead()
+  // 2. While fast and fast.next exist:
+  //    - Move slow one step: slow = slow.next
+  //    - Move fast two steps: fast = fast.next.next
+  //    - If slow === fast, cycle detected!
+  // 3. If loop exits normally, no cycle
+
+  let slow = list.getHead();
+  let fast = list.getHead();
+
+  // TODO: Implement the detection loop
 
   return false;
 }`;

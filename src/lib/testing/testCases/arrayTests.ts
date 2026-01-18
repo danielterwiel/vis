@@ -62,13 +62,15 @@ export const arrayTests: TestCase[] = [
       expect(result).toEqual([11, 12, 22, 25, 34, 64, 90]);
     `,
     referenceSolution: `function sortArray(arr) {
-  // Medium approach: bubble sort implementation
+  // Bubble sort implementation using pure JavaScript
   const n = arr.length;
   for (let i = 0; i < n - 1; i++) {
     for (let j = 0; j < n - i - 1; j++) {
-      // Use TrackedArray's at() for reading and swap() for swapping
-      if (arr.at(j) > arr.at(j + 1)) {
-        arr.swap(j, j + 1);
+      if (arr[j] > arr[j + 1]) {
+        // Swap using temp variable
+        const temp = arr[j];
+        arr[j] = arr[j + 1];
+        arr[j + 1] = temp;
       }
     }
   }
@@ -77,8 +79,6 @@ export const arrayTests: TestCase[] = [
     skeletonCode: `function sortArray(arr) {
   // TODO: Implement bubble sort
   // Bubble sort compares adjacent elements and swaps if out of order
-  // Use arr.at(index) to read values
-  // Use arr.swap(i, j) to swap elements (this will be visualized!)
   const n = arr.length;
 
   // TODO: Implement nested loops
@@ -90,7 +90,7 @@ export const arrayTests: TestCase[] = [
     hints: [
       "Bubble sort compares adjacent elements and swaps them if out of order",
       "You need two nested loops: outer loop runs n-1 times, inner loop compares pairs",
-      "Use arr.swap(j, j+1) to swap adjacent elements when they're out of order",
+      "Swap using: temp = arr[j]; arr[j] = arr[j+1]; arr[j+1] = temp;",
     ],
     acceptanceCriteria: [
       "Function returns array sorted in ascending order",
@@ -114,7 +114,7 @@ export const arrayTests: TestCase[] = [
       expect(result).toEqual([11, 12, 22, 25, 34, 64, 90]);
     `,
     referenceSolution: `function sortArray(arr, low = 0, high = arr.length - 1) {
-  // Hard approach: quick sort implementation
+  // Quick sort implementation using pure JavaScript
   if (low < high) {
     const pi = partition(arr, low, high);
     sortArray(arr, low, pi - 1);
@@ -124,8 +124,24 @@ export const arrayTests: TestCase[] = [
 }
 
 function partition(arr, low, high) {
-  // Use TrackedArray's partition method for visualization
-  return arr.partition(low, high);
+  // Lomuto partition scheme
+  const pivot = arr[high];
+  let i = low - 1;
+
+  for (let j = low; j < high; j++) {
+    if (arr[j] <= pivot) {
+      i++;
+      // Swap arr[i] and arr[j]
+      const temp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = temp;
+    }
+  }
+  // Place pivot in correct position
+  const temp = arr[i + 1];
+  arr[i + 1] = arr[high];
+  arr[high] = temp;
+  return i + 1;
 }`,
     skeletonCode: `function sortArray(arr, low = 0, high = arr.length - 1) {
   // TODO: Implement quick sort
@@ -140,14 +156,16 @@ function partition(arr, low, high) {
 }
 
 function partition(arr, low, high) {
-  // TODO: Use arr.partition(low, high) for visualization
-  // This method handles the partitioning and captures the operation
+  // TODO: Implement Lomuto partition scheme
+  // 1. Choose arr[high] as pivot
+  // 2. Move elements smaller than pivot to the left
+  // 3. Place pivot in its correct position
 
 }`,
     hints: [
       "Quick sort uses divide-and-conquer with a pivot element",
       "The partition function rearranges elements around the pivot",
-      "Use arr.partition(low, high) to partition and capture the operation for visualization",
+      "Use Lomuto scheme: pick last element as pivot, maintain index i for smaller elements",
     ],
     acceptanceCriteria: [
       "Function returns array sorted in ascending order",

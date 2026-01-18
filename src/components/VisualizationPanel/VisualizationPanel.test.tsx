@@ -25,8 +25,8 @@ describe("VisualizationPanel", () => {
 
   it("renders the visualization panel", () => {
     render(<VisualizationPanel />);
-    // Check that the panel renders by looking for the mode selector title
-    expect(screen.getByText("Visualization Mode")).toBeInTheDocument();
+    // Check that the panel renders by looking for the mode selector header
+    expect(screen.getByText("Mode")).toBeInTheDocument();
   });
 
   it("renders ModeSelector component", () => {
@@ -34,7 +34,6 @@ describe("VisualizationPanel", () => {
     expect(screen.getByText("Mode")).toBeInTheDocument();
     expect(screen.getByText("Code Visualization")).toBeInTheDocument();
     expect(screen.getByText("Compare")).toBeInTheDocument();
-    expect(screen.getByText("Show Solution")).toBeInTheDocument();
   });
 
   it("renders playback controls when steps are available", () => {
@@ -61,9 +60,7 @@ describe("VisualizationPanel", () => {
     expect(screen.getByText(/Step \d+ \/ \d+/)).toBeDefined();
 
     // Check for playback control buttons by aria-label
-    expect(
-      screen.getByLabelText("Replay animation from beginning"),
-    ).toBeDefined();
+    expect(screen.getByLabelText("Replay animation from beginning")).toBeDefined();
     expect(screen.getByLabelText("Previous step")).toBeDefined();
     expect(screen.getByLabelText("Next step")).toBeDefined();
   });
@@ -79,9 +76,7 @@ describe("VisualizationPanel", () => {
 
     // No playback controls should be shown
     expect(screen.queryByText("Play")).toBeNull();
-    expect(
-      screen.queryByLabelText("Replay animation from beginning"),
-    ).toBeNull();
+    expect(screen.queryByLabelText("Replay animation from beginning")).toBeNull();
   });
 
   // Animation speed control was removed as per PRD Phase 9

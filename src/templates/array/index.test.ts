@@ -43,10 +43,9 @@ describe("Array Templates", () => {
       expect(todos[0]).toContain("Implement sorting algorithm");
     });
 
-    it("should contain hint about sort()", () => {
-      const hints = skeletonCodeSystem.getInlineHints(easySkeleton);
-      expect(hints.length).toBeGreaterThan(0);
-      expect(hints[0]).toContain("sort()");
+    it("should contain comment about built-in sort", () => {
+      // The easy skeleton mentions sort() in the description comment, not as a Hint:
+      expect(easySkeleton).toContain("sort()");
     });
 
     it("should not contain placeholder", () => {
@@ -77,8 +76,8 @@ describe("Array Templates", () => {
       expect(mediumSkeleton).toContain("Inner loop");
     });
 
-    it("should contain swap hint", () => {
-      expect(mediumSkeleton).toContain("arr.swap");
+    it("should contain standard JS array syntax hint", () => {
+      expect(mediumSkeleton).toContain("arr[i]");
     });
 
     it("should contain return statement", () => {
@@ -117,8 +116,8 @@ describe("Array Templates", () => {
       expect(hardSkeleton).toContain("Recursively sort");
     });
 
-    it("should mention partition for visualization", () => {
-      expect(hardSkeleton).toContain("arr.partition");
+    it("should mention Lomuto partition scheme", () => {
+      expect(hardSkeleton).toContain("Lomuto partition");
     });
 
     it("should mention quick sort approach", () => {

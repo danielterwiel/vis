@@ -70,151 +70,229 @@ export function HashMapVisualizer({
     const visibleBuckets = bucketsData.slice(0, 16);
     const bucketsPerRow = 8;
 
-    // Clear and recreate main group
-    svg.selectAll("g.main-group").remove();
-    const mainGroup = svg.append("g").attr("class", "main-group");
+    // Get or create main group (persistent - never removed)
+    let mainGroup = svg.select<SVGGElement>("g.main-group");
+    if (mainGroup.empty()) {
+      mainGroup = svg.append("g").attr("class", "main-group");
+    }
 
-    // Draw buckets
+    // Draw buckets using D3 data join pattern
     type BucketData = {
       index: number;
       entries: Array<{ key: unknown; value: unknown }>;
       hasEntries: boolean;
     };
 
+    // Helper to get bucket fill color
+    const getBucketFill = (d: BucketData) => {
+      if (d.index === activeIndex) {
+        if (isDeleted) return "#ef4444"; // Red for delete
+        if (isFound) return "#a78bfa"; // Purple for found
+        if (isCollision) return "#fb923c"; // Orange for collision
+        return "#22c55e"; // Green for active
+      }
+      return d.hasEntries ? "#3b82f6" : "#1e293b"; // Blue if has entries, dark if empty
+    };
+
     const bucketGroups = mainGroup
       .selectAll<SVGGElement, BucketData>("g.bucket")
-      .data(visibleBuckets, (d) => d.index);
+      .data(visibleBuckets, (d) => d.index)
+      .join(
+        // Enter: create new bucket groups
+        (enter) => {
+          const g = enter.append("g").attr("class", "bucket");
 
-    const bucketGroupsEnter = bucketGroups.enter().append("g").attr("class", "bucket");
+          // Position buckets in grid
+          g.attr("transform", (d) => {
+            const row = Math.floor(d.index / bucketsPerRow);
+            const col = d.index % bucketsPerRow;
+            const x = margin.left + col * (bucketWidth + 10);
+            const y = margin.top + row * (bucketHeight + 80);
+            return `translate(${x},${y})`;
+          });
 
-    // Position buckets in grid
-    bucketGroupsEnter.attr("transform", (d) => {
-      const row = Math.floor(d.index / bucketsPerRow);
-      const col = d.index % bucketsPerRow;
-      const x = margin.left + col * (bucketWidth + 10);
-      const y = margin.top + row * (bucketHeight + 80);
-      return `translate(${x},${y})`;
+          // Draw bucket rectangles
+          g.append("rect")
+            .attr("class", "bucket-rect")
+            .attr("width", bucketWidth)
+            .attr("height", bucketHeight)
+            .attr("rx", 4)
+            .attr("fill", getBucketFill)
+            .attr("stroke", (d) => (d.index === activeIndex ? "#fff" : "#475569"))
+            .attr("stroke-width", (d) => (d.index === activeIndex ? 2 : 1));
+
+          // Draw bucket index labels
+          g.append("text")
+            .attr("class", "bucket-index")
+            .attr("x", bucketWidth / 2)
+            .attr("y", bucketHeight / 2)
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("fill", "#fff")
+            .attr("font-size", "14px")
+            .attr("font-weight", "bold")
+            .text((d) => d.index);
+
+          return g;
+        },
+        // Update: update existing bucket groups
+        (update) => {
+          // Update bucket rectangle colors (for highlighting)
+          update
+            .select("rect.bucket-rect")
+            .attr("fill", getBucketFill)
+            .attr("stroke", (d) => (d.index === activeIndex ? "#fff" : "#475569"))
+            .attr("stroke-width", (d) => (d.index === activeIndex ? 2 : 1));
+          return update;
+        },
+        // Exit: remove old bucket groups
+        (exit) => exit.remove(),
+      );
+
+    // Draw collision chains (entries in buckets) using D3 data join pattern
+    type EntryData = {
+      bucketIndex: number;
+      entryIndex: number;
+      key: unknown;
+      value: unknown;
+    };
+
+    bucketGroups.each(function (bucketData) {
+      const bucketGroup = d3.select(this);
+
+      // Prepare entry data for this bucket
+      const entriesData: EntryData[] = bucketData.entries.map((entry, i) => ({
+        bucketIndex: bucketData.index,
+        entryIndex: i,
+        key: entry.key,
+        value: entry.value,
+      }));
+
+      // Data join for entries
+      bucketGroup
+        .selectAll<SVGGElement, EntryData>("g.entry")
+        .data(entriesData, (d) => `${d.bucketIndex}-${d.entryIndex}-${String(d.key)}`)
+        .join(
+          // Enter: create new entry groups
+          (enter) => {
+            const g = enter.append("g").attr("class", "entry");
+
+            // Position entries below bucket
+            g.attr("transform", (d) => {
+              const x = (bucketWidth - entryWidth) / 2;
+              const y = bucketHeight + 10 + d.entryIndex * (entryHeight + 5);
+              return `translate(${x},${y})`;
+            });
+
+            // Draw entry rectangles
+            g.append("rect")
+              .attr("class", "entry-rect")
+              .attr("width", entryWidth)
+              .attr("height", entryHeight)
+              .attr("rx", 2)
+              .attr("fill", "#1e40af")
+              .attr("stroke", "#3b82f6")
+              .attr("stroke-width", 1);
+
+            // Draw entry labels (key: value)
+            g.append("text")
+              .attr("class", "entry-label")
+              .attr("x", entryWidth / 2)
+              .attr("y", entryHeight / 2)
+              .attr("text-anchor", "middle")
+              .attr("dominant-baseline", "middle")
+              .attr("fill", "#fff")
+              .attr("font-size", "10px")
+              .text((d) => {
+                const key = String(d.key);
+                const value = String(d.value);
+                const text = `${key}: ${value}`;
+                return text.length > 10 ? `${text.slice(0, 10)}...` : text;
+              });
+
+            return g;
+          },
+          // Update: update existing entry groups
+          (update) => {
+            // Update position (in case entry index changed)
+            update.attr("transform", (d) => {
+              const x = (bucketWidth - entryWidth) / 2;
+              const y = bucketHeight + 10 + d.entryIndex * (entryHeight + 5);
+              return `translate(${x},${y})`;
+            });
+
+            // Update text content
+            update.select("text.entry-label").text((d) => {
+              const key = String(d.key);
+              const value = String(d.value);
+              const text = `${key}: ${value}`;
+              return text.length > 10 ? `${text.slice(0, 10)}...` : text;
+            });
+
+            return update;
+          },
+          // Exit: remove old entry groups
+          (exit) => exit.remove(),
+        );
+
+      // Data join for connectors
+      type ConnectorData = { bucketIndex: number; entryIndex: number };
+      const connectorsData: ConnectorData[] = bucketData.entries.map((_, i) => ({
+        bucketIndex: bucketData.index,
+        entryIndex: i,
+      }));
+
+      bucketGroup
+        .selectAll<SVGLineElement, ConnectorData>("line.connector")
+        .data(connectorsData, (d) => `${d.bucketIndex}-${d.entryIndex}`)
+        .join(
+          // Enter: create new connectors
+          (enter) =>
+            enter
+              .append("line")
+              .attr("class", "connector")
+              .attr("x1", bucketWidth / 2)
+              .attr("y1", bucketHeight)
+              .attr("x2", bucketWidth / 2)
+              .attr("y2", (d) => bucketHeight + 10 + d.entryIndex * (entryHeight + 5))
+              .attr("stroke", "#475569")
+              .attr("stroke-width", 1)
+              .attr("stroke-dasharray", "2,2"),
+          // Update: update connector positions
+          (update) =>
+            update.attr("y2", (d) => bucketHeight + 10 + d.entryIndex * (entryHeight + 5)),
+          // Exit: remove old connectors
+          (exit) => exit.remove(),
+        );
     });
-
-    // Draw bucket rectangles
-    bucketGroupsEnter
-      .append("rect")
-      .attr("class", "bucket-rect")
-      .attr("width", bucketWidth)
-      .attr("height", bucketHeight)
-      .attr("rx", 4)
-      .attr("fill", (d) => {
-        if (d.index === activeIndex) {
-          if (isDeleted) return "#ef4444"; // Red for delete
-          if (isFound) return "#a78bfa"; // Purple for found
-          if (isCollision) return "#fb923c"; // Orange for collision
-          return "#22c55e"; // Green for active
-        }
-        return d.hasEntries ? "#3b82f6" : "#1e293b"; // Blue if has entries, dark if empty
-      })
-      .attr("stroke", (d) => (d.index === activeIndex ? "#fff" : "#475569"))
-      .attr("stroke-width", (d) => (d.index === activeIndex ? 2 : 1));
-
-    // Draw bucket index labels
-    bucketGroupsEnter
-      .append("text")
-      .attr("class", "bucket-index")
-      .attr("x", bucketWidth / 2)
-      .attr("y", bucketHeight / 2)
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
-      .attr("fill", "#fff")
-      .attr("font-size", "14px")
-      .attr("font-weight", "bold")
-      .text((d) => d.index);
-
-    // Draw collision chains (entries in buckets)
-    const entryGroups = bucketGroupsEnter
-      .selectAll("g.entry")
-      .data((d: { index: number; entries: Array<{ key: unknown; value: unknown }> }) =>
-        d.entries.map((entry, i) => ({
-          bucketIndex: d.index,
-          entryIndex: i,
-          key: entry.key,
-          value: entry.value,
-        })),
-      )
-      .enter()
-      .append("g")
-      .attr("class", "entry");
-
-    // Position entries below bucket
-    entryGroups.attr("transform", (d) => {
-      const x = (bucketWidth - entryWidth) / 2;
-      const y = bucketHeight + 10 + d.entryIndex * (entryHeight + 5);
-      return `translate(${x},${y})`;
-    });
-
-    // Draw entry rectangles
-    entryGroups
-      .append("rect")
-      .attr("class", "entry-rect")
-      .attr("width", entryWidth)
-      .attr("height", entryHeight)
-      .attr("rx", 2)
-      .attr("fill", "#1e40af")
-      .attr("stroke", "#3b82f6")
-      .attr("stroke-width", 1);
-
-    // Draw entry labels (key: value)
-    entryGroups
-      .append("text")
-      .attr("class", "entry-label")
-      .attr("x", entryWidth / 2)
-      .attr("y", entryHeight / 2)
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
-      .attr("fill", "#fff")
-      .attr("font-size", "10px")
-      .text((d) => {
-        const key = String(d.key);
-        const value = String(d.value);
-        const text = `${key}: ${value}`;
-        return text.length > 10 ? `${text.slice(0, 10)}...` : text;
-      });
-
-    // Draw connectors from bucket to entries
-    bucketGroupsEnter
-      .selectAll("line.connector")
-      .data((d: { index: number; entries: Array<{ key: unknown; value: unknown }> }) =>
-        d.entries.map((_, i) => ({
-          bucketIndex: d.index,
-          entryIndex: i,
-        })),
-      )
-      .enter()
-      .append("line")
-      .attr("class", "connector")
-      .attr("x1", bucketWidth / 2)
-      .attr("y1", bucketHeight)
-      .attr("x2", bucketWidth / 2)
-      .attr("y2", (d) => bucketHeight + 10 + d.entryIndex * (entryHeight + 5))
-      .attr("stroke", "#475569")
-      .attr("stroke-width", 1)
-      .attr("stroke-dasharray", "2,2");
 
     // Format step description
     const stepDescription = currentStep
       ? formatStepDescription(currentStep)
       : "Hash Map Visualization";
 
-    // Update step indicator
-    mainGroup.selectAll("text.step-indicator").remove();
+    // Update step indicator using D3 data join pattern
     mainGroup
-      .append("text")
-      .attr("class", "step-indicator")
-      .attr("x", width / 2)
-      .attr("y", 30)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#cbd5e1")
-      .attr("font-size", "16px")
-      .attr("font-weight", "500")
-      .text(stepDescription);
+      .selectAll<SVGTextElement, string>("text.step-indicator")
+      .data([stepDescription])
+      .join(
+        // Enter: create step indicator
+        (enter) =>
+          enter
+            .append("text")
+            .attr("class", "step-indicator")
+            .attr("x", width / 2)
+            .attr("y", 30)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#cbd5e1")
+            .attr("font-size", "16px")
+            .attr("font-weight", "500")
+            .text((d) => d),
+        // Update: update text content
+        (update) => update.text((d) => d),
+        // Exit: remove (shouldn't happen with single element)
+        (exit) => exit.remove(),
+      );
 
     // Cleanup on unmount
     return () => {

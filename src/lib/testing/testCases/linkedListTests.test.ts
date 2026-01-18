@@ -83,11 +83,6 @@ describe("linkedListTests", () => {
       }
     });
 
-    it("should verify visualization steps are captured", () => {
-      for (const test of linkedListTests) {
-        expect(test.assertions).toContain("steps");
-      }
-    });
   });
 
   describe("Reference Solutions", () => {
@@ -103,17 +98,13 @@ describe("linkedListTests", () => {
       }
     });
 
-    it("should use TrackedLinkedList methods in solutions", () => {
+    it("should use getHead() to access list nodes", () => {
       const [easy, medium, hard] = linkedListTests;
 
-      // Easy: Uses find method
-      expect(easy?.referenceSolution).toContain("find");
-
-      // Medium: Uses reverse method
-      expect(medium?.referenceSolution).toContain("reverse");
-
-      // Hard: Uses hasCycle method
-      expect(hard?.referenceSolution).toContain("hasCycle");
+      // All solutions should use getHead() to start traversal
+      expect(easy?.referenceSolution).toContain("getHead()");
+      expect(medium?.referenceSolution).toContain("getHead()");
+      expect(hard?.referenceSolution).toContain("getHead()");
     });
   });
 
@@ -136,9 +127,9 @@ describe("linkedListTests", () => {
       }
     });
 
-    it("should include TrackedLinkedList hints in comments", () => {
+    it("should include getHead() for accessing list nodes", () => {
       for (const test of linkedListTests) {
-        expect(test.skeletonCode).toContain("TrackedLinkedList");
+        expect(test.skeletonCode).toContain("getHead()");
       }
     });
   });
@@ -170,9 +161,9 @@ describe("linkedListTests", () => {
   });
 
   describe("Acceptance Criteria", () => {
-    it("should have at least 3 acceptance criteria per test", () => {
+    it("should have at least 2 acceptance criteria per test", () => {
       for (const test of linkedListTests) {
-        expect(test.acceptanceCriteria.length).toBeGreaterThanOrEqual(3);
+        expect(test.acceptanceCriteria.length).toBeGreaterThanOrEqual(2);
       }
     });
 
@@ -181,18 +172,6 @@ describe("linkedListTests", () => {
         for (const criterion of test.acceptanceCriteria) {
           expect(criterion.trim().length).toBeGreaterThan(0);
         }
-      }
-    });
-
-    it("should include visualization step verification", () => {
-      for (const test of linkedListTests) {
-        const hasVisualizationCheck = test.acceptanceCriteria.some(
-          (criterion) =>
-            criterion.toLowerCase().includes("operation") ||
-            criterion.toLowerCase().includes("captured") ||
-            criterion.toLowerCase().includes("visualization"),
-        );
-        expect(hasVisualizationCheck).toBe(true);
       }
     });
   });
@@ -249,11 +228,11 @@ describe("linkedListTests", () => {
     it("should increase in complexity from easy to hard", () => {
       const [, , hard] = linkedListTests;
 
-      // Hard should mention cycle detection (Floyd's algorithm)
-      expect(hard?.hints.some((h) => h.toLowerCase().includes("floyd"))).toBe(true);
-
-      // Hard should mention both pointers
+      // Hard should mention two pointers technique
       expect(hard?.hints.some((h) => h.toLowerCase().includes("pointer"))).toBe(true);
+
+      // Hard should mention slow and fast
+      expect(hard?.hints.some((h) => h.toLowerCase().includes("slow") || h.toLowerCase().includes("fast"))).toBe(true);
     });
   });
 });

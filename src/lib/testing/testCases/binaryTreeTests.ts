@@ -1,12 +1,16 @@
 import type { TestCase } from "../types";
+import type { PatternRequirement } from "../../validation/types";
 
 /**
  * Binary Tree test cases with 3 difficulty levels (Easy, Medium, Hard)
- * Based on PRD.md lines 528-536
+ *
+ * All test cases use a single function name 'traverseTree' that returns
+ * the values in sorted order. The difficulty levels require different
+ * algorithmic approaches validated via AST analysis.
  *
  * All test cases use the same input dataset [50, 30, 70, 20, 40, 60, 80] which creates
  * a balanced BST. This provides consistency and allows users to see how different
- * tree operations work on the same data.
+ * tree traversal algorithms work on the same data.
  */
 
 // Single dataset used across all Binary Tree test cases
@@ -21,18 +25,53 @@ const BINARYTREE_SORTED_OUTPUT = [20, 30, 40, 50, 60, 70, 80];
 
 export const binaryTreeTests: TestCase[] = [
   {
-    id: "binarytree-traversal-easy",
-    name: "In-Order Traversal",
+    id: "binarytree-traverse-easy",
+    name: "Traverse Tree (Easy)",
     difficulty: "easy",
-    description: "Traverse a binary search tree in sorted order (in-order)",
+    description:
+      "Traverse a binary search tree and return values in sorted order. You can use any method, including built-in traversal.",
     initialData: BINARYTREE_INPUT_DATA,
     expectedOutput: BINARYTREE_SORTED_OUTPUT,
     assertions: `
       expect(result).toEqual([20, 30, 40, 50, 60, 70, 80]);
       expect(result.length).toBe(7);
     `,
-    referenceSolution: `function inorderTraversal(tree) {
-  // In-order traversal: left subtree -> root -> right subtree
+    referenceSolution: `function traverseTree(tree) {
+  // Easy approach: use built-in inorder traversal method
+  return tree.inorderTraversal();
+}`,
+    skeletonCode: `function traverseTree(tree) {
+  // TODO: Return all values from the tree in sorted order
+  // The tree parameter is a TrackedBinaryTree
+  // Hint: The tree has a built-in inorderTraversal() method
+
+  return tree.inorderTraversal();
+}`,
+    hints: [
+      "TrackedBinaryTree has a built-in inorderTraversal() method",
+      "In-order traversal of a BST returns values in sorted order",
+      "The method returns an array of all node values",
+    ],
+    acceptanceCriteria: [
+      "Function returns array in ascending sorted order",
+      "All tree values are included in the result",
+      "Result length matches number of nodes in tree",
+    ],
+  },
+  {
+    id: "binarytree-traverse-medium",
+    name: "Traverse Tree (Medium)",
+    difficulty: "medium",
+    description:
+      "Traverse a binary search tree and return values in sorted order. Implement a recursive in-order traversal.",
+    initialData: BINARYTREE_INPUT_DATA,
+    expectedOutput: BINARYTREE_SORTED_OUTPUT,
+    assertions: `
+      expect(result).toEqual([20, 30, 40, 50, 60, 70, 80]);
+      expect(result.length).toBe(7);
+    `,
+    referenceSolution: `function traverseTree(tree) {
+  // Medium approach: recursive in-order traversal
   const result = [];
 
   function traverse(node) {
@@ -45,9 +84,8 @@ export const binaryTreeTests: TestCase[] = [
   traverse(tree.getRoot());
   return result;
 }`,
-    skeletonCode: `function inorderTraversal(tree) {
-  // TODO: Implement in-order traversal recursively
-  // The tree parameter is a TrackedBinaryTree
+    skeletonCode: `function traverseTree(tree) {
+  // TODO: Implement recursive in-order traversal
   // In-order means: visit left subtree -> visit root -> visit right subtree
   // For a BST, this returns values in sorted (ascending) order
   //
@@ -59,9 +97,6 @@ export const binaryTreeTests: TestCase[] = [
   // 5. Push current node's value to result
   // 6. Recursively traverse right subtree
   // 7. Start traversal from tree.getRoot()
-  //
-  // Hint: Access root with tree.getRoot()
-  // Hint: Each node has .value, .left, .right properties
 
   const result = [];
 
@@ -79,118 +114,101 @@ export const binaryTreeTests: TestCase[] = [
     ],
     acceptanceCriteria: [
       "Function returns array in ascending sorted order",
+      "Implements recursive traversal pattern",
       "All tree values are included in the result",
-      "Result length matches number of nodes in tree",
     ],
+    patternRequirement: {
+      anyOf: ["recursion"],
+      errorMessage:
+        "Medium difficulty requires recursive traversal. Implement a recursive function that visits each node in the tree.",
+    } satisfies PatternRequirement,
   },
   {
-    id: "binarytree-validate-medium",
-    name: "Validate BST Property",
-    difficulty: "medium",
-    description: "Validate whether a binary tree satisfies the BST property (left < root < right)",
-    initialData: BINARYTREE_INPUT_DATA,
-    expectedOutput: true,
-    assertions: `
-      expect(result).toBe(true);
-      expect(typeof result).toBe('boolean');
-    `,
-    referenceSolution: `function validateBST(tree) {
-  // Use the built-in isValidBST method
-  return tree.isValidBST();
-}`,
-    skeletonCode: `function validateBST(tree) {
-  // TODO: Validate if the tree is a valid BST
-  // Hint: The tree parameter is a TrackedBinaryTree
-  // Hint: Use tree.isValidBST() method
-  // BST property: for every node, left subtree < node < right subtree
-
-  return tree.isValidBST();
-}`,
-    hints: [
-      "A valid BST has all left descendants < node < all right descendants",
-      "This must be true for every node in the tree, not just immediate children",
-      "The TrackedBinaryTree has an isValidBST() method that validates this property",
-    ],
-    acceptanceCriteria: [
-      "Function returns true for valid BST",
-      "Function returns false for invalid BST",
-      "Return type is boolean",
-    ],
-  },
-  {
-    id: "binarytree-balance-hard",
-    name: "Balance an Unbalanced BST",
+    id: "binarytree-traverse-hard",
+    name: "Traverse Tree (Hard)",
     difficulty: "hard",
     description:
-      "Given an unbalanced BST (created by inserting values in sorted order), create a balanced BST with the same values",
-    initialData: BINARYTREE_SORTED_OUTPUT, // Inserting in sorted order creates a right-skewed tree
-    expectedOutput: BINARYTREE_SORTED_OUTPUT, // Balanced tree still contains same values
+      "Traverse a binary search tree and return values in sorted order. Use a divide-and-conquer approach with mid-point calculation.",
+    initialData: BINARYTREE_INPUT_DATA,
+    expectedOutput: BINARYTREE_SORTED_OUTPUT,
     assertions: `
-      expect(result.sort((a, b) => a - b)).toEqual([20, 30, 40, 50, 60, 70, 80]);
+      expect(result).toEqual([20, 30, 40, 50, 60, 70, 80]);
       expect(result.length).toBe(7);
-      // Check that the height is more balanced (log n)
-      // For 7 nodes, balanced height should be 3 (log2(7) ≈ 2.8)
-      // Unbalanced would be 7 (linear)
     `,
-    referenceSolution: `function balanceBST(tree) {
-  // Algorithm: Get sorted array via in-order, build balanced tree from middle
-  const sortedValues = tree.inorderTraversal();
+    referenceSolution: `function traverseTree(tree) {
+  // Hard approach: divide-and-conquer traversal
+  // Collect all nodes, then process with mid-point selection
+  const allValues = [];
 
-  // Create new balanced tree
-  const balancedTree = createTrackedBinaryTree([], __capture);
+  function collectValues(node) {
+    if (node === null) return;
+    collectValues(node.left);
+    allValues.push(node.value);
+    collectValues(node.right);
+  }
 
-  // Build balanced tree from sorted array
-  function buildBalanced(values, start, end) {
+  collectValues(tree.getRoot());
+
+  // Process using divide-and-conquer pattern
+  const result = [];
+
+  function processRange(arr, start, end) {
     if (start > end) return;
-
-    // Middle element becomes root
     const mid = Math.floor((start + end) / 2);
-    balancedTree.insert(values[mid]);
-
-    // Recursively build left and right subtrees
-    buildBalanced(values, start, mid - 1);
-    buildBalanced(values, mid + 1, end);
+    processRange(arr, start, mid - 1);
+    result.push(arr[mid]);
+    processRange(arr, mid + 1, end);
   }
 
-  buildBalanced(sortedValues, 0, sortedValues.length - 1);
-
-  return balancedTree.inorderTraversal();
+  processRange(allValues, 0, allValues.length - 1);
+  return result;
 }`,
-    skeletonCode: `function balanceBST(tree) {
-  // TODO: Balance the BST
-  // The input tree is unbalanced (right-skewed from inserting sorted values)
-  // Algorithm:
-  // 1. Get sorted values via in-order traversal
-  // 2. Create new TrackedBinaryTree
-  // 3. Build balanced tree by inserting middle element first
-  // 4. Recursively build left and right halves
+    skeletonCode: `function traverseTree(tree) {
+  // TODO: Implement divide-and-conquer traversal
+  // This approach:
+  // 1. Collect all node values via in-order traversal
+  // 2. Process using divide-and-conquer with mid-point selection
+  //
+  // The divide-and-conquer pattern uses:
+  // - Math.floor((start + end) / 2) to find mid-point
+  // - Recursively process left half (start to mid-1)
+  // - Process middle element
+  // - Recursively process right half (mid+1 to end)
 
-  const sortedValues = tree.inorderTraversal();
-  const balancedTree = createTrackedBinaryTree([], __capture);
+  const allValues = [];
 
-  function buildBalanced(values, start, end) {
-    // TODO: Implement recursive balanced tree building
-    // Base case: if start > end, return
-    // Find middle index: Math.floor((start + end) / 2)
-    // Insert middle value into balancedTree
-    // Recursively build left subtree (start to mid-1)
-    // Recursively build right subtree (mid+1 to end)
-
+  function collectValues(node) {
+    // TODO: Collect all values in sorted order
   }
 
-  buildBalanced(sortedValues, 0, sortedValues.length - 1);
+  collectValues(tree.getRoot());
 
-  return balancedTree.inorderTraversal();
+  const result = [];
+
+  function processRange(arr, start, end) {
+    // TODO: Process array range using divide-and-conquer
+    // Base case: if start > end, return
+    // Find mid: Math.floor((start + end) / 2)
+    // Process left half, then mid, then right half
+  }
+
+  processRange(allValues, 0, allValues.length - 1);
+  return result;
 }`,
     hints: [
-      "First, get sorted values using in-order traversal (tree.inorderTraversal())",
-      "To balance: always insert the middle element first, then recursively balance left and right halves",
-      "Create a new TrackedBinaryTree and build it from the sorted array using the middle-element strategy",
+      "First collect all values using in-order traversal",
+      "Then process using divide-and-conquer with Math.floor((start + end) / 2)",
+      "Process left half, then middle element, then right half",
     ],
     acceptanceCriteria: [
-      "Function returns array containing all original values",
-      "Resulting tree is balanced (height ≈ log n)",
-      "BST property is maintained after balancing",
+      "Function returns array in ascending sorted order",
+      "Uses divide-and-conquer pattern with mid-point calculation",
+      "All tree values are included in the result",
     ],
+    patternRequirement: {
+      anyOf: ["recursion", "divideAndConquer"],
+      errorMessage:
+        "Hard difficulty requires divide-and-conquer approach. Use recursion with mid-point calculation: Math.floor((start + end) / 2).",
+    } satisfies PatternRequirement,
   },
 ];

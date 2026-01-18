@@ -97,9 +97,7 @@ export function ArrayVisualizer({
 
     // Data join for bars - use index as key for position-based animations
     // This ensures bars update in place rather than exit/enter when values swap
-    const bars = g
-      .selectAll<SVGGElement, number>("g.bar")
-      .data(data, (_, i) => `${i}`);
+    const bars = g.selectAll<SVGGElement, number>("g.bar").data(data, (_, i) => `${i}`);
 
     // EXIT: Remove bars that are no longer in the data
     bars.exit().transition().duration(duration).style("opacity", 0).remove();
@@ -145,10 +143,7 @@ export function ArrayVisualizer({
       .attr("height", 16)
       .attr("rx", 3);
 
-    indexGroup
-      .append("text")
-      .attr("class", "bar-index")
-      .attr("text-anchor", "middle");
+    indexGroup.append("text").attr("class", "bar-index").attr("text-anchor", "middle");
 
     // UPDATE: Merge enter and update selections
     const barsMerge = barsEnter.merge(bars);
@@ -234,19 +229,11 @@ function getHighlightIndices(step: VisualizationStep | null): {
   if (!step) return result;
 
   // Extract indices from step metadata
-  if (
-    step.type === "swap" &&
-    Array.isArray(step.args) &&
-    step.args.length >= 2
-  ) {
+  if (step.type === "swap" && Array.isArray(step.args) && step.args.length >= 2) {
     result.swapped = [step.args[0], step.args[1]].filter(
       (idx): idx is number => typeof idx === "number",
     );
-  } else if (
-    step.type === "compare" &&
-    Array.isArray(step.args) &&
-    step.args.length >= 2
-  ) {
+  } else if (step.type === "compare" && Array.isArray(step.args) && step.args.length >= 2) {
     result.comparing = [step.args[0], step.args[1]].filter(
       (idx): idx is number => typeof idx === "number",
     );
