@@ -137,9 +137,6 @@ function App() {
   if (swcError) {
     return (
       <div className="app">
-        <header className="app-header">
-          <h1>Data Structure Visualizer</h1>
-        </header>
         <div style={{ padding: "2rem", color: "red" }}>
           <h2>Initialization Error</h2>
           <p>{swcError}</p>
@@ -151,9 +148,6 @@ function App() {
   if (!swcReady) {
     return (
       <div className="app">
-        <header className="app-header">
-          <h1>Data Structure Visualizer</h1>
-        </header>
         <div style={{ padding: "2rem" }}>Loading...</div>
       </div>
     );
@@ -161,9 +155,6 @@ function App() {
 
   return (
     <div className="app">
-      <header className="app-header">
-        <h1>Data Structure Visualizer</h1>
-      </header>
       <PanelGroup direction={isMobile ? "vertical" : "horizontal"} className="panels-container">
         <Panel defaultSize={50} minSize={isMobile ? 20 : 30} maxSize={70}>
           <PanelGroup direction="vertical">

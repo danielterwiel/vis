@@ -18,10 +18,10 @@ describe("trackedArrayBundle", () => {
 
     it("should contain all core methods", () => {
       const code = bundleTrackedArray();
+      // The Proxy-based implementation uses emitArrayStep instead of emitStep
+      // and handles array access (at/set) through the Proxy handler
       const methods = [
         "getData",
-        "at",
-        "set",
         "push",
         "pop",
         "shift",
@@ -34,7 +34,9 @@ describe("trackedArrayBundle", () => {
         "partition",
         "reset",
         "toArray",
-        "emitStep",
+        "emitArrayStep",
+        "isArrayIndex",
+        "createTrackedArrayProxy",
       ];
 
       for (const method of methods) {

@@ -15,6 +15,7 @@ export type PatternId =
   | "stackUsage"
   | "queueUsage"
   | "twoStacks"
+  | "twoQueues"
   | "hashMapUsage"
   | "iteration";
 

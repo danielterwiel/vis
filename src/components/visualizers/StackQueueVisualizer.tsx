@@ -94,9 +94,11 @@ export function StackQueueVisualizer({
     }
 
     // Data join with key function for smooth transitions
+    // Use value-based keys to maintain element identity when queue shifts
+    // (dequeue removes from front, causing all indices to shift)
     const elements = mainGroup
       .selectAll<SVGGElement, unknown>("g.element")
-      .data(arrayData, (d, i) => `${i}-${String(d)}`);
+      .data(arrayData, (d) => String(d));
 
     // EXIT: Remove old elements
     elements.exit().transition().duration(duration).style("opacity", 0).remove();
@@ -156,6 +158,9 @@ export function StackQueueVisualizer({
         }
         return "element-rect";
       });
+
+    // Update index labels (positions may have shifted after dequeue)
+    merged.select<SVGTextElement>("text.element-index").text((_, i) => `[${i}]`);
 
     // Update step indicator using data join
     const stepData = currentStep ? [formatStepDescription(currentStep, mode)] : [];

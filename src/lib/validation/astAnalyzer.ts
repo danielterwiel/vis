@@ -1660,6 +1660,91 @@ export function hasTwoStacks(ast: Program): boolean {
 }
 
 /**
+ * Detect two queues usage pattern.
+ * Detects when code uses two separate queue instances (e.g., queue1 and queue2).
+ */
+export function hasTwoQueues(ast: Program): boolean {
+  const body = ast.type === "Module" ? ast.body : ast.body;
+
+  function countQueueCreations(stmts: Statement[]): number {
+    let count = 0;
+
+    function checkExpr(expr: Expression): number {
+      let localCount = 0;
+      if (expr.type === "CallExpression") {
+        const callee = expr.callee;
+        if (callee.type === "Identifier" && callee.value === "createTrackedQueue") {
+          localCount++;
+        }
+        for (const arg of expr.arguments) {
+          localCount += checkExpr(arg.expression);
+        }
+      }
+
+      if (expr.type === "AssignmentExpression") {
+        localCount += checkExpr(expr.right);
+      }
+
+      if (expr.type === "ArrowFunctionExpression" && expr.body.type === "BlockStatement") {
+        localCount += countInStmts(expr.body.stmts);
+      }
+
+      if (expr.type === "FunctionExpression" && expr.body) {
+        localCount += countInStmts(expr.body.stmts);
+      }
+
+      return localCount;
+    }
+
+    function countInStmts(statements: Statement[]): number {
+      let localCount = 0;
+      for (const stmt of statements) {
+        if (stmt.type === "VariableDeclaration") {
+          for (const decl of stmt.declarations) {
+            if (decl.init) localCount += checkExpr(decl.init);
+          }
+        }
+
+        if (stmt.type === "ExpressionStatement") {
+          localCount += checkExpr(stmt.expression);
+        }
+
+        if (stmt.type === "BlockStatement") {
+          localCount += countInStmts(stmt.stmts);
+        }
+
+        if (stmt.type === "IfStatement") {
+          localCount += countInStmts([stmt.consequent]);
+          if (stmt.alternate) localCount += countInStmts([stmt.alternate]);
+        }
+
+        if (
+          stmt.type === "ForStatement" ||
+          stmt.type === "WhileStatement" ||
+          stmt.type === "DoWhileStatement"
+        ) {
+          localCount += countInStmts([stmt.body]);
+        }
+
+        if (stmt.type === "FunctionDeclaration" && stmt.body) {
+          localCount += countInStmts(stmt.body.stmts);
+        }
+      }
+      return localCount;
+    }
+
+    count = countInStmts(stmts);
+    return count;
+  }
+
+  const statements = body.filter(
+    (item): item is Statement => !("source" in item && item.type.includes("Export")),
+  ) as Statement[];
+
+  return countQueueCreations(statements) >= 2;
+}
+
+/**
  * Detect hash map usage pattern.
  * Detects createTrackedHashMap() calls.
  */
@@ -1853,6 +1938,7 @@ const patternDetectors: Record<string, (ast: Program) => boolean> = {
   stackUsage: hasStackUsage,
   queueUsage: hasQueueUsage,
   twoStacks: hasTwoStacks,
+  twoQueues: hasTwoQueues,
   hashMapUsage: hasHashMapUsage,
   iteration: hasIteration,
 };
