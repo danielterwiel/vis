@@ -82,7 +82,6 @@ describe("linkedListTests", () => {
         expect(test.assertions).toContain("expect(");
       }
     });
-
   });
 
   describe("Reference Solutions", () => {
@@ -232,7 +231,11 @@ describe("linkedListTests", () => {
       expect(hard?.hints.some((h) => h.toLowerCase().includes("pointer"))).toBe(true);
 
       // Hard should mention slow and fast
-      expect(hard?.hints.some((h) => h.toLowerCase().includes("slow") || h.toLowerCase().includes("fast"))).toBe(true);
+      expect(
+        hard?.hints.some(
+          (h) => h.toLowerCase().includes("slow") || h.toLowerCase().includes("fast"),
+        ),
+      ).toBe(true);
     });
   });
 });

@@ -125,9 +125,13 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
         case "linkedList":
           return linkedListTests.find((t) => t.difficulty === difficulty);
         case "stack":
-          return stackQueueTests.find((t) => t.difficulty === difficulty && t.id.startsWith("stack-"));
+          return stackQueueTests.find(
+            (t) => t.difficulty === difficulty && t.id.startsWith("stack-"),
+          );
         case "queue":
-          return stackQueueTests.find((t) => t.difficulty === difficulty && t.id.startsWith("queue-"));
+          return stackQueueTests.find(
+            (t) => t.difficulty === difficulty && t.id.startsWith("queue-"),
+          );
         case "tree":
           return binaryTreeTests.find((t) => t.difficulty === difficulty);
         case "graph":
@@ -174,7 +178,10 @@ function EditorPanel({ onRunAllTests }: EditorPanelProps) {
             onSelectPreset={handlePresetSelect}
             disabled={isReadOnly}
           />
-          <SolutionDropdown disabled={isReadOnly} onSelectSolution={handleShowSolutionForDifficultyLevel} />
+          <SolutionDropdown
+            disabled={isReadOnly}
+            onSelectSolution={handleShowSolutionForDifficultyLevel}
+          />
         </div>
       </div>
       <div className="run-button-container">

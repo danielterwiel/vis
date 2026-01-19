@@ -395,16 +395,16 @@ describe("TrackedArray", () => {
       const callback = vi.fn();
       const arr = new TrackedArray([1, 2, 3], callback);
 
-      arr.push(4);       // 1 call
-      arr.pop();         // 1 call
-      arr.shift();       // 1 call
-      arr.unshift(0);    // 1 call
-      arr.set(0, 99);    // 1 call (2 calls from swap: two set operations)
-      arr.swap(0, 1);    // 2 calls (two set operations)
+      arr.push(4); // 1 call
+      arr.pop(); // 1 call
+      arr.shift(); // 1 call
+      arr.unshift(0); // 1 call
+      arr.set(0, 99); // 1 call (2 calls from swap: two set operations)
+      arr.swap(0, 1); // 2 calls (two set operations)
       arr.compare(0, 1); // 0 calls (compare doesn't emit in proxy)
-      arr.reverse();     // 1 call
+      arr.reverse(); // 1 call
       arr.sort((a, b) => a - b); // 1 call
-      arr.splice(0, 1);  // 1 call
+      arr.splice(0, 1); // 1 call
       arr.partition(0, [], [1]); // 0 calls (no-op)
       arr.reset([1, 2]); // 2 calls (length + push)
 

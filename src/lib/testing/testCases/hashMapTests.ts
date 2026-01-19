@@ -84,8 +84,7 @@ export const hashMapTests: TestCase[] = [
     id: "hashmap-frequency-medium",
     name: "Count Frequency (Medium)",
     difficulty: "medium",
-    description:
-      "Count character frequencies using a TrackedHashMap to visualize hash operations.",
+    description: "Count character frequencies using a TrackedHashMap to visualize hash operations.",
     initialData: HASHMAP_INPUT_DATA,
     expectedOutput: HASHMAP_EXPECTED_OUTPUT,
     assertions: `

@@ -105,8 +105,7 @@ export const graphTests: TestCase[] = [
     id: "graph-path-medium",
     name: "Find Path (Medium)",
     difficulty: "medium",
-    description:
-      "Find a path between two vertices in a graph. Implement DFS-based pathfinding.",
+    description: "Find a path between two vertices in a graph. Implement DFS-based pathfinding.",
     initialData: {
       vertices: GRAPH_VERTICES,
       edges: GRAPH_EDGES,
@@ -186,16 +185,14 @@ export const graphTests: TestCase[] = [
     ],
     patternRequirement: {
       anyOf: ["recursion", "dfs"],
-      errorMessage:
-        "Medium difficulty requires DFS-based pathfinding using recursion.",
+      errorMessage: "Medium difficulty requires DFS-based pathfinding using recursion.",
     } satisfies PatternRequirement,
   },
   {
     id: "graph-path-hard",
     name: "Find Path (Hard)",
     difficulty: "hard",
-    description:
-      "Find the shortest path between two vertices using Dijkstra's algorithm.",
+    description: "Find the shortest path between two vertices using Dijkstra's algorithm.",
     initialData: {
       vertices: GRAPH_VERTICES,
       edges: GRAPH_EDGES,

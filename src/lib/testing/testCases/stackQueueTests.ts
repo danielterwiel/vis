@@ -21,8 +21,7 @@ export const queueTests: TestCase[] = [
     id: "queue-process-easy",
     name: "Queue Elements (Easy)",
     difficulty: "easy",
-    description:
-      "Process elements using a queue and return them in FIFO order.",
+    description: "Process elements using a queue and return them in FIFO order.",
     initialData: STACKQUEUE_INPUT_DATA,
     expectedOutput: STACKQUEUE_OUTPUT_DATA,
     assertions: `
@@ -73,8 +72,7 @@ export const queueTests: TestCase[] = [
     id: "queue-process-medium",
     name: "Queue Elements (Medium)",
     difficulty: "medium",
-    description:
-      "Process elements using queue operations with multiple passes.",
+    description: "Process elements using queue operations with multiple passes.",
     initialData: STACKQUEUE_INPUT_DATA,
     expectedOutput: STACKQUEUE_OUTPUT_DATA,
     assertions: `
@@ -137,16 +135,14 @@ export const queueTests: TestCase[] = [
     ],
     patternRequirement: {
       anyOf: ["queueUsage"],
-      errorMessage:
-        "Medium difficulty requires using queue operations. Use createTrackedQueue().",
+      errorMessage: "Medium difficulty requires using queue operations. Use createTrackedQueue().",
     } satisfies PatternRequirement,
   },
   {
     id: "queue-process-hard",
     name: "Queue Elements (Hard)",
     difficulty: "hard",
-    description:
-      "Implement a priority-based processing using queue operations.",
+    description: "Implement a priority-based processing using queue operations.",
     initialData: STACKQUEUE_INPUT_DATA,
     expectedOutput: STACKQUEUE_OUTPUT_DATA,
     assertions: `
@@ -218,8 +214,7 @@ export const queueTests: TestCase[] = [
     ],
     patternRequirement: {
       anyOf: ["twoQueues"],
-      errorMessage:
-        "Hard difficulty requires using two queues. Use createTrackedQueue() twice.",
+      errorMessage: "Hard difficulty requires using two queues. Use createTrackedQueue() twice.",
     } satisfies PatternRequirement,
   },
 ];
@@ -230,8 +225,7 @@ export const stackTests: TestCase[] = [
     id: "stack-process-easy",
     name: "Stack Elements (Easy)",
     difficulty: "easy",
-    description:
-      "Process elements using a stack. Return them in reverse (LIFO) order.",
+    description: "Process elements using a stack. Return them in reverse (LIFO) order.",
     initialData: STACKQUEUE_INPUT_DATA,
     expectedOutput: [6, 5, 4, 3, 2, 1], // LIFO reverses the order
     assertions: `
@@ -283,8 +277,7 @@ export const stackTests: TestCase[] = [
     id: "stack-process-medium",
     name: "Stack Elements (Medium)",
     difficulty: "medium",
-    description:
-      "Use a stack to reverse elements twice, returning original order.",
+    description: "Use a stack to reverse elements twice, returning original order.",
     initialData: STACKQUEUE_INPUT_DATA,
     expectedOutput: STACKQUEUE_OUTPUT_DATA, // Double reversal = original
     assertions: `
@@ -346,16 +339,14 @@ export const stackTests: TestCase[] = [
     ],
     patternRequirement: {
       anyOf: ["stackUsage"],
-      errorMessage:
-        "Medium difficulty requires using stack operations. Use createTrackedStack().",
+      errorMessage: "Medium difficulty requires using stack operations. Use createTrackedStack().",
     } satisfies PatternRequirement,
   },
   {
     id: "stack-process-hard",
     name: "Stack Elements (Hard)",
     difficulty: "hard",
-    description:
-      "Implement queue behavior using two stacks to return elements in FIFO order.",
+    description: "Implement queue behavior using two stacks to return elements in FIFO order.",
     initialData: STACKQUEUE_INPUT_DATA,
     expectedOutput: STACKQUEUE_OUTPUT_DATA,
     assertions: `
