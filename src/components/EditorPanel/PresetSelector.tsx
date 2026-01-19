@@ -37,16 +37,9 @@ export function PresetSelector({
     : presets;
 
   const handlePresetClick = (preset: PresetExample) => {
-    // Confirm before replacing user's code
-    const confirmed = window.confirm(
-      `Load "${preset.name}" example?\n\nThis will replace your current code.`,
-    );
-
-    if (confirmed) {
-      onSelectPreset(preset.code);
-      setIsOpen(false);
-      setSelectedCategory(null); // Reset category filter on close
-    }
+    onSelectPreset(preset.code);
+    setIsOpen(false);
+    setSelectedCategory(null); // Reset category filter on close
   };
 
   const handleClose = () => {
