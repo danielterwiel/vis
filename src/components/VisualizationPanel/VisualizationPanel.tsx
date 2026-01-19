@@ -212,6 +212,37 @@ function VisualizationPanel() {
   // Extract current array data from steps or use initial data
   const currentData = useMemo(() => {
     if (currentSteps.length === 0) {
+      // For binary trees, build tree structure from initial array
+      if (
+        selectedDataStructure === "tree" &&
+        Array.isArray(initialData) &&
+        initialData.length > 0
+      ) {
+        // Build BST from array by inserting values in order
+        let root: BinaryTreeNode<number> | null = null;
+
+        const insertNode = (
+          node: BinaryTreeNode<number> | null,
+          value: number,
+        ): BinaryTreeNode<number> => {
+          if (node === null) {
+            return { value, left: null, right: null };
+          }
+          if (value < node.value) {
+            node.left = insertNode(node.left, value);
+          } else if (value > node.value) {
+            node.right = insertNode(node.right, value);
+          }
+          return node;
+        };
+
+        for (const value of initialData as number[]) {
+          root = insertNode(root, value);
+        }
+
+        return root;
+      }
+
       // For graphs, convert initialData to graph format
       if (selectedDataStructure === "graph" && initialData) {
         const graphInit = initialData as {
@@ -254,7 +285,35 @@ function VisualizationPanel() {
 
   // Extract data for comparison view (left = user code, right = expected output)
   const comparisonLeftData = useMemo(() => {
-    if (userCodeSteps.length === 0) return initialData;
+    if (userCodeSteps.length === 0) {
+      // For binary trees, build tree structure from initial array
+      if (
+        selectedDataStructure === "tree" &&
+        Array.isArray(initialData) &&
+        initialData.length > 0
+      ) {
+        let root: BinaryTreeNode<number> | null = null;
+        const insertNode = (
+          node: BinaryTreeNode<number> | null,
+          value: number,
+        ): BinaryTreeNode<number> => {
+          if (node === null) {
+            return { value, left: null, right: null };
+          }
+          if (value < node.value) {
+            node.left = insertNode(node.left, value);
+          } else if (value > node.value) {
+            node.right = insertNode(node.right, value);
+          }
+          return node;
+        };
+        for (const value of initialData as number[]) {
+          root = insertNode(root, value);
+        }
+        return root;
+      }
+      return initialData;
+    }
     if (currentStepIndex >= 0 && currentStepIndex < userCodeSteps.length) {
       const step = userCodeSteps[currentStepIndex];
       // For binary trees, extract the tree structure from metadata
@@ -272,7 +331,35 @@ function VisualizationPanel() {
   }, [userCodeSteps, currentStepIndex, initialData, selectedDataStructure, convertGraphData]);
 
   const comparisonRightData = useMemo(() => {
-    if (expectedOutputSteps.length === 0) return initialData;
+    if (expectedOutputSteps.length === 0) {
+      // For binary trees, build tree structure from initial array
+      if (
+        selectedDataStructure === "tree" &&
+        Array.isArray(initialData) &&
+        initialData.length > 0
+      ) {
+        let root: BinaryTreeNode<number> | null = null;
+        const insertNode = (
+          node: BinaryTreeNode<number> | null,
+          value: number,
+        ): BinaryTreeNode<number> => {
+          if (node === null) {
+            return { value, left: null, right: null };
+          }
+          if (value < node.value) {
+            node.left = insertNode(node.left, value);
+          } else if (value > node.value) {
+            node.right = insertNode(node.right, value);
+          }
+          return node;
+        };
+        for (const value of initialData as number[]) {
+          root = insertNode(root, value);
+        }
+        return root;
+      }
+      return initialData;
+    }
     if (currentStepIndex >= 0 && currentStepIndex < expectedOutputSteps.length) {
       const step = expectedOutputSteps[currentStepIndex];
       // For binary trees, extract the tree structure from metadata
