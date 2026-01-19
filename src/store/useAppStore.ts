@@ -53,6 +53,7 @@ export interface AppState {
   // Data structure selection
   selectedDataStructure: DataStructureType;
   selectedDifficulty: DifficultyLevel;
+  isLoadingDataStructure: boolean;
 
   // Editor state
   userCode: string;
@@ -134,6 +135,7 @@ const useAppStore = create<AppState>((set, get) => {
     // Initial state
     selectedDataStructure: initialDataStructure,
     selectedDifficulty: initialDifficulty,
+    isLoadingDataStructure: false,
 
     userCode: savedCode || "",
     codeStatus: "incomplete",
@@ -153,27 +155,35 @@ const useAppStore = create<AppState>((set, get) => {
     // Actions - Data structure selection
     setSelectedDataStructure: (dataStructure) => {
       const state = get();
-      // Save current code before switching
-      saveUserCode(state.selectedDataStructure, state.selectedDifficulty, state.userCode);
 
-      // Load code for new data structure (default to easy)
-      const newDifficulty: DifficultyLevel = "easy";
-      const savedCode = loadUserCode(dataStructure, newDifficulty);
-      const savedHints = loadHintsRevealed(dataStructure, newDifficulty);
+      // Set loading state immediately
+      set({ isLoadingDataStructure: true });
 
-      // Update URL params
-      updateUrlParams(dataStructure, newDifficulty);
+      // Use requestAnimationFrame to ensure loading state renders before heavy operations
+      requestAnimationFrame(() => {
+        // Save current code before switching
+        saveUserCode(state.selectedDataStructure, state.selectedDifficulty, state.userCode);
 
-      set({
-        selectedDataStructure: dataStructure,
-        selectedDifficulty: newDifficulty,
-        userCode: savedCode || "",
-        userCodeSteps: [],
-        expectedOutputSteps: [],
-        referenceSteps: [],
-        currentStepIndex: 0,
-        testResults: new Map(),
-        hintsRevealed: savedHints ?? 0,
+        // Load code for new data structure (default to easy)
+        const newDifficulty: DifficultyLevel = "easy";
+        const savedCode = loadUserCode(dataStructure, newDifficulty);
+        const savedHints = loadHintsRevealed(dataStructure, newDifficulty);
+
+        // Update URL params
+        updateUrlParams(dataStructure, newDifficulty);
+
+        set({
+          selectedDataStructure: dataStructure,
+          selectedDifficulty: newDifficulty,
+          userCode: savedCode || "",
+          userCodeSteps: [],
+          expectedOutputSteps: [],
+          referenceSteps: [],
+          currentStepIndex: 0,
+          testResults: new Map(),
+          hintsRevealed: savedHints ?? 0,
+          isLoadingDataStructure: false,
+        });
       });
     },
 

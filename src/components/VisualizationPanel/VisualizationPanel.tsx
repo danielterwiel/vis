@@ -36,6 +36,7 @@ function VisualizationPanel() {
     isAnimating,
     visualizationMode,
     codeStatus,
+    isLoadingDataStructure,
     nextStep,
     previousStep,
     setCurrentStepIndex,
@@ -568,8 +569,19 @@ function VisualizationPanel() {
       />
       <div className="visualizer-container">
         <div className="visualizer-inner">
-          {renderVisualizer()}
-          {visualizationMode === "skeleton" && <div className="skeleton-badge">Initial State</div>}
+          {isLoadingDataStructure ? (
+            <div className="loading-overlay">
+              <div className="loading-spinner" />
+              <div className="loading-text">Loading data structure...</div>
+            </div>
+          ) : (
+            <>
+              {renderVisualizer()}
+              {visualizationMode === "skeleton" && (
+                <div className="skeleton-badge">Initial State</div>
+              )}
+            </>
+          )}
         </div>
 
         {/* Playback controls - shown below visualization when there are steps */}
