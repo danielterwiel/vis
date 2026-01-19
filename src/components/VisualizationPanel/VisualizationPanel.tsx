@@ -265,6 +265,13 @@ function VisualizationPanel() {
           }));
         }
       }
+
+      // For hash maps, return empty bucket array in skeleton mode
+      if (selectedDataStructure === "hashMap") {
+        // Return 16 null buckets (matching default capacity)
+        return Array.from({ length: 16 }, (): HashMapBucket<unknown, unknown> | null => null);
+      }
+
       return initialData;
     }
     if (currentStepIndex >= 0 && currentStepIndex < currentSteps.length) {
@@ -312,6 +319,13 @@ function VisualizationPanel() {
         }
         return root;
       }
+
+      // For hash maps, return empty bucket array in skeleton mode
+      if (selectedDataStructure === "hashMap") {
+        // Return 16 null buckets (matching default capacity)
+        return Array.from({ length: 16 }, (): HashMapBucket<unknown, unknown> | null => null);
+      }
+
       return initialData;
     }
     if (currentStepIndex >= 0 && currentStepIndex < userCodeSteps.length) {
@@ -358,6 +372,13 @@ function VisualizationPanel() {
         }
         return root;
       }
+
+      // For hash maps, return empty bucket array in skeleton mode
+      if (selectedDataStructure === "hashMap") {
+        // Return 16 null buckets (matching default capacity)
+        return Array.from({ length: 16 }, (): HashMapBucket<unknown, unknown> | null => null);
+      }
+
       return initialData;
     }
     if (currentStepIndex >= 0 && currentStepIndex < expectedOutputSteps.length) {
