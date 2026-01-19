@@ -25,12 +25,25 @@ const VALID_DATA_STRUCTURES: Set<string> = new Set([
 const VALID_DIFFICULTIES: Set<string> = new Set(["easy", "medium", "hard"]);
 
 /**
+ * Normalize data structure aliases to canonical names
+ */
+function normalizeDataStructure(value: string | null): string | null {
+  if (!value) return null;
+  // Map common aliases to canonical names
+  if (value === "binaryTree") return "tree";
+  return value;
+}
+
+/**
  * Get URL parameters
  */
 export function getUrlParams() {
   const params = new URLSearchParams(window.location.search);
+  const rawDataStructure = params.get(PARAM_DATA_STRUCTURE);
+  const normalizedDataStructure = normalizeDataStructure(rawDataStructure);
+
   return {
-    dataStructure: (params.get(PARAM_DATA_STRUCTURE) as DataStructureType) || null,
+    dataStructure: (normalizedDataStructure as DataStructureType) || null,
     difficulty: (params.get(PARAM_DIFFICULTY) as DifficultyLevel) || null,
   };
 }

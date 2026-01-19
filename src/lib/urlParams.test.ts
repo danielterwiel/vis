@@ -38,6 +38,19 @@ describe("urlParams", () => {
       expect(params.dataStructure).toBe("tree");
       expect(params.difficulty).toBe("medium");
     });
+
+    it("normalizes binaryTree alias to tree", () => {
+      window.history.replaceState(null, "", "/?ds=binaryTree");
+      const params = getUrlParams();
+      expect(params.dataStructure).toBe("tree");
+    });
+
+    it("normalizes binaryTree alias with difficulty", () => {
+      window.history.replaceState(null, "", "/?ds=binaryTree&difficulty=hard");
+      const params = getUrlParams();
+      expect(params.dataStructure).toBe("tree");
+      expect(params.difficulty).toBe("hard");
+    });
   });
 
   describe("updateUrlParams", () => {
