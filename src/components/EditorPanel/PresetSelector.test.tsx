@@ -132,6 +132,27 @@ describe("PresetSelector", () => {
     window.confirm = originalConfirm;
   });
 
+  it("should close modal when preset is selected and confirmed", () => {
+    // Mock window.confirm to return true
+    const originalConfirm = window.confirm;
+    window.confirm = vi.fn(() => true);
+
+    render(<PresetSelector dataStructure="array" onSelectPreset={mockOnSelectPreset} />);
+
+    // Open modal
+    fireEvent.click(screen.getByText("Examples"));
+    expect(screen.getByText("Algorithm Examples")).toBeTruthy();
+
+    // Click a preset
+    fireEvent.click(screen.getByText("Bubble Sort"));
+
+    // Modal should be closed
+    expect(screen.queryByText("Algorithm Examples")).toBeNull();
+
+    // Restore original confirm
+    window.confirm = originalConfirm;
+  });
+
   it("should not call onSelectPreset when preset clicked but not confirmed", () => {
     // Mock window.confirm to return false
     const originalConfirm = window.confirm;
