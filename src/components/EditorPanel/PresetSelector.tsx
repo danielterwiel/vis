@@ -32,10 +32,6 @@ export function PresetSelector({
   const presets = getPresetsForDataStructure(dataStructure);
   const categories = getCategoriesForDataStructure(dataStructure);
 
-  if (presets.length === 0) {
-    return null;
-  }
-
   const filteredPresets = selectedCategory
     ? presets.filter((p) => p.category === selectedCategory)
     : presets;
@@ -79,6 +75,11 @@ export function PresetSelector({
       document.body.style.overflow = "";
     };
   }, [isOpen]);
+
+  // Move conditional return after all hooks
+  if (presets.length === 0) {
+    return null;
+  }
 
   return (
     <div className="preset-selector">
