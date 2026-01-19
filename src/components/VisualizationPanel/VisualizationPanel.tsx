@@ -320,6 +320,29 @@ function VisualizationPanel() {
         return root;
       }
 
+      // For graphs, convert initialData to graph format
+      if (selectedDataStructure === "graph" && initialData) {
+        const graphInit = initialData as {
+          vertices?: unknown[];
+          edges?: Array<{ from: unknown; to: unknown; weight?: number; directed?: boolean }>;
+          directed?: boolean;
+        };
+        if (graphInit.vertices && graphInit.edges) {
+          return graphInit.vertices.map((vertex) => ({
+            id: vertex as string | number,
+            label: String(vertex),
+            edges: graphInit.edges
+              ?.filter((e) => e.from === vertex)
+              .map((e) => ({
+                from: e.from as string | number,
+                to: e.to as string | number,
+                weight: e.weight,
+                directed: e.directed || graphInit.directed || false,
+              })),
+          }));
+        }
+      }
+
       // For hash maps, return empty bucket array in skeleton mode
       if (selectedDataStructure === "hashMap") {
         // Return 16 null buckets (matching default capacity)
@@ -371,6 +394,29 @@ function VisualizationPanel() {
           root = insertNode(root, value);
         }
         return root;
+      }
+
+      // For graphs, convert initialData to graph format
+      if (selectedDataStructure === "graph" && initialData) {
+        const graphInit = initialData as {
+          vertices?: unknown[];
+          edges?: Array<{ from: unknown; to: unknown; weight?: number; directed?: boolean }>;
+          directed?: boolean;
+        };
+        if (graphInit.vertices && graphInit.edges) {
+          return graphInit.vertices.map((vertex) => ({
+            id: vertex as string | number,
+            label: String(vertex),
+            edges: graphInit.edges
+              ?.filter((e) => e.from === vertex)
+              .map((e) => ({
+                from: e.from as string | number,
+                to: e.to as string | number,
+                weight: e.weight,
+                directed: e.directed || graphInit.directed || false,
+              })),
+          }));
+        }
       }
 
       // For hash maps, return empty bucket array in skeleton mode
