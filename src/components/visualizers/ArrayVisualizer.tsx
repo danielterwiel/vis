@@ -29,7 +29,9 @@ export function ArrayVisualizer({
   isAnimating = false,
 }: ArrayVisualizerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
+  // Start with small dimensions that will be immediately updated by ResizeObserver
+  // This prevents the initial 800x400 from causing overflow on mobile
+  const [dimensions, setDimensions] = useState({ width: 300, height: 300 });
 
   // Get current step for the text display (outside D3)
   const currentStep = useMemo(() => {
@@ -70,13 +72,20 @@ export function ArrayVisualizer({
     svg.attr("viewBox", `0 0 ${width} ${height}`);
 
     // Calculate dimensions (reduced top margin since step text is outside SVG)
-    const margin = { top: 20, right: 40, bottom: 100, left: 40 };
+    // Use responsive margins for mobile viewports
+    const isMobile = width < 480;
+    const margin = isMobile
+      ? { top: 10, right: 15, bottom: 50, left: 15 }
+      : { top: 20, right: 40, bottom: 100, left: 40 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
     const barSpacing = innerWidth / data.length;
-    const barWidth = Math.min(50, barSpacing * 0.4);
+    const maxBarWidth = isMobile ? 30 : 50;
+    const barWidth = Math.min(maxBarWidth, barSpacing * 0.4);
     const maxValue = Math.max(...data, 1);
     const barOffset = (barSpacing - barWidth) / 2;
+    const fontSize = isMobile ? 10 : 14;
+    const indexFontSize = isMobile ? 9 : 11;
 
     // Get current step for highlighting
     const currentStep =
@@ -126,7 +135,8 @@ export function ArrayVisualizer({
       .attr("class", "bar-label")
       .attr("x", barSpacing / 2)
       .attr("y", innerHeight - 10)
-      .attr("text-anchor", "middle");
+      .attr("text-anchor", "middle")
+      .style("font-size", `${fontSize}px`);
 
     // Add index label group (background + text) to new bars
     const indexGroup = barsEnter
@@ -143,7 +153,11 @@ export function ArrayVisualizer({
       .attr("height", 16)
       .attr("rx", 3);
 
-    indexGroup.append("text").attr("class", "bar-index").attr("text-anchor", "middle");
+    indexGroup
+      .append("text")
+      .attr("class", "bar-index")
+      .attr("text-anchor", "middle")
+      .style("font-size", `${indexFontSize}px`);
 
     // UPDATE: Merge enter and update selections
     const barsMerge = barsEnter.merge(bars);
@@ -180,6 +194,7 @@ export function ArrayVisualizer({
     barsMerge
       .select<SVGTextElement>("text.bar-label")
       .text((d) => d)
+      .style("font-size", `${fontSize}px`)
       .transition()
       .duration(duration)
       .attr("x", barSpacing / 2)
@@ -191,7 +206,10 @@ export function ArrayVisualizer({
       .attr("transform", `translate(${barSpacing / 2}, ${innerHeight + 18})`);
 
     // Update index text
-    barsMerge.select<SVGTextElement>("text.bar-index").text((_, i) => i);
+    barsMerge
+      .select<SVGTextElement>("text.bar-index")
+      .text((_, i) => i)
+      .style("font-size", `${indexFontSize}px`);
 
     // Cleanup: only interrupt in-flight transitions
     // Do NOT remove bars here - let D3's data join handle enter/update/exit animations

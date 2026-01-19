@@ -382,7 +382,7 @@ body {
 
 .skeleton-badge {
   position: absolute;
-  top: 0.75rem;
+  top: 0.5rem;
   left: 50%;
   transform: translateX(-50%);
   background-color: rgba(100, 108, 255, 0.9);
@@ -393,6 +393,14 @@ body {
   border-radius: 4px;
   z-index: 10;
   pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .skeleton-badge {
+    top: 0.25rem;
+    font-size: 0.625rem;
+    padding: 0.2rem 0.5rem;
+  }
 }
 
 /* Playback controls below visualization */
@@ -546,6 +554,12 @@ body {
 
   .visualizer-inner {
     margin: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .visualizer-inner {
+    margin: 0.25rem;
   }
 
   /* Hide resize handle on mobile - panels stack vertically */
