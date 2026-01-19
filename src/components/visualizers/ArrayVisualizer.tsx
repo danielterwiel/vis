@@ -8,7 +8,7 @@ import "./ArrayVisualizer.css";
 select.prototype.transition = transition;
 
 interface ArrayVisualizerProps {
-  data: number[];
+  data: number[] | null;
   steps?: VisualizationStep[];
   currentStepIndex?: number;
   isAnimating?: boolean;
@@ -61,7 +61,7 @@ export function ArrayVisualizer({
   }, []);
 
   useEffect(() => {
-    if (!svgRef.current || data.length === 0) return;
+    if (!svgRef.current || !data || data.length === 0) return;
 
     const svg = select(svgRef.current);
     const { width, height } = dimensions;
